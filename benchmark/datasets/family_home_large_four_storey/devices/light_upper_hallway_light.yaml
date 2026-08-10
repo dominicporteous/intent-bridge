@@ -1,0 +1,63 @@
+-
+  name: light_upper_hallway_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      state: 'on'
+  sentences:
+    - 'Turn on the Upper Hallway Light'
+    - 'Flick on the upper hallway light in the upper_hallway'
+    - 'Please flip on the Upper Hallway Light for me'
+    - "If you don't mind, could you turn on the light upper hallway light"
+    - 'Activate the Upper Hallway Light'
+    - 'Switch on the upper_hallway light'
+    - 'Quickly turn on the Upper Hallway Light'
+    - 'Can you please flick on the light in the upper hallway'
+-
+  name: light_upper_hallway_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      state: 'off'
+  sentences:
+    - 'Turn off the upper hallway light'
+    - 'Please turn off the light in the upper hallway for me'
+    - "If you don't mind, flick off the upper_hallway light"
+    - 'Flip off the light in upper_hallway'
+    - 'Shut off the upper hallway light'
+    - 'Could you turn off the upper_hallway light please'
+    - 'Deactivate the light in the upper hallway'
+-
+  name: light_upper_hallway_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      attributes:
+        brightness: 31
+  sentences:
+    - 'Set the upper hallway light to 31 percent brightness'
+    - 'Please dim the Upper Hallway Light to 31 for me'
+    - "Flick the light upper hallway light down to 31 if you don't mind"
+    - 'Upper hallway light brightness 31'
+    - 'Turn the upper_hallway light to thirty one percent'
+    - 'Could you adjust the Upper Hallway Light brightness to 31 please'
+    - 'Flip the light upper hallway light brightness to 31'
+-
+  name: light_upper_hallway_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      attributes:
+        color: white
+  sentences:
+    - 'Set the Upper Hallway Light to white'
+    - 'Please change the upper hallway light to white for me'
+    - 'Flick the upper_hallway light to white'
+    - "If you don't mind, flip the Upper Hallway Light to white"
+    - 'Make the upper hallway light white'
+    - 'Turn the upper_hallway light white please'
+    - 'Quickly set upper hallway light to white'

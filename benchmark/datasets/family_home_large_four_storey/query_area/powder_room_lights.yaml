@@ -1,0 +1,60 @@
+-
+  name: powder_room_lights_get_state
+  conditions:
+    -
+      type: query
+      area: powder_room
+      domain: light
+  sentences:
+    - "What's the light status in the powder room?"
+    - 'Are the powder room lights on?'
+    - 'Check powder room lights please'
+    - "If you don't mind, could you tell me if the powder room lights are on?"
+    - 'Powder room lights state'
+    - 'Please check the lights in the powder room for me'
+    - 'Get current state of powder room lighting'
+-
+  name: powder_room_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: powder_room
+      domain: light
+  sentences:
+    - "What's the status of the powder room lights?"
+    - 'Powder room lights state'
+    - "Please tell me the current state of the lights in the powder room if you don't mind"
+    - 'Are the powder room lights on or off right now?'
+    - 'Check powder room lighting status for me'
+    - 'Powder room lights - current state please'
+    - 'If you could check the powder room lights state, that would be great'
+-
+  name: powder_room_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: powder_room
+      domain: light
+  sentences:
+    - "What's the status of the powder room lights?"
+    - 'Are the lights on in the powder room?'
+    - 'Check powder room lighting please'
+    - "If you don't mind, tell me about the powder room lights"
+    - 'Powder room lights status'
+    - 'Could you check if the powder room lights are on for me?'
+    - 'Get current state of powder room lights'
+-
+  name: powder_room_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: powder_room
+      domain: light
+  sentences:
+    - "What's the status of the powder room lights?"
+    - 'Check powder room lights'
+    - "Please tell me the state of the lights in the powder room if you don't mind"
+    - 'Powder room lights status'
+    - 'Could you check the lights in the powder room for me'
+    - 'Get current state of powder room lighting'
+    - 'Are the powder room lights on or off?'

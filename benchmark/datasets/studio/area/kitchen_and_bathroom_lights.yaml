@@ -1,0 +1,84 @@
+-
+  name: kitchen_and_bathroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen and bathroom lights'
+    - 'Please flick on the lights in the kitchen and bathroom for me'
+    - "If you don't mind, flip on the kitchen and bathroom lights"
+    - 'Kitchen and bathroom lights on'
+    - 'Activate the lights in the kitchen and bathroom'
+    - 'Could you turn on the kitchen and bathroom lights please'
+    - 'Switch on the lights for the kitchen and bathroom'
+-
+  name: kitchen_and_bathroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen and bathroom lights'
+    - 'Please switch off the lights in the kitchen and bathroom for me'
+    - "Flick off the kitchen and bathroom lights if you don't mind"
+    - 'Flip the kitchen and bathroom lights off'
+    - 'Could you turn off the lights in the kitchen and bathroom please'
+    - 'Kill the lights in the kitchen and bathroom'
+    - 'Shut off the kitchen and bathroom lights for me'
+-
+  name: kitchen_and_bathroom_lights_change_brightness
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        brightness: 48
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        brightness: 48
+  sentences:
+    - 'Set the kitchen and bathroom lights to 48 percent brightness'
+    - 'Turn the lights in the kitchen and bathroom down to 48'
+    - "Please adjust kitchen and bathroom lights to 48 if you don't mind"
+    - 'Flick the kitchen and bathroom lights to 48 brightness'
+    - 'Could you set the lights in kitchen and bathroom to 48 for me'
+    - 'Make kitchen and bathroom lights 48 percent'
+    - 'Flip kitchen and bathroom lights brightness to 48 please'
+-
+  name: kitchen_and_bathroom_lights_change_color
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        color: yellow
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change the kitchen and bathroom lights to yellow'
+    - 'Please set the kitchen and bathroom lights to yellow for me'
+    - "Flick on yellow for the kitchen and bathroom lights if you don't mind"
+    - 'Turn the kitchen and bathroom lights yellow'
+    - 'Flip the kitchen and bathroom lights to yellow please'
+    - 'Could you change the lights in the kitchen and bathroom to yellow'
+    - 'Set kitchen and bathroom lights to yellow'

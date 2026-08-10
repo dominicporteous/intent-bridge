@@ -1,0 +1,18 @@
+-
+  name: light_kitchen_bench_and_switch_bathroom_fan_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_bench
+    -
+      type: query
+      entity_id: switch.bathroom_fan
+  sentences:
+    - "What's the status of the bench lights?"
+    - 'Is the bathroom fan on?'
+    - 'Please check the kitchen bench lights for me'
+    - 'Can you tell me if the bathroom fan is running?'
+    - 'Bench lights status'
+    - "If you don't mind, what's the state of the bathroom fan?"
+    - 'Are the kitchen bench lights currently on?'
+    - 'Quick check on bathroom fan please'

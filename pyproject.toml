@@ -1,0 +1,53 @@
+[project]
+name = "intent-bridge"
+version = "6.9.0"
+description = "OpenAI-compatible Home Intent bridge for Home Assistant"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116.0",
+  "uvicorn[standard]>=0.35.0",
+  "python-dotenv>=1.1.0",
+  "openai-agents==0.18.3",
+  "websockets>=14",
+  "music-assistant-client==1.4.3",
+  "hassil==3.11.0",
+  "home-assistant-intents==2026.7.30",
+  "httpx>=0.28.1",
+  "pyyaml>=6.0.2",
+  "uv",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4",
+  "pytest-asyncio>=1.1",
+  "pytest-cov>=6.2",
+  "ruff>=0.12",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["."]
+cache_dir = ".cache/pytest"
+addopts = [
+  "--cov=main",
+  "--cov=intent_bridge",
+  "--cov-branch",
+  "--cov-report=term-missing",
+  "--cov-fail-under=85",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = [
+  ".cache",
+  ".refactor-backup",
+  ".uv-cache",
+  ".venv",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

@@ -1,0 +1,45 @@
+-
+  name: upper_bath_switchs_get_state
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: switch
+  sentences:
+    - "What's the status of the upper bath switches"
+    - 'upper bath switches state'
+    - "please tell me the current state of the switches in the upper bathroom if you don't mind"
+    - 'get upper bath switches'
+    - 'could you check the switches upstairs in the bath for me'
+    - 'upper bathroom switches status please'
+    - 'show me the state of all switches in the upper bath'
+-
+  name: upper_bath_switchs_list_on_switchs
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: switch
+  sentences:
+    - "What's the status of the upper bath switches"
+    - 'Check upper bathroom switches'
+    - "Please tell me the state of the switches in the upper bath if you don't mind"
+    - 'Upper bath switches status'
+    - 'Could you check the switches upstairs bathroom for me'
+    - 'Get current state of upper bathroom switches'
+    - 'Are the upper bath switches on or off'
+-
+  name: upper_bath_switchs_list_off_switchs
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: switch
+  sentences:
+    - "What's the status of the upper bath switches"
+    - 'Check the switches in the upper bathroom'
+    - "Please tell me the state of the upper bath switches if you don't mind"
+    - 'Upper bath switches status'
+    - 'Could you check the upper bathroom switches for me'
+    - 'Get the current state of the switches upstairs in the bath'
+    - 'Are the upper bath switches on or off'

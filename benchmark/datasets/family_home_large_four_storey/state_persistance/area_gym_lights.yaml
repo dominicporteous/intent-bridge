@@ -1,0 +1,32 @@
+-
+  name: gym_lights_set_brightness
+  setup:
+    -
+      entity_id: light.gym_lights
+      brightness: 36
+  conditions:
+    -
+      entity_id: light.gym_lights
+      brightness: 22
+  sentences:
+    -
+      - 'What is the brightness of the lights in the gym?'
+      - 'Set it to 22.'
+    -
+      - 'Can you tell me the current brightness level in the gym please?'
+      - 'Please change it to 22 for me.'
+    -
+      - 'Gym lights brightness status?'
+      - 'Flick it to 22.'
+    -
+      - "What's the brightness in the gym right now if you don't mind?"
+      - 'Flip it to 22.'
+    -
+      - "Tell me the gym's light brightness."
+      - 'Adjust to 22.'
+    -
+      - 'Gym brightness level?'
+      - 'Make it 22.'
+    -
+      - 'Could you check the brightness of the gym lights for me?'
+      - 'Turn it to 22 please.'

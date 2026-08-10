@@ -1,0 +1,61 @@
+-
+  name: home_theater_lights_get_state
+  conditions:
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the home theater lights?"
+    - 'Lights in the home theater please'
+    - "If you don't mind, could you check the home theater lights for me?"
+    - 'Home theater lights state'
+    - 'Please tell me if the home theater lights are on or off'
+    - 'Quick check on the theater lighting'
+    - 'Are the home theater lights currently on?'
+-
+  name: home_theater_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the home theater lights?"
+    - 'Lights in the theater room?'
+    - "Please tell me the current state of the home theater lights if you don't mind"
+    - 'Check home theater lighting status'
+    - 'Could you check the lights in the theater for me please'
+    - 'Home theater lights state'
+    - 'Get me the current lighting status in the home theater'
+    - 'Are the home theater lights on or off?'
+-
+  name: home_theater_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the home theater lights?"
+    - 'Lights in the theater, please.'
+    - 'Could you tell me if the home theater lights are on or off?'
+    - 'Hey, check the lights in the home theater for me.'
+    - 'Theater lights status?'
+    - "If you don't mind, what's the current state of the home theater lights?"
+    - 'Are the lights on in the theater?'
+-
+  name: home_theater_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the home theater lights?"
+    - 'Lights in home theater please'
+    - "If you don't mind, could you check the home theater lights for me?"
+    - 'Home theater lights state'
+    - 'Please tell me if the home theater lights are on or off'
+    - 'Quick check on theater lighting'
+    - 'Are the home theater lights currently on?'

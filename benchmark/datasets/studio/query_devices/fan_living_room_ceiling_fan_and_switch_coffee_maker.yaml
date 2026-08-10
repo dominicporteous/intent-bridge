@@ -1,0 +1,17 @@
+-
+  name: fan_living_room_ceiling_fan_and_switch_coffee_maker_get_status
+  conditions:
+    -
+      type: query
+      entity_id: fan.living_room_ceiling_fan
+    -
+      type: query
+      entity_id: switch.coffee_maker
+  sentences:
+    - "What's the status of the ceiling fan and coffee maker?"
+    - 'Get the current state of the living room ceiling fan and coffee maker please'
+    - 'Tell me if the ceiling fan and coffee maker are on or off'
+    - 'Could you check the ceiling fan and coffee maker status for me'
+    - 'Ceiling fan and coffee maker state'
+    - "Please report the current state of the living room ceiling fan and the coffee maker if you don't mind"
+    - 'Are the ceiling fan and coffee maker currently running'

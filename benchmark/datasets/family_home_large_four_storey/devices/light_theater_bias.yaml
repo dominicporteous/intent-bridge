@@ -1,0 +1,62 @@
+-
+  name: light_theater_bias_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      state: 'on'
+  sentences:
+    - 'Turn on the bias lighting in the home theater'
+    - 'Flick on the theater bias light'
+    - 'Please flip on the bias lighting for me'
+    - "If you don't mind, turn on the home_theater bias light"
+    - 'Activate the bias lighting in home theater'
+    - 'Quickly turn on the theater bias light'
+    - 'Switch on the home_theater bias lighting'
+-
+  name: light_theater_bias_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      state: 'off'
+  sentences:
+    - 'Turn off the bias lighting in the home theater'
+    - 'Please kill the theater bias light for me'
+    - 'Flick off the bias lights in home_theater'
+    - "If you don't mind, shut down the theater bias lighting"
+    - 'Flip the bias light off in the home theater'
+    - 'Deactivate the home_theater bias lighting please'
+    - 'Kill the bias lights in the theater'
+-
+  name: light_theater_bias_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      attributes:
+        brightness: 46
+  sentences:
+    - 'Set the home theater bias lighting to 46 percent'
+    - 'Please adjust the theater bias light to 46 for me'
+    - "If you don't mind, flick the Bias Lighting in home_theater to 46"
+    - 'Quickly dim the home theater bias light to 46'
+    - 'Turn the theater bias lighting brightness to 46 please'
+    - 'Flip the Bias Lighting in home_theater down to 46'
+    - 'Change home theater bias light brightness to 46 if you could'
+-
+  name: light_theater_bias_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      attributes:
+        color: blue
+  sentences:
+    - 'Turn the home theater bias lighting blue'
+    - 'Flick on the theater bias light to blue'
+    - 'Please set the Bias Lighting in the home_theater to blue for me'
+    - "If you don't mind, flip the light theater bias to blue"
+    - 'Change the home_theater bias lighting color to blue'
+    - 'Quickly make the theater bias light blue'
+    - 'Set the Bias Lighting to blue in the home theater area'

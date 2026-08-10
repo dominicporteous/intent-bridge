@@ -1,0 +1,28 @@
+-
+  name: light_kitchen_under_cabinet_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_under_cabinet
+  sentences:
+    - "What's the status of the under cabinet lights in the kitchen?"
+    - 'Kitchen under cabinet lights state'
+    - 'Please tell me if the under cabinet lights are on or off'
+    - "If you don't mind, could you check the kitchen under cabinet lights for me?"
+    - 'Under cabinet lights kitchen'
+    - 'Get state of kitchen under cabinet lights'
+    - 'Are the under cabinet lights on in the kitchen?'
+-
+  name: light_kitchen_under_cabinet_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_under_cabinet
+  sentences:
+    - "What's the brightness of the under cabinet lights?"
+    - 'Get brightness for kitchen under cabinet lights'
+    - "Please tell me the current brightness of the under cabinet lights if you don't mind"
+    - 'Kitchen under cabinet light brightness level'
+    - 'Could you check how bright the under cabinet lights are right now'
+    - 'Under cabinet lights brightness in kitchen'
+    - "What's the brightness setting on the kitchen under cabinet lights please"

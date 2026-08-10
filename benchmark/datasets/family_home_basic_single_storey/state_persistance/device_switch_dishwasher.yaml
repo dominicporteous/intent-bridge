@@ -1,0 +1,69 @@
+-
+  name: switch_dishwasher_turn_on
+  setup:
+    -
+      entity_id: switch.dishwasher
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: switch.dishwasher
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the dishwasher?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the dishwasher running?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Check the dishwasher state in the kitchen.'
+      - 'Flip it on please.'
+    -
+      - 'Dishwasher status?'
+      - 'Turn it on.'
+    -
+      - 'Can you tell me if the dishwasher is on?'
+      - 'Switch it on for me.'
+    -
+      - "What's the dishwasher doing?"
+      - 'Please flick it on in the kitchen.'
+    -
+      - 'Dishwasher status in kitchen?'
+      - "Flip it on if you don't mind."
+    -
+      - 'Is the dishwasher off?'
+      - 'Turn it on please.'
+-
+  name: switch_dishwasher_turn_off
+  setup:
+    -
+      entity_id: switch.dishwasher
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: switch.dishwasher
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the dishwasher?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the dishwasher running?'
+      - "If you don't mind, switch it off."
+    -
+      - 'Check the dishwasher in the kitchen.'
+      - 'Flick it off, thanks.'
+    -
+      - 'Dishwasher status?'
+      - 'Flip it off please.'
+    -
+      - 'Can you tell me if the dishwasher is on?'
+      - 'Turn it off if you would.'
+    -
+      - "How's the kitchen dishwasher doing?"
+      - 'Shut it down for me.'
+    -
+      - 'Dishwasher state in the kitchen?'
+      - 'Kill the power to it, please.'

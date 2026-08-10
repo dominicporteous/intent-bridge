@@ -1,0 +1,438 @@
+-
+  name: timer_oven_start
+  conditions:
+    -
+      entity_id: timer.oven
+      minutes: 2
+      seconds: 30
+  sentences:
+    - 'Start the oven timer for 2 minutes 30 seconds'
+    - 'Set oven timer to 2 minutes 30 seconds'
+    - 'Hey, can you start the oven timer for 2 minutes 30 seconds please'
+    - 'Please set the oven timer for 2 minutes 30 seconds'
+    - 'Oven timer 2 minutes 30 seconds'
+    - 'Begin oven timer countdown for 2 minutes 30 seconds'
+    - 'Could you please start the oven timer for 2 minutes 30 seconds'
+-
+  name: timer_oven_increase
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 30
+  conditions:
+    -
+      entity_id: timer.oven
+      minutes: 30
+      seconds: 30
+  sentences:
+    - 'Add 30 seconds to the oven timer'
+    - 'Extend the oven timer by 30 seconds'
+    - 'Please increase the oven timer by 30 seconds'
+    - 'Hey, tack on 30 seconds to the oven timer'
+    - 'Bump up the oven timer by 30 seconds'
+    - 'Give the oven timer an extra 30 seconds'
+    - 'Push the oven timer forward by 30 seconds'
+-
+  name: timer_oven_decrease
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 45
+  conditions:
+    -
+      entity_id: timer.oven
+      minutes: 44
+      seconds: 30
+  sentences:
+    - 'Subtract 30 seconds from the oven timer'
+    - 'Cut 30 seconds off the oven timer'
+    - 'Reduce the oven timer by 30 seconds'
+    - 'Shorten the oven timer by 30 seconds'
+    - 'Take 30 seconds off the oven timer'
+    - 'Knock 30 seconds off the oven timer'
+    - 'Please remove 30 seconds from the oven timer'
+    - 'Hey, shorten the oven timer by 30 seconds'
+-
+  name: timer_oven_pause
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 20
+  conditions:
+    -
+      entity_id: timer.oven
+      state: paused
+  sentences:
+    - 'Pause the oven timer'
+    - 'Hold the oven timer'
+    - 'Freeze the oven timer'
+    - 'Can you pause that timer please'
+    - 'Hey, put the oven timer on hold'
+    - 'Pause the oven timer now' # Changed from: Stop the oven timer
+    - 'Halt the timer'
+    - 'Pause that timer for me'
+-
+  name: timer_oven_unpause
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 20
+  conditions:
+    -
+      entity_id: timer.oven
+      state: active
+  sentences:
+    - 'Resume the oven timer'
+    - 'Unpause the timer'
+    - 'Hey, can you continue the oven timer'
+    - 'Please restart the timer'
+    - 'Start the oven timer again'
+    - 'Pick up where the timer left off'
+    - 'Resume that timer please'
+-
+  name: timer_oven_cancel
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 20
+  conditions:
+    -
+      entity_id: timer.oven
+      state: idle
+  sentences:
+    - 'Cancel the oven timer'
+    - 'Stop the oven timer'
+    - 'Hey, clear the oven timer'
+    - 'Please cancel that timer'
+    - 'Go ahead and stop the oven timer'
+    - 'Clear the timer'
+    - 'Cancel the timer now'
+    - 'Turn off the oven timer'
+-
+  name: timer_oven_status
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 20
+  conditions:
+    -
+      type: query
+      entity_id: timer.oven
+  sentences:
+    - 'Check the oven timer'
+    - 'How much time is left on the oven timer?'
+    - "What's the status of the oven timer?"
+    - 'Can you tell me how long is remaining on the oven timer please?'
+    - 'Hey, where are we at with the oven timer?'
+    - 'Time remaining on the oven timer?'
+    - 'Query the oven timer status'
+    - 'How long left on the oven timer?'
+-
+  name: timer_laundry_start
+  conditions:
+    -
+      entity_id: timer.laundry
+      seconds: 90
+  sentences:
+    - 'Start the laundry timer for 90 seconds' # Changed from: Start a timer for 90 seconds
+    - 'Set the laundry timer for 90 seconds' # Changed from: Set the timer for 90 seconds
+    - 'Hey, can you start the laundry timer for 90 seconds please' # Changed from: Hey, can you start a timer for 90 seconds please
+    - 'Begin a 90-second laundry timer' # Changed from: Begin a 90-second timer
+    - 'Please set the laundry timer for 90 seconds' # Changed from: Please set a timer for 90 seconds
+    - 'Start the laundry timer for 90 seconds now' # Changed from: Start the timer for 90 seconds now
+    - 'Can you set the laundry timer for 90 seconds' # Changed from: Can you set a timer for 90 seconds
+-
+  name: timer_laundry_increase
+  setup:
+    -
+      entity_id: timer.laundry
+      minutes: 15
+  conditions:
+    -
+      entity_id: timer.laundry
+      minutes: 16
+  sentences:
+    - 'Add 1 minute to the timer'
+    - 'Please extend the timer by 1 minute'
+    - 'Hey, bump up the timer by 1 minute'
+    - 'Increase the timer by 1 minute'
+    - 'Tack on 1 minute to the timer'
+    - 'Give the timer an extra 1 minute'
+    - 'Push the timer forward by 1 minute'
+-
+  name: timer_laundry_decrease
+  setup:
+    -
+      entity_id: timer.laundry
+      minutes: 10
+  conditions:
+    -
+      entity_id: timer.laundry
+      minutes: 5
+  sentences:
+    - 'Subtract five minutes from the timer'
+    - 'Please reduce the timer by five minutes'
+    - 'Hey, cut five minutes off the timer'
+    - 'Shorten the timer by five minutes'
+    - 'Knock five minutes off the timer'
+    - 'Remove five minutes from the timer'
+    - 'Take five minutes off the timer'
+-
+  name: timer_laundry_pause
+  setup:
+    -
+      entity_id: timer.laundry
+      hours: 1
+  conditions:
+    -
+      entity_id: timer.laundry
+      state: paused
+  sentences:
+    - 'Pause the laundry timer'
+    - 'Hold the laundry timer'
+    - 'Freeze the laundry timer'
+    - 'Hey, can you pause the laundry timer'
+    - 'Please put the laundry timer on hold'
+    - 'Pause the laundry timer now' # Changed from: Stop the laundry timer
+    - 'Halt the laundry timer'
+    - 'Pause that timer'
+-
+  name: timer_laundry_unpause
+  setup:
+    -
+      entity_id: timer.laundry
+      hours: 1
+  conditions:
+    -
+      entity_id: timer.laundry
+      state: active
+  sentences:
+    - 'Resume the laundry timer'
+    - 'Unpause laundry timer'
+    - 'Hey, can you continue the laundry timer'
+    - 'Please restart the laundry timer'
+    - 'Continue that timer'
+    - 'Pick up the laundry timer where it left off'
+    - 'Resume laundry timer please'
+-
+  name: timer_laundry_cancel
+  setup:
+    -
+      entity_id: timer.laundry
+      hours: 1
+  conditions:
+    -
+      entity_id: timer.laundry
+      state: idle
+  sentences:
+    - 'Cancel the laundry timer'
+    - 'Stop the laundry timer'
+    - 'Please clear the laundry timer'
+    - 'Hey, go ahead and cancel that timer'
+    - 'Clear the laundry timer now'
+    - 'Stop the laundry timer please'
+    - 'Cancel that laundry timer'
+    - 'Please stop the laundry timer'
+-
+  name: timer_laundry_status
+  setup:
+    -
+      entity_id: timer.laundry
+      hours: 1
+  conditions:
+    -
+      type: query
+      entity_id: timer.laundry
+  sentences:
+    - 'How long is left on the laundry timer?'
+    - "What's the status of the laundry timer?"
+    - 'Check the laundry timer for me.'
+    - 'How much time is remaining on the laundry timer?'
+    - "Can you tell me where we're at with the laundry timer?"
+    - 'Please check how much time is left on the laundry timer.'
+    - "Hey, what's the time remaining on the laundry timer?"
+-
+  name: abstract_start
+  conditions:
+    -
+      entity_id: timer.abstract
+      minutes: 45
+  sentences:
+    - 'Start a 45 minute timer'
+    - 'Set timer for 45 minutes'
+    - 'Hey, can you start the timer for 45 minutes please'
+    - 'Begin a 45-minute timer now'
+    - 'Please set a timer for 45 minutes'
+    - 'Start timer 45 minutes'
+    - 'Can you set the timer for 45 minutes'
+    - 'Create a 45 minute timer'
+-
+  name: abstract_start_seconds
+  conditions:
+    -
+      entity_id: timer.abstract
+      seconds: 45
+  sentences:
+    - 'Start a timer for 45 seconds'
+    - 'Set the timer for 45 seconds please'
+    - 'Hey can you start a timer for 45 seconds'
+    - 'Begin timer 45 seconds'
+    - 'Please set a timer for 45 seconds'
+    - 'Can you create a timer for 45 seconds'
+    - 'Start the timer for 45 seconds now'
+-
+  name: abstract_start_hours_minutes
+  conditions:
+    -
+      entity_id: timer.abstract
+      hours: 1
+      minutes: 20
+  sentences:
+    - 'Start a timer for 1 hour 20 minutes'
+    - 'Set the timer for 1 hour 20 minutes'
+    - 'Hey, can you start a timer for 1 hour 20 minutes please'
+    - 'Please set a timer for 1 hour 20 minutes'
+    - 'Begin timer 1 hour 20 minutes'
+    - 'Create a timer for 1 hour 20 minutes'
+    - 'Start timer 1 hour 20 minutes now'
+-
+  name: abstract_increase
+  setup:
+    -
+      entity_id: timer.abstract
+      start_hours: 1
+  conditions:
+    -
+      entity_id: timer.abstract
+      hours: 1
+      minutes: 5
+  sentences:
+    - 'Add five minutes to the timer'
+    - 'Please extend the timer by five minutes'
+    - 'Hey, bump up the timer five minutes'
+    - 'Increase the timer by five minutes'
+    - 'Tack on five minutes to that timer'
+    - 'Push the timer forward five minutes'
+    - 'Give the timer five more minutes'
+    - 'Add another five minutes to that timer' # Changed from: Add five minutes to the oven timer
+-
+  name: abstract_decrease
+  setup:
+    -
+      entity_id: timer.abstract
+      start_minutes: 20
+  conditions:
+    -
+      entity_id: timer.abstract
+      minutes: 15
+  sentences:
+    - 'Subtract five minutes from the timer'
+    - 'Hey, can you shorten the timer by five minutes please'
+    - 'Reduce the timer by five minutes'
+    - 'Cut five minutes off the timer'
+    - 'Knock off five minutes from that timer'
+    - 'Remove five minutes from the timer'
+    - 'Take five minutes off the timer'
+-
+  name: abstract_pause
+  setup:
+    -
+      entity_id: timer.abstract
+      start_seconds: 90
+  conditions:
+    -
+      entity_id: timer.abstract
+      state: paused
+  sentences:
+    - 'Pause the timer'
+    - 'Hold the timer please'
+    - 'Can you freeze that timer'
+    - 'Hey, put the timer on hold'
+    - 'Pause the timer now' # Changed from: Stop the timer
+    - 'Pause that timer please' # Changed from: Pause the oven timer
+    - 'Freeze the timer for me'
+    - 'Halt the timer'
+-
+  name: abstract_unpause
+  setup:
+    -
+      entity_id: timer.abstract
+      start_seconds: 90
+  conditions:
+    -
+      entity_id: timer.abstract
+      state: active
+  sentences:
+    - 'Resume the timer'
+    - 'Unpause that timer please' # Changed from: Unpause the oven timer
+    - 'Hey, can you continue that timer please'
+    - 'Restart the timer'
+    - 'Pick up the timer where you left off'
+    - 'Continue the timer'
+    - 'Unpause the timer'
+    - 'Start the timer again'
+-
+  name: abstract_cancel
+  setup:
+    -
+      entity_id: timer.abstract
+      start_seconds: 90
+  conditions:
+    -
+      entity_id: timer.abstract
+      state: idle
+  sentences:
+    - 'Cancel the timer'
+    - 'Stop the timer'
+    - 'Hey, cancel the timer please'
+    - 'Go ahead and clear that timer'
+    - 'Cancel that timer please' # Changed from: Cancel the oven timer
+    - 'Stop that timer please' # Changed from: Stop the kitchen timer
+    - 'Please cancel the timer'
+    - 'Clear the timer now'
+-
+  name: cancel_all_timers
+  setup:
+    -
+      entity_id: timer.oven
+      minutes: 45
+    -
+      entity_id: timer.laundry
+      minutes: 45
+    -
+      entity_id: timer.abstract
+      start_hours: 1
+  conditions:
+    -
+      entity_id: timer.oven
+      state: idle
+    -
+      entity_id: timer.laundry
+      state: idle
+  sentences:
+    - 'Cancel all timers'
+    - 'Stop every timer right now'
+    - 'Hey, clear all the timers please'
+    - 'Go ahead and cancel every active timer'
+    - 'Delete all timers'
+    - 'Please turn off all timers at once'
+    - 'Clear every timer you have going'
+-
+  name: abstract_status
+  setup:
+    -
+      entity_id: timer.abstract
+      start_seconds: 90
+  conditions:
+    -
+      type: query
+      entity_id: timer.abstract
+  sentences:
+    - 'how long left on the timer'
+    - 'check the status of the timer'
+    - "what's the time remaining"
+    - 'can you tell me how much time is left'
+    - 'hey where are we at with the timer'
+    - 'please check that timer' # Changed from: please check the oven timer
+    - 'time remaining on that timer'
+    - 'how much time is left on the timer'

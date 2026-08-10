@@ -1,0 +1,29 @@
+-
+  name: light_basement_bath_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.basement_bath_light
+  sentences:
+    - "What's the status of the basement bathroom light?"
+    - 'Is the basement bath light on or off?'
+    - 'Please check the light in the basement bathroom for me'
+    - "If you don't mind, what's the current state of the basement bath light?"
+    - 'Basement bath light status'
+    - 'Tell me if the basement bathroom light is on'
+    - 'Quick check on basement_bathroom light state'
+    - "Can you tell me the basement bath light's current condition?"
+-
+  name: light_basement_bath_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.basement_bath_light
+  sentences:
+    - "What's the brightness of the Basement Bath Light?"
+    - 'Get the brightness level for the light in the basement_bathroom'
+    - 'Please tell me how bright the Basement Bath Light is'
+    - "If you don't mind, what's the current brightness of the basement bath light?"
+    - 'Check brightness on light basement bath light'
+    - 'How bright is the Basement Bath Light right now?'
+    - 'Could you get the brightness for the light in basement_bathroom please?'

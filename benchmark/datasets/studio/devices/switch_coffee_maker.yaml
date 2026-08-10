@@ -1,0 +1,30 @@
+-
+  name: switch_coffee_maker_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+  sentences:
+    - 'Turn on the coffee maker'
+    - 'Flick on the kitchen coffee maker'
+    - 'Please flip on the coffee maker for me'
+    - "If you don't mind, turn on the coffee maker in the kitchen"
+    - 'Activate the coffee maker'
+    - 'Switch on the kitchen coffee maker please'
+    - 'Can you power on the coffee maker for me'
+-
+  name: switch_coffee_maker_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'off'
+  sentences:
+    - 'Turn off the coffee maker'
+    - 'Please switch off the coffee maker for me'
+    - "If you don't mind, flip off the kitchen coffee maker"
+    - 'Deactivate the coffee maker'
+    - 'Kill the kitchen coffee maker'
+    - 'Can you shut down the coffee maker please'
+    - 'Power off the coffee maker in the kitchen'

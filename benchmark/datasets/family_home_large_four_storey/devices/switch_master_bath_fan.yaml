@@ -1,0 +1,31 @@
+-
+  name: switch_master_bath_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.master_bath_fan
+      state: 'on'
+  sentences:
+    - 'turn on the master bath fan'
+    - 'flick on the master bath fan'
+    - 'flip on the master bath fan'
+    - 'please turn on the master bath fan for me'
+    - "if you don't mind, turn on the master bath fan"
+    - 'activate the master bath fan'
+    - 'switch on the master bath fan in the master bath'
+    - 'can you turn on the master bath fan'
+-
+  name: switch_master_bath_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.master_bath_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the master bath fan'
+    - 'Please switch off the master_bath fan for me'
+    - "Flick off the Master Bath Fan if you don't mind"
+    - 'Flip the master_bath fan switch off'
+    - 'Could you turn off the fan in master_bath'
+    - 'Shut off the Master Bath Fan'
+    - 'Deactivate master_bath fan please'

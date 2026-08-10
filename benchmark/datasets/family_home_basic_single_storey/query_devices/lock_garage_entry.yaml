@@ -1,0 +1,15 @@
+-
+  name: lock_garage_entry_get_status
+  conditions:
+    -
+      type: query
+      entity_id: lock.garage_entry
+  sentences:
+    - "What's the status of the garage entry door lock"
+    - 'Is the garage entry door locked'
+    - 'Please check the garage entry door for me'
+    - 'Can you tell me if the garage entry door is locked'
+    - 'Lock status of garage entry door'
+    - "If you don't mind, what's the current state of the garage entry door"
+    - 'Garage entry door lock state'
+    - 'Tell me the garage entry door lock status'

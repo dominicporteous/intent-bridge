@@ -1,0 +1,65 @@
+-
+  name: entryway_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway lights'
+    - 'Flick on the lights in the entryway'
+    - 'Please flip on the entryway lights for me'
+    - "If you don't mind, could you turn on the lights in the entryway"
+    - 'Activate the entryway lights'
+    - 'Flip on the lights in the entryway please'
+    - 'Turn the entryway lights on'
+    - 'Can you flick on the entryway lights'
+-
+  name: entryway_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway lights'
+    - 'Please kill the lights in the entryway for me'
+    - "If you don't mind, flick off the foyer lights"
+    - 'Flip the entry lights off'
+    - 'Shut off the entryway lights please'
+    - 'Can you turn off the lights by the door'
+    - 'Kill the entry lights if you would'
+-
+  name: entryway_lights_change_brightness
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        brightness: 37
+  sentences:
+    - 'Set entryway lights to 37%'
+    - 'Please dim the entryway lights to 37 for me'
+    - 'Flick entryway brightness down to 37%'
+    - "If you don't mind, adjust the entryway lights to 37"
+    - 'Turn entryway lights to 37 percent'
+    - 'Could you set the entryway brightness to 37 please'
+    - 'Make the entryway lights 37%'
+-
+  name: entryway_lights_change_color
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change the entryway lights to pink'
+    - 'Please set the entryway lights to pink for me'
+    - "Flick the entryway lights to pink if you don't mind"
+    - 'Flip on pink for the entryway lights'
+    - 'Turn the entryway lights pink'
+    - 'Could you make the entryway lights pink please'
+    - 'Set entryway lights to pink color'

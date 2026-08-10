@@ -1,0 +1,28 @@
+-
+  name: light_gym_lights_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.gym_lights
+  sentences:
+    - "What's the status of the gym lights?"
+    - 'Gym lights state please'
+    - "If you don't mind, could you check the gym lights for me?"
+    - 'Current state of gym lights'
+    - 'Please tell me if the gym lights are on or off'
+    - 'Quick check on gym lights status'
+    - 'Are the gym lights currently on?'
+-
+  name: light_gym_lights_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.gym_lights
+  sentences:
+    - "What's the brightness of the gym lights?"
+    - 'Gym lights brightness please'
+    - "If you don't mind, could you tell me the current brightness of the gym lights?"
+    - 'Check gym lights brightness'
+    - 'Please get me the brightness level of the gym lights'
+    - "Gym lights, what's your brightness right now?"
+    - 'Could you check the brightness in the gym area for me?'

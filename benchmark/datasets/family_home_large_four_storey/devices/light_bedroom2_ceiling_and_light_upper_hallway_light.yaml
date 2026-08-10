@@ -1,0 +1,39 @@
+-
+  name: light_bedroom2_ceiling_and_light_upper_hallway_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      state: 'on'
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      state: 'on'
+  sentences:
+    - 'Turn on the Bedroom 2 Ceiling'
+    - 'Flick on the light bedroom2 ceiling'
+    - 'Please flip on the Upper Hallway Light for me'
+    - "If you don't mind, turn on the light upper hallway light"
+    - 'Activate bedroom_2 ceiling light'
+    - 'Switch on the upper_hallway light'
+    - 'Quickly turn on Bedroom 2 Ceiling'
+    - 'Can you turn on the Upper Hallway Light please'
+-
+  name: light_bedroom2_ceiling_and_light_upper_hallway_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      state: 'off'
+    -
+      type: action
+      entity_id: light.upper_hallway_light
+      state: 'off'
+  sentences:
+    - 'Turn off the Bedroom 2 Ceiling and Upper Hallway Light'
+    - 'Please flick off bedroom2 ceiling and upper hallway light for me'
+    - "If you don't mind, flip off the lights in bedroom_2 and upper_hallway"
+    - 'Deactivate Bedroom 2 Ceiling and Upper Hallway Light now'
+    - 'Kill the bedroom_2 ceiling and upper hallway light please'
+    - 'Switch off light bedroom2 ceiling and light upper hallway light'
+    - 'Shut down Bedroom 2 Ceiling plus Upper Hallway Light if possible'

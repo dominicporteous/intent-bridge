@@ -1,0 +1,29 @@
+-
+  name: light_master_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.master_ceiling
+  sentences:
+    - "What's the status of the master bedroom ceiling light?"
+    - 'Is the master_bedroom ceiling light on?' # Changed from: Turn on master_bedroom ceiling light
+    - 'Please check the master ceiling light for me'
+    - "If you don't mind, what's the current state of the ceiling light in the master bedroom?"
+    - 'Master bedroom ceiling light status'
+    - 'Could you tell me if the master_bedroom ceiling is on or off?'
+    - 'Quick check on master ceiling light please'
+    - 'State of light master ceiling'
+-
+  name: light_master_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.master_ceiling
+  sentences:
+    - "What's the brightness of the master bedroom ceiling light?"
+    - 'Tell me the current brightness level for the master ceiling light in master_bedroom'
+    - 'Please check the brightness of the Master Bedroom Ceiling for me'
+    - "If you don't mind, what's the brightness setting on the master ceiling light right now?"
+    - 'master_bedroom ceiling light brightness'
+    - 'Get brightness master ceiling'
+    - 'Could you tell me how bright the Master Bedroom Ceiling is?'

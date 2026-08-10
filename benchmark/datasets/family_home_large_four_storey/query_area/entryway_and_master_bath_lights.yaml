@@ -1,0 +1,78 @@
+-
+  name: entryway_and_master_bath_lights_get_state
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the entryway and master bath"
+    - 'entryway and master bath lights state'
+    - "please tell me the current state of the entryway and master bath lights if you don't mind"
+    - 'get light status entryway master bath'
+    - 'could you check the lights in the entryway and master bath for me'
+    - 'lights entryway master bath'
+    - 'if you could give me the light states for entryway and master bath please'
+    - 'current lighting status entryway master bath'
+-
+  name: entryway_and_master_bath_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the entryway and master bath lights"
+    - 'Lights in entryway and master bath'
+    - "Please tell me the current state of the lights in the entryway and master bath if you don't mind"
+    - 'Check lights entryway master bath'
+    - 'Could you get the light status for entryway and master bath for me'
+    - 'Entryway master bath lights state'
+    - "If it's not too much trouble, what's the light situation in the entryway and master bath"
+    - 'Lights status entryway master bath'
+-
+  name: entryway_and_master_bath_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the entryway and master bath lights"
+    - 'Lights in entryway and master bath'
+    - "Please tell me the current state of the lights in the entryway and master bath if you don't mind"
+    - 'Check lights entryway master bath'
+    - 'Could you get the light status for the entryway and master bath for me'
+    - 'Entryway and master bath lights state'
+    - 'Show me the lights status in entryway and master bath please'
+-
+  name: entryway_and_master_bath_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the entryway and master bath lights?"
+    - 'Lights in entryway and master bath'
+    - "Please tell me the current state of the lights in the entryway and master bath if you don't mind"
+    - 'Check entryway and master bath lighting status'
+    - 'Could you show me the lights status for entryway and master bath please'
+    - 'Entryway master bath lights state'
+    - 'Get me the current light states in entryway and master bath'

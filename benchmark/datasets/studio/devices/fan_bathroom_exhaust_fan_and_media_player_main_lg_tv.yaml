@@ -1,0 +1,39 @@
+-
+  name: fan_bathroom_exhaust_fan_and_media_player_main_lg_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the exhaust fan and LG TV'
+    - 'Please flick on the bathroom exhaust fan and main LG TV for me'
+    - 'Activate the exhaust fan and lg media player'
+    - 'Could you switch on the bathroom fan and LG TV please'
+    - 'Turn the exhaust fan and TV on'
+    - 'Power up the bathroom fan and main LG TV'
+    - 'Start the bathroom exhaust fan and LG TV'
+-
+  name: fan_bathroom_exhaust_fan_and_media_player_main_lg_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the exhaust fan and LG TV'
+    - 'Please shut down the bathroom exhaust fan and main LG TV for me'
+    - 'Flick off the exhaust fan and flip off the LG TV'
+    - "If you don't mind, power down the fan bathroom exhaust fan and media player main lg tv"
+    - 'Deactivate the exhaust fan and LG TV now'
+    - 'Could you turn off the bathroom exhaust fan and main LG TV please'
+    - 'Kill the exhaust fan and LG TV'
+    - 'Switch off the fan bathroom exhaust fan and media player main lg tv if possible'

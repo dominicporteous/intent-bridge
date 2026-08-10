@@ -1,0 +1,40 @@
+-
+  name: cover_master_blinds_and_cover_garage_door_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: open
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: open
+  sentences:
+    - 'Open the master bedroom blinds'
+    - 'Please open the garage door for me'
+    - "Flick on the master bedroom blinds if you don't mind"
+    - 'Flip on the garage door'
+    - 'Could you open the master_bedroom blinds'
+    - 'Open the garage door please'
+    - 'Raise the master bedroom blinds'
+    - "Lift the garage door if you don't mind"
+-
+  name: cover_master_blinds_and_cover_garage_door_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: closed
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: closed
+  sentences:
+    - 'Close the master bedroom blinds'
+    - 'Shut the garage door'
+    - 'Please close the master bedroom blinds for me'
+    - "If you don't mind, close the garage door"
+    - 'Flick the master bedroom blinds closed'
+    - 'Flip the garage door shut'
+    - 'Close master_bedroom cover'
+    - 'Close garage door cover'

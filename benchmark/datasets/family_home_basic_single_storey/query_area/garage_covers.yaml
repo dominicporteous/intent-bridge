@@ -1,0 +1,62 @@
+-
+  name: garage_covers_get_state
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the garage windows?"
+    - 'Garage blinds state please'
+    - "If you don't mind, could you check the curtains in the garage for me?"
+    - 'Tell me if garage windows are open or closed'
+    - 'Quick check on garage blinds status'
+    - 'Please report the current state of all garage curtains'
+    - 'Are the garage windows open right now?'
+-
+  name: garage_covers_list_open_covers
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the garage windows?"
+    - 'Garage blinds state please'
+    - 'Could you check the curtains in the garage for me?'
+    - 'Tell me if the garage windows are open or closed'
+    - "If you don't mind, what's happening with the garage blinds?"
+    - 'Garage curtains - current position?'
+    - 'Quick check on garage window status'
+    - 'Are the garage blinds up or down right now?'
+-
+  name: garage_covers_list_closed_covers
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the garage windows?"
+    - 'Check garage blinds state'
+    - "Please tell me if the garage curtains are open or closed if you don't mind"
+    - 'Garage window status report'
+    - 'Could you check the garage blinds for me please'
+    - 'Are the garage curtains open'
+    - 'Get current garage window positions'
+-
+  name: garage_covers_get_position
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the garage windows?"
+    - 'Are the garage blinds open or closed?'
+    - 'Check garage curtains please'
+    - 'Garage window state'
+    - "If you don't mind, could you tell me if the garage windows are open?"
+    - 'Quick check on garage blinds'
+    - 'Please report garage curtain status for me'
+    - 'Garage windows - current position?'

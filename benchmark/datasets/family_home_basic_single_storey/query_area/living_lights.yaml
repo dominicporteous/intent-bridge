@@ -1,0 +1,62 @@
+-
+  name: living_lights_get_state
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the living room lights?"
+    - 'Are the living room lights on or off?'
+    - 'Please check the living room lights for me'
+    - "If you don't mind, could you tell me about the living room lights?"
+    - 'Living room lights state'
+    - 'Get me the current living room lighting status'
+    - 'Quick check on living room lights please'
+-
+  name: living_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the living room lights"
+    - 'Living room lights state'
+    - 'Please tell me if the living room lights are on or off'
+    - 'Could you check the living room lights for me'
+    - 'Living room lights on or off'
+    - "If you don't mind, what's happening with the living room lights"
+    - 'Are the living room lights currently on'
+-
+  name: living_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the living room lights?"
+    - 'Living room lights state please'
+    - "If you don't mind, could you check the living room lights for me?"
+    - 'Are the living room lights on or off?'
+    - 'Quick check: living room lights?'
+    - 'Please tell me the living room lights status'
+    - 'Living room lighting situation report'
+    - 'Can you show me the living room lights state?'
+-
+  name: living_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the living room lights"
+    - 'Are the living room lights on'
+    - 'Please check the living room lights for me'
+    - "If you don't mind, what's the current state of the living room lights"
+    - 'Living room lights status'
+    - 'Can you tell me if the living room lights are on or off'
+    - 'Quick check on living room lights'
+    - "What's going on with the living room lights right now"

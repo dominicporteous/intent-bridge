@@ -1,0 +1,40 @@
+-
+  name: light_entryway_light_and_light_kitchen_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'on'
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway light'
+    - 'Flick on the kitchen ceiling light'
+    - 'Please flip on the entryway light for me'
+    - "If you don't mind, turn on the kitchen ceiling"
+    - 'Activate the entryway light'
+    - 'Switch on the kitchen ceiling light please'
+    - 'Turn on the lights in the entryway and kitchen'
+    - 'Flip on the ceiling light in the kitchen'
+-
+  name: light_entryway_light_and_light_kitchen_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'off'
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway light and kitchen ceiling'
+    - 'Please turn off the lights in the entryway and kitchen for me'
+    - "Flick off the Entryway Light and Kitchen Ceiling if you don't mind"
+    - 'Flip off the lights in the entryway and kitchen'
+    - 'Could you turn off the entryway light and kitchen ceiling please'
+    - 'Shut off the Entryway Light and Kitchen Ceiling'
+    - 'Turn off the lights in the entryway and kitchen area'
+    - 'Deactivate the entryway light and kitchen ceiling lights'

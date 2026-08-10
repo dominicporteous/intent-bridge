@@ -1,0 +1,18 @@
+name: gym_ventilation_with_lights
+sentences:
+- Create an automation that turns on the gym ventilation whenever the gym lights come
+  on
+- Set up a rule so the gym ventilation switches on automatically when the gym lights
+  turn on
+- Make an automation to turn the gym ventilation on when the gym lights are switched
+  on
+- Automate the gym ventilation to start whenever the gym lights come on
+- When the gym lights turn on I want the ventilation to start automatically
+expected:
+  trigger:
+    platform: state
+    entity_id: light.gym_lights
+    to: 'on'
+  actions:
+  - action: switch.turn_on
+    entity_id: switch.gym_ventilation

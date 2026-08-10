@@ -1,0 +1,17 @@
+name: lamp_dim_at_sunset
+sentences:
+- Create an automation to dim the floor lamp to 20 percent at sunset
+- Set up a sunset rule that dims the living room lamp down to 20 brightness
+- Automate the floor lamp to dim to 20 percent when the sun sets
+- Make a rule that sets the floor lamp to 20 percent brightness at sunset every evening
+- Can you create an automation that automatically dims the living room lamp to 20 at sunset # Changed from: Can you create an automation that automatically dims the lamp to 20 at sunset
+- Set up an evening automation that dims the floor lamp to 20 percent when the sun
+  goes down
+expected:
+  trigger:
+    platform: sun
+    event: sunset
+  actions:
+  - action: light.turn_on
+    entity_id: light.living_room_lamp
+    brightness_pct: 20

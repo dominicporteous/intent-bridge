@@ -1,0 +1,84 @@
+-
+  name: master_bath_and_living_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bath and living room lights'
+    - 'Please flick on the lights in the master bath and living room for me'
+    - "If you don't mind, flip on the master bath and living lights"
+    - 'Activate master bath and living room lighting'
+    - 'Hey, could you switch on the lights in the master bath and living room'
+    - 'Turn the master bath and living lights on now'
+    - 'Light up the master bath and living room please'
+-
+  name: master_bath_and_living_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the master bath and living room'
+    - 'Please turn off the master bath and living room lights for me'
+    - "If you don't mind, could you flick off the lights in the master bath and living room"
+    - 'Shut off the master bath and living room lights'
+    - 'Flip off the lights in the master bath and living room please'
+    - 'Turn the master bath and living room lights off'
+    - 'Deactivate the lights in the master bath and living room'
+-
+  name: master_bath_and_living_lights_change_brightness
+  conditions:
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        brightness: 57
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 57
+  sentences:
+    - 'Set the master bath and living room lights to 57 percent brightness'
+    - "Please dim the lights in the master bath and living room to 57 if you don't mind"
+    - 'Flick the master bath and living lights down to 57%'
+    - 'Turn the brightness of the master bath and living room lights to 57'
+    - 'Could you adjust the master bath and living lights to 57 brightness for me'
+    - 'Flip the master bath and living room lights to 57 percent'
+    - 'Set brightness to 57 in the master bath and living room lights please'
+-
+  name: master_bath_and_living_lights_change_color
+  conditions:
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        color: blue
+    -
+      area: living
+      domain: light
+      attributes:
+        color: blue
+  sentences:
+    - 'Change the master bath and living room lights to blue'
+    - 'Please set the lights in the master bath and living room to blue for me'
+    - 'Flick on blue for the master bath and living room lights'
+    - "If you don't mind, flip the master bath and living room lights to blue"
+    - 'Quickly turn the master bath and living room lights blue'
+    - 'Set master bath and living room lights to blue please'
+    - 'Change the color of the lights in the master bath and living room to blue'

@@ -1,0 +1,47 @@
+-
+  name: cover_garage_door_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: open
+  sentences:
+    - 'Open the garage door'
+    - 'Please open the garage door for me'
+    - "If you don't mind, open the garage door"
+    - 'Flick on the garage door'
+    - 'Flip on the garage door'
+    - 'Open the garage door in the garage'
+    - 'Quickly open the garage door'
+-
+  name: cover_garage_door_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: closed
+  sentences:
+    - 'Close the garage door'
+    - 'Shut the garage door please'
+    - "If you don't mind, close the garage door for me"
+    - 'Flick the garage door closed'
+    - 'Please shut the garage door'
+    - 'Close the garage door in the garage'
+    - 'Would you mind closing the garage door'
+    - 'Shut the garage door now'
+-
+  name: cover_garage_door_change_position
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      attributes:
+        position: 58
+  sentences:
+    - 'Set the garage door to 58%'
+    - 'Garage door position 58'
+    - 'Please move the garage door to 58% for me'
+    - "If you don't mind, set the garage door to 58"
+    - 'Flick the garage door to 58%'
+    - 'Adjust the garage door position to 58'
+    - 'Can you please change the garage door to 58 for me'

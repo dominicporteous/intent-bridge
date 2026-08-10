@@ -1,0 +1,28 @@
+-
+  name: light_theater_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.theater_ceiling
+  sentences:
+    - "What's the status of the Theater Ceiling light?"
+    - 'theater ceiling'
+    - "please tell me the state of the light theater ceiling if you don't mind"
+    - 'get current state of Theater Ceiling in home_theater'
+    - 'Theater Ceiling light status please'
+    - 'can you check the Theater Ceiling for me'
+    - 'light.theater_ceiling state'
+-
+  name: light_theater_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.theater_ceiling
+  sentences:
+    - "What's the brightness of the Theater Ceiling?"
+    - 'Get brightness for light theater ceiling'
+    - "Please tell me the current brightness of the Theater Ceiling if you don't mind"
+    - 'Theater Ceiling brightness level'
+    - 'Can you check how bright the Theater Ceiling is right now'
+    - 'Brightness status of light theater ceiling in home_theater'
+    - 'Tell me the Theater Ceiling brightness'

@@ -1,0 +1,17 @@
+name: master_light_bedside_left_vs_bedside_right_on
+conditions:
+- type: action
+  entity_id: light.master_bedside_left
+  state: 'on'
+- type: action
+  entity_id: light.master_bedside_right
+  state: 'off'
+sentences:
+- - turn on the bedside lamp
+  - left one
+- - switch on the bedside light
+  - left bedside
+- - bedside light on
+  - left please
+- - flip on the bedside lamp
+  - just the left

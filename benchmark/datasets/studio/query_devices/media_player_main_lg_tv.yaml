@@ -1,0 +1,15 @@
+-
+  name: media_player_main_lg_tv_get_status
+  conditions:
+    -
+      type: query
+      entity_id: media_player.main_lg_tv
+  sentences:
+    - "What's the status of the LG TV?"
+    - 'LG TV state please'
+    - "if you don't mind, tell me the current state of the living room LG TV for me"
+    - 'LG TV status'
+    - 'could you check the living room LG TV state please'
+    - "what's happening with the main lg tv"
+    - 'LG TV current state in living room'
+    - 'tell me about the LG TV'

@@ -1,0 +1,64 @@
+-
+  name: powder_room_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: powder_room
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the powder room lights'
+    - 'Flick on the powder room lights'
+    - 'Please flip on the lights in the powder room for me'
+    - "If you don't mind, turn on the powder room lights"
+    - 'Switch on the powder room lights'
+    - 'Can you please turn on the powder room lights'
+    - 'Activate the powder room lights'
+-
+  name: powder_room_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: powder_room
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the powder room lights'
+    - 'Please kill the lights in the powder room for me'
+    - "If you don't mind, flick off the powder room lights"
+    - 'Powder room lights off'
+    - 'Could you flip off the powder room lights please'
+    - 'Deactivate the powder room lighting'
+    - 'Shut down the powder room lights if possible'
+-
+  name: powder_room_lights_change_brightness
+  conditions:
+    -
+      area: powder_room
+      domain: light
+      attributes:
+        brightness: 82
+  sentences:
+    - 'Set the powder room lights to 82%'
+    - 'Please dim the powder room lights to 82 for me'
+    - "Flick the powder room brightness to 82 if you don't mind"
+    - 'Turn the powder room lights down to 82 percent'
+    - 'Could you adjust the powder room illumination to 82'
+    - 'Make the powder room lights 82%'
+    - 'Flip the powder room brightness to 82 please'
+-
+  name: powder_room_lights_change_color
+  conditions:
+    -
+      area: powder_room
+      domain: light
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the powder room lights white'
+    - 'Please set the powder room lights to white for me'
+    - "Flick the powder room lights to white if you don't mind"
+    - 'Change the powder room lights to white'
+    - 'Flip the powder room lights to white'
+    - 'Set the powder room lights white please'
+    - 'Make the powder room lights white'

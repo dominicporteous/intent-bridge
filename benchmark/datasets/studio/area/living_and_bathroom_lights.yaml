@@ -1,0 +1,85 @@
+-
+  name: living_and_bathroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the living room and bathroom lights'
+    - 'Flick on lights in living and bath'
+    - 'Please turn on the lights in the living room and bathroom for me'
+    - "If you don't mind, flip on the living and bathroom lights"
+    - 'Activate lights living room bathroom'
+    - 'Could you switch on the living room and bathroom lights please'
+    - 'Turn living and bath lights on now'
+    - 'Light up the living room and bathroom'
+-
+  name: living_and_bathroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the living room and bathroom lights'
+    - 'Please switch off the lights in the living room and bathroom for me'
+    - "Flick off the lights in the living room and bathroom if you don't mind"
+    - 'Flip off the living room and bathroom lights'
+    - 'Could you turn off the lights in the living room and bathroom please'
+    - 'Kill the lights in the living room and bathroom'
+    - 'Shut off the living room and bathroom lights for me'
+-
+  name: living_and_bathroom_lights_change_brightness
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 75
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        brightness: 75
+  sentences:
+    - 'Set living room and bathroom lights to 75 percent'
+    - 'Please dim the lights in the living room and bathroom to 75 for me'
+    - 'Flick living and bathroom lights to 75%'
+    - "If you don't mind, could you adjust the living room and bathroom lights to 75 brightness"
+    - 'Turn living room and bathroom lights down to 75'
+    - 'Quickly set living and bathroom lights brightness to 75'
+    - 'Flip living room and bathroom lights to 75 percent please'
+-
+  name: living_and_bathroom_lights_change_color
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        color: yellow
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change the living room and bathroom lights to yellow'
+    - 'Please set the lights in the living room and bathroom to yellow for me'
+    - 'Flick the living and bathroom lights on to yellow'
+    - "If you don't mind, flip the living room and bathroom lights to yellow"
+    - 'Quickly turn the living and bathroom lights yellow'
+    - 'Set living room and bathroom lights to yellow please'
+    - 'Change living and bathroom lights color to yellow'

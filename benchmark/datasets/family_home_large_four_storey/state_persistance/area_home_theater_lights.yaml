@@ -1,0 +1,38 @@
+-
+  name: home_theater_lights_set_brightness
+  setup:
+    -
+      entity_id: light.theater_ceiling
+      brightness: 95
+    -
+      entity_id: light.theater_bias
+      brightness: 95
+  conditions:
+    -
+      entity_id: light.theater_ceiling
+      brightness: 54
+    -
+      entity_id: light.theater_bias
+      brightness: 54
+  sentences:
+    -
+      - "What's the brightness of the home theater lights?"
+      - 'Set it to 54.'
+    -
+      - "Please tell me the brightness in the home theater if you don't mind."
+      - 'Flick it to 54 for me.'
+    -
+      - 'Can you check the brightness of the theater lights?'
+      - 'Flip it to 54.'
+    -
+      - "What's the current brightness in the home theater?"
+      - 'Turn it to 54 please.'
+    -
+      - 'Tell me the brightness of the home theater lights.'
+      - 'Adjust it to 54.'
+    -
+      - 'Check the brightness for the theater please.'
+      - 'Set it to 54.'
+    -
+      - "What's the brightness level in the home theater?"
+      - 'Make it 54.'

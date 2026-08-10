@@ -1,0 +1,41 @@
+-
+  name: garage_covers_set_position
+  setup:
+    -
+      entity_id: cover.garage_door_left
+      position: 59
+    -
+      entity_id: cover.garage_door_right
+      position: 59
+  conditions:
+    -
+      entity_id: cover.garage_door_left
+      position: 59
+    -
+      entity_id: cover.garage_door_right
+      position: 59
+  sentences:
+    -
+      - 'Where are the garage windows right now?'
+      - 'Set them to fifty-nine percent.'
+    -
+      - "What's the current position of the blinds in the garage?"
+      - 'Please adjust to fifty-nine for me.'
+    -
+      - 'Garage curtains status?'
+      - 'Flick them to fifty-nine.'
+    -
+      - 'Can you tell me the garage window positions?'
+      - "If you don't mind, set to fifty-nine for me."
+    -
+      - 'Are the garage blinds open or closed?'
+      - 'Flip them to fifty-nine percent.'
+    -
+      - 'Garage window positions please?'
+      - 'Quickly set to fifty-nine.'
+    -
+      - 'Tell me the status of the garage curtains.'
+      - 'Adjust to fifty-nine if you would.'
+    -
+      - "What's the garage blinds position?"
+      - 'Make it fifty-nine.'

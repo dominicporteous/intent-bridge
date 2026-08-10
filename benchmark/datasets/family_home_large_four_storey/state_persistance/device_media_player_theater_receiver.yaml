@@ -1,0 +1,99 @@
+-
+  name: media_player_theater_receiver_turn_on
+  setup:
+    -
+      entity_id: media_player.theater_receiver
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the AV receiver in the home theater?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the media player theater receiver?'
+      - "Flick it on if you don't mind."
+    -
+      - "How's the AV receiver doing in home_theater?"
+      - 'Flip it on please.'
+    -
+      - 'Tell me the state of the media player theater receiver.'
+      - 'Switch it on.'
+    -
+      - "What's going on with the AV receiver in the home theater?"
+      - "Turn it on for me if you don't mind."
+    -
+      - 'Check the status of the media player theater receiver.'
+      - 'Power it on please.'
+    -
+      - 'How is the AV receiver in home_theater right now?'
+      - 'Flip it on.'
+-
+  name: media_player_theater_receiver_turn_off
+  setup:
+    -
+      entity_id: media_player.theater_receiver
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the media player theater receiver?"
+      - 'Please turn it off for me.'
+    -
+      - 'Can you check the media player theater receiver in the home_theater?'
+      - "Flick it off if you don't mind."
+    -
+      - "How's the media player theater receiver doing?"
+      - 'Flip it off, please.'
+    -
+      - 'Tell me the status of the media player theater receiver in the home_theater.'
+      - 'Shut it down for me.'
+    -
+      - "What's going on with the media player theater receiver?"
+      - "Turn it off if you don't mind."
+    -
+      - 'Check the media player theater receiver status.'
+      - 'Power it down, please.'
+    -
+      - 'Status of the media player theater receiver in the home_theater?'
+      - 'Switch it off for me.'
+-
+  name: media_player_theater_receiver_persistance_volume_level
+  setup:
+    -
+      entity_id: media_player.theater_receiver
+      volume_level: 14
+  conditions:
+    -
+      entity_id: media_player.theater_receiver
+      attributes:
+        volume_level: 43
+  sentences:
+    -
+      - "What's the volume_level of the media player theater receiver?"
+      - 'Set it to 43.'
+    -
+      - 'Volume level in the home_theater?'
+      - 'Change it to 43 please.'
+    -
+      - 'Can you tell me the volume_level of the AV Receiver?'
+      - "Adjust to 43 if you don't mind."
+    -
+      - "What's the current volume_level for the theater receiver?"
+      - 'Make it 43.'
+    -
+      - 'Volume level home_theater please?'
+      - 'Turn it up to 43.'
+    -
+      - 'Tell me the volume_level of the media player theater receiver.'
+      - 'Set volume to 43 for me.'
+    -
+      - "What's the volume_level of the theater receiver in the home_theater area?" # Changed from: What's the volume_level in the home_theater area?
+      - 'Change the volume_level to 43.'

@@ -1,0 +1,32 @@
+-
+  name: gym_switchs_turn_on
+  conditions:
+    -
+      type: action
+      area: gym
+      domain: switch
+      state: 'on'
+  sentences:
+    - 'Turn on the gym switches'
+    - 'Flick on the gym switches please'
+    - "If you don't mind, flip on the gym switches for me"
+    - 'Activate the gym switches'
+    - 'Switch on the gym switches now'
+    - 'Please enable the gym switches'
+    - 'Turn the gym switches on if you could'
+-
+  name: gym_switchs_turn_off
+  conditions:
+    -
+      type: action
+      area: gym
+      domain: switch
+      state: 'off'
+  sentences:
+    - 'Turn off the gym switches'
+    - 'Please switch off the gym switches for me'
+    - "If you don't mind, flip off the gym switches"
+    - 'Deactivate the gym switches'
+    - 'Can you turn off the gym switches please'
+    - 'Flick off the gym switches'
+    - 'Shut down the gym switches if possible'

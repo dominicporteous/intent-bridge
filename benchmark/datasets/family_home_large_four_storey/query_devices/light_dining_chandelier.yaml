@@ -1,0 +1,28 @@
+-
+  name: light_dining_chandelier_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.dining_chandelier
+  sentences:
+    - "What's the status of the dining chandelier?"
+    - 'Dining chandelier state please'
+    - "If you don't mind, could you tell me if the dining chandelier is on or off?"
+    - 'Please check the dining chandelier for me'
+    - 'Dining chandelier?'
+    - 'Can you get the current state of the dining chandelier?'
+    - 'Tell me about the dining chandelier light'
+-
+  name: light_dining_chandelier_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.dining_chandelier
+  sentences:
+    - "What's the brightness of the Dining Chandelier?"
+    - 'Dining Chandelier brightness level?'
+    - "Please tell me the current brightness of the dining chandelier if you don't mind."
+    - 'How bright is the Dining Chandelier right now?'
+    - 'Could you check the brightness setting on the dining chandelier for me?'
+    - "Dining area chandelier - what's the brightness?"
+    - 'Get me the Dining Chandelier brightness please.'

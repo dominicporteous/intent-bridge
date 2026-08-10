@@ -1,0 +1,15 @@
+name: master_thermostat_setback_at_night
+sentences:
+- Create an automation to set the master bedroom AC to 20 degrees at 10pm every night
+- Set up a nightly rule at ten to lower the master AC temperature to 20
+- Make an automation at 10pm that sets the master AC to 20 degrees
+- Automate the master bedroom air conditioner to set to 20 degrees each night at ten
+- Can you create a rule to set the master AC to 20 every night at 10
+expected:
+  trigger:
+    platform: time
+    at: '22:00:00'
+  actions:
+  - action: climate.set_temperature
+    entity_id: climate.master_ac
+    temperature: 20

@@ -1,0 +1,84 @@
+-
+  name: loft_and_bedroom_2_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: loft
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in the loft and bedroom 2'
+    - 'Please flick on the loft and bedroom 2 lights for me'
+    - "If you don't mind, flip on the lights upstairs and in bedroom 2"
+    - 'Activate loft and bedroom 2 lighting'
+    - 'Could you switch on the loft lights and bedroom 2 lights please'
+    - 'Quick, turn on the lights in the loft and bedroom 2'
+    - 'Hit the lights for the loft and bedroom 2'
+-
+  name: loft_and_bedroom_2_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: loft
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the loft and bedroom 2'
+    - 'Please switch off the loft and bedroom 2 lights for me'
+    - "If you don't mind, flick off the lights upstairs and in bedroom 2"
+    - 'Kill the loft and bedroom 2 lights'
+    - 'Flip off the lights in the loft and bedroom 2 please'
+    - 'Shut down the lights in the loft and bedroom 2 for me'
+    - 'Can you turn off the loft and bedroom 2 lights'
+-
+  name: loft_and_bedroom_2_lights_change_brightness
+  conditions:
+    -
+      area: loft
+      domain: light
+      attributes:
+        brightness: 68
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        brightness: 68
+  sentences:
+    - 'Set the loft and bedroom 2 lights to 68 percent'
+    - 'Please dim the loft and bedroom 2 lights to 68 for me'
+    - "Flick the loft and bedroom 2 lights down to 68 if you don't mind"
+    - 'Turn the brightness in the loft and bedroom 2 to 68'
+    - 'Could you adjust the loft and bedroom 2 lights to 68 percent please'
+    - 'Flip the loft and bedroom 2 lights to 68 brightness'
+    - 'Make the loft and bedroom 2 lights 68 percent if you would'
+-
+  name: loft_and_bedroom_2_lights_change_color
+  conditions:
+    -
+      area: loft
+      domain: light
+      attributes:
+        color: yellow
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'change the loft and bedroom 2 lights to yellow'
+    - 'flick on yellow lights in the loft and bedroom 2'
+    - 'please set the loft and bedroom 2 lights to yellow for me'
+    - "flip the loft and bedroom 2 lights to yellow if you don't mind"
+    - 'make the loft and bedroom 2 lights yellow'
+    - 'turn the loft and bedroom 2 lights yellow please'
+    - 'set loft and bedroom 2 lights to yellow'

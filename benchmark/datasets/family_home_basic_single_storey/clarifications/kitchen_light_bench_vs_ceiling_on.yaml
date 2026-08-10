@@ -1,0 +1,17 @@
+name: kitchen_light_bench_vs_ceiling_on
+conditions:
+- type: action
+  entity_id: light.kitchen_bench
+  state: 'on'
+- type: action
+  entity_id: light.kitchen_ceiling
+  state: 'off'
+sentences:
+- - turn on the kitchen light
+  - bench lights
+- - switch on the kitchen lights
+  - the bench ones
+- - kitchen light on
+  - bench
+- - can you turn on the kitchen light
+  - bench lights please

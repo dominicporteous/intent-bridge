@@ -1,0 +1,28 @@
+-
+  name: light_upper_hallway_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.upper_hallway_light
+  sentences:
+    - "What's the status of the Upper Hallway Light?"
+    - 'Is the upper hallway light on?'
+    - 'Check light upper hallway light state'
+    - 'Please tell me if the upper hallway light is on'
+    - "If you don't mind, what's the current state of the light in the upper hallway?"
+    - 'Upper hallway light status'
+    - 'Can you check the upper_hallway light for me?'
+-
+  name: light_upper_hallway_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.upper_hallway_light
+  sentences:
+    - "What's the brightness of the Upper Hallway Light?"
+    - 'How bright is the light upper hallway light right now?'
+    - "Please tell me the current brightness of the Upper Hallway Light if you don't mind."
+    - 'Get brightness level for light upper hallway light in upper_hallway.'
+    - 'Upper Hallway Light brightness status please.'
+    - 'Can you check how bright the Upper Hallway Light is?'
+    - 'Report the brightness value of light upper hallway light.'

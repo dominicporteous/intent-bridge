@@ -1,0 +1,84 @@
+-
+  name: entryway_and_master_bath_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway and master bath lights'
+    - 'Flick on the lights in the entryway and master bath'
+    - 'Please flip on the entryway and master bath lights for me'
+    - "If you don't mind, could you turn on the lights in the entryway and master bath"
+    - 'Activate the lights in the entryway and master bath'
+    - 'Switch on the entryway and master bath lights please'
+    - 'Flip on the lights for the entryway and master bath'
+-
+  name: entryway_and_master_bath_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway and master bath lights'
+    - 'Please kill the lights in the entryway and master bath for me'
+    - "If you don't mind, flick off the lights in the entryway and master bath"
+    - 'Entryway and master bath lights off'
+    - 'Flip off the lights in the entryway and master bath please'
+    - 'Can you shut off the entryway and master bath lights'
+    - 'Turn the entryway and master bath lights off'
+-
+  name: entryway_and_master_bath_lights_change_brightness
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        brightness: 27
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        brightness: 27
+  sentences:
+    - 'Set the entryway and master bath lights to 27 percent brightness'
+    - 'Please dim the entryway and master bath lights to 27 for me'
+    - "If you don't mind, flick the entryway and master bath lights down to 27"
+    - 'Turn the entryway and master bath lights to 27 brightness'
+    - 'Quickly adjust entryway and master bath lights to 27 percent'
+    - 'Flip the entryway and master bath lights down to 27'
+    - 'Could you set entryway and master bath lights to 27 brightness please'
+-
+  name: entryway_and_master_bath_lights_change_color
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        color: white
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the entryway and master bath lights white'
+    - 'Flick on white lights in the entryway and master bath'
+    - "Please set the entryway and master bath to white if you don't mind"
+    - 'Flip the entryway and master bath lights to white'
+    - 'Could you change the entryway and master bath lights to white for me'
+    - 'Make the entryway and master bath white'
+    - 'Set entryway and master bath lights to white please'

@@ -1,0 +1,29 @@
+-
+  name: light_theater_bias_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.theater_bias
+  sentences:
+    - "What's the status of the bias lighting in the home theater?"
+    - 'Turn on bias lights home_theater'
+    - 'Please check the bias lighting for me'
+    - "If you don't mind, what's the state of the theater bias lights?"
+    - 'Bias lighting home_theater status'
+    - 'Can you tell me if the bias lights are on in the home theater?'
+    - 'Quick check on theater bias lighting please'
+    - 'home_theater bias lights current state'
+-
+  name: light_theater_bias_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.theater_bias
+  sentences:
+    - "What's the brightness of the Bias Lighting in the home_theater?"
+    - 'Get current brightness for light theater bias'
+    - "Please tell me the brightness level of the Bias Lighting if you don't mind"
+    - 'Brightness of Bias Lighting in home_theater right now'
+    - 'Could you check the brightness on the light theater bias for me please'
+    - 'home_theater Bias Lighting brightness status'
+    - 'What brightness is the Bias Lighting set to in the home_theater area'

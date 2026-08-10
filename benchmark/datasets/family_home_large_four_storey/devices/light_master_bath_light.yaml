@@ -1,0 +1,64 @@
+-
+  name: light_master_bath_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bath_light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bath light'
+    - 'Please flick on the light in the master_bath for me'
+    - "Flip on the master bath light if you don't mind"
+    - 'Activate the master_bath light'
+    - 'Could you switch on the light in the master bath area'
+    - 'Turn the master_bath light on please'
+    - 'Ignite the master bath light'
+-
+  name: light_master_bath_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bath_light
+      state: 'off'
+  sentences:
+    - 'turn off the master bath light'
+    - 'flick off the master_bath light'
+    - 'flip off the light in the master bath'
+    - 'please turn off the master bath light for me'
+    - "if you don't mind, could you turn off the master_bath light"
+    - 'switch off the master bath light'
+    - 'kill the lights in the master_bath'
+    - 'shut off the master bath light'
+-
+  name: light_master_bath_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bath_light
+      attributes:
+        brightness: 83
+  sentences:
+    - 'Set the Master Bath Light to 83 percent brightness'
+    - 'Please adjust the master bath light to 83 for me'
+    - "Flick the master_bath light brightness up to 83 if you don't mind"
+    - 'Turn the Master Bath Light brightness to 83%'
+    - 'Could you set the master bath light to 83 brightness please'
+    - 'Flip the master_bath light to 83 percent'
+    - 'Make the Master Bath Light 83 brightness'
+    - 'Change the master bath light brightness to 83'
+-
+  name: light_master_bath_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bath_light
+      attributes:
+        color: orange
+  sentences:
+    - 'Turn the master bath light orange'
+    - 'Please set the master_bath light to orange for me'
+    - "Flick the Master Bath Light to orange if you don't mind"
+    - 'Change the master bath light color to orange'
+    - 'Flip the master_bath light to orange please'
+    - 'Make the Master Bath Light orange'
+    - 'Set the master bath light to orange if you could'

@@ -1,0 +1,62 @@
+-
+  name: light_dining_chandelier_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_chandelier
+      state: 'on'
+  sentences:
+    - 'Turn on the dining chandelier'
+    - 'Flick on dining chandelier'
+    - 'Please flip on the light in the dining area for me'
+    - "If you don't mind, turn on the dining chandelier"
+    - 'Activate dining chandelier'
+    - 'Can you switch on the dining room light'
+    - 'Flip on the chandelier in dining'
+-
+  name: light_dining_chandelier_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_chandelier
+      state: 'off'
+  sentences:
+    - 'Turn off the dining chandelier'
+    - 'Please switch off the dining chandelier for me'
+    - "If you don't mind, flick off the light in the dining area"
+    - 'Kill the dining chandelier'
+    - 'Flip off the dining chandelier please'
+    - 'Turn the dining area chandelier off'
+    - 'Can you shut off the dining chandelier'
+-
+  name: light_dining_chandelier_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_chandelier
+      attributes:
+        brightness: 12
+  sentences:
+    - 'Set the dining chandelier to 12 percent'
+    - 'Dining chandelier brightness 12'
+    - 'Please turn the dining chandelier down to 12 for me'
+    - "If you don't mind, flick the dining chandelier to 12"
+    - 'Dining area chandelier brightness 12'
+    - 'Quickly dim dining chandelier to 12'
+    - 'Flip dining chandelier brightness to 12'
+-
+  name: light_dining_chandelier_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_chandelier
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the dining chandelier white'
+    - 'Please set the dining room light to white for me'
+    - "Flick the dining chandelier to white if you don't mind"
+    - 'Make the dining area chandelier white'
+    - 'Flip the dining chandelier white please'
+    - 'Change dining chandelier color to white'
+    - 'Set dining room light to white color'

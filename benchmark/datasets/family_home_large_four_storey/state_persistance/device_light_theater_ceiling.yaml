@@ -1,0 +1,108 @@
+-
+  name: light_theater_ceiling_turn_on
+  setup:
+    -
+      entity_id: light.theater_ceiling
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the Theater Ceiling?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the Theater Ceiling light?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Theater Ceiling status in home_theater?'
+      - 'Flip it on please.'
+    -
+      - 'Is the Theater Ceiling on or off?'
+      - 'Turn it on.'
+    -
+      - 'Tell me about the Theater Ceiling.'
+      - 'Switch it on for me.'
+    -
+      - "What's happening with the Theater Ceiling?"
+      - 'Could you turn it on please?'
+    -
+      - 'Theater Ceiling state?'
+      - "Flick it on if you don't mind."
+    -
+      - "How's the Theater Ceiling doing?"
+      - 'Please flip it on.'
+-
+  name: light_theater_ceiling_turn_off
+  setup:
+    -
+      entity_id: light.theater_ceiling
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the Theater Ceiling?"
+      - 'Turn it off.'
+    -
+      - 'Can you tell me if the Theater Ceiling is on?'
+      - 'Please switch it off for me.'
+    -
+      - 'Is the Theater Ceiling currently lit?'
+      - "Flip it off if you don't mind."
+    -
+      - 'Check the Theater Ceiling light status in the home_theater.'
+      - 'Flick it off.'
+    -
+      - "How's the Theater Ceiling doing?"
+      - 'Turn it off please.'
+    -
+      - "What's up with the Theater Ceiling?"
+      - 'Shut it off for me.'
+    -
+      - 'Theater Ceiling status check in home_theater.'
+      - 'Kill it.'
+    -
+      - 'Is the Theater Ceiling on or off?'
+      - "Turn it off if you don't mind."
+-
+  name: light_theater_ceiling_persistance_brightness
+  setup:
+    -
+      entity_id: light.theater_ceiling
+      brightness: 43
+  conditions:
+    -
+      entity_id: light.theater_ceiling
+      attributes:
+        brightness: 65
+  sentences:
+    -
+      - 'What is the brightness of the Theater Ceiling?'
+      - 'Set it to 65.'
+    -
+      - "What's the brightness level in the home theater?"
+      - 'Change it to 65 please.'
+    -
+      - 'Can you tell me the brightness of the Theater Ceiling?'
+      - "Adjust it to 65 if you don't mind."
+    -
+      - 'Brightness of the Theater Ceiling?'
+      - 'Make it 65.'
+    -
+      - "What's the current brightness in the home theater?"
+      - 'Turn it up to 65.'
+    -
+      - 'Tell me the brightness of the Theater Ceiling please.'
+      - 'Set it to 65 for me.'
+    -
+      - 'Brightness level of the Theater Ceiling?'
+      - 'Change it to 65.'
+    -
+      - "What's the brightness in the home theater right now?"
+      - 'Adjust it to 65 please.'

@@ -1,0 +1,19 @@
+name: bench_lights_on_when_kitchen_ceiling_on
+sentences:
+- Create an automation so the kitchen bench lights turn on whenever the kitchen ceiling
+  light turns on
+- Set up a rule that switches the bench lights on whenever the kitchen ceiling comes
+  on
+- Make an automation to turn the bench lights on when the kitchen ceiling light is
+  switched on
+- Automate the bench lights to come on whenever the kitchen ceiling turns on
+- When the kitchen ceiling light turns on I want the bench lights to come on automatically
+  too
+expected:
+  trigger:
+    platform: state
+    entity_id: light.kitchen_ceiling
+    to: 'on'
+  actions:
+  - action: light.turn_on
+    entity_id: light.kitchen_bench

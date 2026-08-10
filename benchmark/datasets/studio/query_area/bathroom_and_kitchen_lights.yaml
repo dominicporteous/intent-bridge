@@ -1,0 +1,78 @@
+-
+  name: bathroom_and_kitchen_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and kitchen?"
+    - 'Lights bathroom kitchen status'
+    - 'Please check the lights in the bathroom and kitchen for me'
+    - "If you don't mind, could you tell me if the bathroom and kitchen lights are on?"
+    - 'Bathroom kitchen lights state'
+    - 'Get me the current lighting status for bathroom and kitchen'
+    - 'Are the lights on in the bathroom and kitchen right now?'
+-
+  name: bathroom_and_kitchen_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and kitchen"
+    - 'Lights bathroom kitchen status'
+    - "Please check the lights for me in the bathroom and kitchen if you don't mind"
+    - 'Are the bathroom and kitchen lights on right now'
+    - 'Get me the current light state for bathroom plus kitchen'
+    - 'Bathroom kitchen lights state please'
+    - 'Quick check - bathroom and kitchen illumination status'
+-
+  name: bathroom_and_kitchen_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and kitchen"
+    - 'Lights bathroom kitchen state'
+    - "Please tell me the current state of the lights in the bathroom and kitchen if you don't mind"
+    - 'Get me the light status for bathroom and kitchen'
+    - 'Could you check the lights status in the bathroom and kitchen for me'
+    - 'Bathroom kitchen lights current state'
+    - "If possible, what's the light status in the bathroom and kitchen"
+    - 'Report the state of lights in bathroom and kitchen'
+-
+  name: bathroom_and_kitchen_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and kitchen?"
+    - 'Get bathroom and kitchen light states'
+    - "Please check the lights for me in the bathroom and kitchen if you don't mind"
+    - 'Lights bathroom kitchen status'
+    - 'Could you tell me if the bathroom and kitchen lights are on or off?'
+    - 'Report current state of kitchen and bathroom lighting'
+    - 'Bathroom kitchen lights state please'
+    - "If it's not too much trouble, what's the light situation in the bathroom and kitchen?"

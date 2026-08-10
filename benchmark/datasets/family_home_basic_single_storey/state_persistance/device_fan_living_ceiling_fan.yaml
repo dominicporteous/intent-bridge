@@ -1,0 +1,105 @@
+-
+  name: fan_living_ceiling_fan_turn_on
+  setup:
+    -
+      entity_id: fan.living_ceiling_fan
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the ceiling fan in the living room?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the living room ceiling fan?'
+      - 'Flick it on.'
+    -
+      - "How's the ceiling fan doing in the living room?"
+      - "If you don't mind, flip it on for me."
+    -
+      - 'Is the living room ceiling fan on or off?'
+      - 'Go ahead and switch it on.'
+    -
+      - 'Tell me the current state of the ceiling fan living room.'
+      - 'Quick, turn it on.'
+    -
+      - 'Ceiling fan living room status?'
+      - 'Flip it on please.'
+    -
+      - "What's up with the ceiling fan in living?"
+      - 'Turn it on if you would.'
+    -
+      - "Living room ceiling fan - what's its status?"
+      - 'Please flick it on for me.'
+-
+  name: fan_living_ceiling_fan_turn_off
+  setup:
+    -
+      entity_id: fan.living_ceiling_fan
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the ceiling fan in the living room?"
+      - 'Please turn it off for me.'
+    -
+      - 'Can you check the living ceiling fan?'
+      - 'Turn it off.'
+    -
+      - "How's the ceiling fan doing in the living area?"
+      - "If you don't mind, switch it off."
+    -
+      - 'Tell me about the fan in the living room.'
+      - 'Flick it off.'
+    -
+      - 'Is the living ceiling fan running?'
+      - 'Flip it off please.'
+    -
+      - 'Check the status of the ceiling fan living room.'
+      - "Turn it off for me if you don't mind."
+    -
+      - "What's going on with the fan in the living area?"
+      - 'Shut it off.'
+    -
+      - 'Living room ceiling fan status?'
+      - 'Please turn it off.'
+-
+  name: fan_living_ceiling_fan_persistance_percentage
+  setup:
+    -
+      entity_id: fan.living_ceiling_fan
+      percentage: 66
+  conditions:
+    -
+      entity_id: fan.living_ceiling_fan
+      attributes:
+        percentage: 87
+  sentences:
+    -
+      - "What's the percentage of the ceiling fan?"
+      - 'Set it to 87.'
+    -
+      - 'How much is the fan living ceiling fan at?'
+      - 'Change it to 87 please.'
+    -
+      - 'Can you tell me the current percentage of the ceiling fan in the living room?'
+      - "Adjust it to 87 if you don't mind."
+    -
+      - "What's the fan speed percentage?"
+      - 'Make it 87 for me.'
+    -
+      - 'Tell me the percentage on the living room ceiling fan.'
+      - 'Turn it to 87.'
+    -
+      - 'How high is the ceiling fan percentage right now?'
+      - 'Please change it to 87.'
+    -
+      - "What's the current percentage setting of the living room ceiling fan?" # Changed from: What's the current percentage setting?
+      - 'Set it to 87 for me please.'

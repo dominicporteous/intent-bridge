@@ -1,0 +1,94 @@
+-
+  name: media_player_main_lg_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the LG TV'
+    - 'Please turn on the main LG TV for me'
+    - "Flick on the living room LG TV if you don't mind"
+    - 'Flip on the media player main lg tv'
+    - 'Could you power up the LG TV in the living room please'
+    - 'Activate the main LG TV'
+    - 'Switch on the living room LG TV for me'
+-
+  name: media_player_main_lg_tv_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: paused
+  sentences:
+    - 'Pause the LG TV'
+    - 'Pause the main LG TV in the living room'
+    - 'Please pause the LG TV for me'
+    - "If you don't mind, pause the media player main LG TV"
+    - 'Stop the LG TV'
+    - 'Hold the LG TV'
+    - 'Flick pause on the LG TV'
+    - 'Pause the living room LG TV'
+-
+  name: media_player_main_lg_tv_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: playing
+  sentences:
+    - 'unpause the LG TV'
+    - 'please resume the main LG TV for me'
+    - 'flip the LG TV back on'
+    - 'resume playback on the main LG TV'
+    - 'turn the living room LG TV back on'
+    - 'if you could, resume the LG TV'
+    - 'restart the main LG TV in the living room'
+-
+  name: media_player_main_lg_tv_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the LG TV'
+    - 'Please mute the main LG TV for me'
+    - 'Turn off the sound on the LG TV in the living room'
+    - "If you don't mind, silence the LG TV"
+    - 'Quickly mute the main LG TV'
+    - 'Flip the LG TV to mute in the living room'
+    - 'Mute the TV please'
+    - 'Could you mute the LG TV for me'
+-
+  name: media_player_main_lg_tv_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'Unmute the LG TV'
+    - 'Please unmute the main LG TV for me'
+    - "If you don't mind, unmute the living room LG TV"
+    - 'Flip the mute off on the main LG TV'
+    - 'Can you unmute the living room TV'
+    - 'Quickly unmute the LG TV please'
+    - 'Restore audio on the main LG TV'
+-
+  name: media_player_main_lg_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the LG TV'
+    - 'Please switch off the main LG TV for me'
+    - 'Flick off the living room LG TV'
+    - "If you don't mind, power down the LG TV"
+    - 'Shut off the main LG TV please'
+    - 'Flip off the living room LG TV'
+    - 'Can you turn off the LG TV for me'

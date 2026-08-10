@@ -1,0 +1,40 @@
+-
+  name: cover_garage_door_right_and_cover_garage_door_left_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: open
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: open
+  sentences:
+    - 'Open the right garage door'
+    - 'Please open the left garage door for me'
+    - "Flick on the garage door right if you don't mind"
+    - 'Flip on the left garage door'
+    - 'Open the garage right door'
+    - 'Could you open the garage door left please'
+    - 'Turn on the right garage door'
+    - 'Open the left garage door in the garage'
+-
+  name: cover_garage_door_right_and_cover_garage_door_left_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: closed
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: closed
+  sentences:
+    - 'Close the right garage door'
+    - 'Shut the left garage door please'
+    - "If you don't mind, close the garage door right for me"
+    - 'Flick the left garage door closed'
+    - 'Please shut the right garage door in the garage'
+    - "Close garage door left if you don't mind"
+    - 'Flip the right garage door closed'
+    - 'Shut the left garage door in the garage for me'

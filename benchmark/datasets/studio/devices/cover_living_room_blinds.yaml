@@ -1,0 +1,46 @@
+-
+  name: cover_living_room_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      state: open
+  sentences:
+    - 'Open the living room blinds'
+    - 'Please open the living room blinds for me'
+    - "If you don't mind, open the living room blinds"
+    - 'Flick on the living room blinds'
+    - 'Flip on the living room blinds'
+    - 'Raise the living room blinds'
+    - 'Pull up the living room blinds'
+-
+  name: cover_living_room_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      state: closed
+  sentences:
+    - 'Close the living room blinds'
+    - 'Shut the living room blinds please'
+    - "If you don't mind, close the living room blinds for me"
+    - 'Flick the living room blinds closed'
+    - 'Pull down the living room blinds'
+    - 'Lower the living room blinds if you could'
+    - 'Roll down the living room blinds now'
+-
+  name: cover_living_room_blinds_change_position
+  conditions:
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      attributes:
+        position: 17
+  sentences:
+    - 'Set the living room blinds to 17'
+    - 'Please adjust the living room blinds to 17 for me'
+    - 'Flick the living room blinds to position 17'
+    - "If you don't mind, set the living room blinds to 17"
+    - 'Quickly move the living room blinds to 17'
+    - 'Change the living room blinds to 17 please'
+    - 'Position the living room blinds at 17'

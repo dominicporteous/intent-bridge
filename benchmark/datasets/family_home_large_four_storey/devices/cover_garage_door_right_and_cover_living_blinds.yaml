@@ -1,0 +1,40 @@
+-
+  name: cover_garage_door_right_and_cover_living_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: open
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: open
+  sentences:
+    - 'Open the right garage door'
+    - 'Please open the living room blinds for me'
+    - 'Flick on the garage door right'
+    - "If you don't mind, could you open the living blinds"
+    - 'Raise the right garage door'
+    - 'Flip up the living room blinds'
+    - 'Open the garage door right'
+    - 'Pull up the living blinds'
+-
+  name: cover_garage_door_right_and_cover_living_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: closed
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: closed
+  sentences:
+    - 'Close the right garage door'
+    - 'Shut the living room blinds'
+    - 'Please close the garage door right for me'
+    - "If you don't mind, close the living blinds"
+    - 'Flick down the right garage door'
+    - 'Roll down the living room blinds'
+    - 'Close the right garage door and the living room blinds' # Changed from: Close the garage door in the garage area
+    - 'Shut the blinds in the living area'

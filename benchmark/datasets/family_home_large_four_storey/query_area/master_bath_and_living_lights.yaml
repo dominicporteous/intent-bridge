@@ -1,0 +1,78 @@
+-
+  name: master_bath_and_living_lights_get_state
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bath and living room?"
+    - 'Lights master bath living state'
+    - 'Please check the lights in the master bath and living room for me'
+    - "If you don't mind, could you tell me if the lights are on in the master bath and living?"
+    - 'Master bath and living lights status'
+    - 'Can you check the lighting status in the master bath and living room please'
+    - 'Lights in master bath and living - current state?'
+-
+  name: master_bath_and_living_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "what's the status of the lights in the master bath and living"
+    - 'lights master bath living state'
+    - "please tell me the current state of the lights in the master bath and living if you don't mind"
+    - 'get light status master bath living'
+    - 'hey could you check the lights in the master bath and living for me'
+    - 'lights master bath living'
+    - "if you don't mind, what's the state of the lights in the master bath and living"
+    - 'master bath living lights status'
+-
+  name: master_bath_and_living_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bath and living room"
+    - 'lights master bath living'
+    - 'please check the lights in the master bathroom and living room for me'
+    - "if you don't mind, could you tell me about the lights in the master bath and living area"
+    - 'lights status master bath living'
+    - 'hey can you check the lights in the master bath and living room real quick'
+    - "what's the current state of the lights in master bath and living"
+    - 'lights master bath living status please'
+-
+  name: master_bath_and_living_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bath and living room?"
+    - 'Lights master bath living state'
+    - "Please check the lights in the master bath and living room for me if you don't mind"
+    - 'Are the lights on in the master bath and living?'
+    - 'Get current light status master bath living room'
+    - 'Could you tell me about the lights in the master bath and living area?'
+    - 'Master bath living lights state please'

@@ -1,0 +1,64 @@
+-
+  name: living_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the living room lights'
+    - 'Lights living room on'
+    - 'Please turn on the living room lights for me'
+    - "If you don't mind, could you flick on the living room lights"
+    - 'Flip on the living room lights'
+    - 'Hey, can you switch on the living room lights please'
+    - 'Activate the living room lights'
+-
+  name: living_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the living room lights'
+    - 'Please switch off the lights in the living room for me'
+    - "If you don't mind, flick off the living room lights"
+    - 'Kill the living room lights'
+    - 'Could you flip off the lights in the living room please'
+    - 'Deactivate living room illumination'
+    - 'Turn the living room lights off if you would'
+-
+  name: living_lights_change_brightness
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 67
+  sentences:
+    - 'Set the living room lights to 67 percent'
+    - 'Please dim the living room lights to 67 for me'
+    - "If you don't mind, flick the living room lights to 67"
+    - 'Quickly adjust living room brightness to 67'
+    - 'Flip living room lights to 67 percent please'
+    - 'Change living room lights brightness to 67 if possible'
+    - 'Turn living room lights down to 67'
+-
+  name: living_lights_change_color
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Turn the living room lights yellow'
+    - 'Flick on the living room lights to yellow'
+    - 'Please set the living room lights to yellow for me'
+    - "If you don't mind, flip the living room lights to yellow"
+    - 'Change the living room lights to yellow'
+    - 'Make the living room lights yellow please'
+    - 'Set the living room lights to yellow if you could'

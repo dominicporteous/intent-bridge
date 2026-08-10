@@ -1,0 +1,65 @@
+-
+  name: upper_bath_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: upper_bath
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the upper bath lights'
+    - 'Flick on the upper bathroom lights' # Changed from: Flick on the lights upstairs
+    - 'Please flip on the bathroom lights for me'
+    - "If you don't mind, could you turn on the upper bathroom lights"
+    - 'Switch on the lights in the upstairs bath'
+    - 'Activate the upper bath lighting'
+    - 'Hey, can you turn on those bathroom lights upstairs'
+-
+  name: upper_bath_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: upper_bath
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the upper bath lights'
+    - 'Please switch off the upstairs bathroom lights for me'
+    - "Flick off the lights in the upper bath if you don't mind"
+    - 'Flip the upper bathroom lights off'
+    - 'Could you turn off the lights upstairs in the bath'
+    - 'Deactivate the upper bath lighting'
+    - 'Shut off the lights in the upstairs bathroom please'
+-
+  name: upper_bath_lights_change_brightness
+  conditions:
+    -
+      area: upper_bath
+      domain: light
+      attributes:
+        brightness: 72
+  sentences:
+    - 'Set the upper bath lights to 72 percent brightness'
+    - 'Please dim the upstairs bathroom lights to 72 for me'
+    - "Flick the upper bath brightness to 72 if you don't mind"
+    - 'Turn the upstairs bathroom lights down to 72 percent'
+    - 'Could you adjust the upper bath lights to 72 brightness please'
+    - 'Make the upstairs bathroom lights 72 percent bright'
+    - 'Flip the upper bath brightness to 72'
+    - 'Set upstairs bathroom to 72 brightness'
+-
+  name: upper_bath_lights_change_color
+  conditions:
+    -
+      area: upper_bath
+      domain: light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change the upper bath lights to pink'
+    - 'Set upstairs bathroom lights pink'
+    - 'Please turn the lights in the upper bath pink for me'
+    - "If you don't mind, flick the upper bathroom lights on pink"
+    - 'Flip the lights in the upstairs bath to pink please'
+    - 'Make the upper bath lights pink now'
+    - 'Quickly set upstairs bathroom to pink'

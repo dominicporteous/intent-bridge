@@ -1,0 +1,63 @@
+-
+  name: light_loft_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.loft_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the loft ceiling'
+    - 'Flick on loft ceiling light'
+    - 'Please flip on the light in the loft for me'
+    - "If you don't mind, could you turn on the loft ceiling light"
+    - 'Activate loft ceiling'
+    - 'Switch on the light in loft'
+    - 'Loft ceiling on please'
+    - 'Can you turn on loft ceiling light'
+-
+  name: light_loft_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.loft_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the loft ceiling light'
+    - 'Please switch off the loft ceiling for me'
+    - "If you don't mind, flick off the loft ceiling light"
+    - 'Deactivate loft ceiling'
+    - 'Could you flip off the loft ceiling light please'
+    - 'Loft ceiling off'
+    - "Turn the loft ceiling light off if you don't mind"
+-
+  name: light_loft_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.loft_ceiling
+      attributes:
+        brightness: 73
+  sentences:
+    - 'Set the Loft Ceiling to 73 percent brightness'
+    - 'Please dim the loft ceiling light to 73 for me'
+    - "If you don't mind, could you adjust the Loft Ceiling to 73 brightness"
+    - 'Flick the loft ceiling down to 73'
+    - 'Turn the Loft Ceiling brightness to 73%'
+    - 'Quickly set loft ceiling to 73'
+    - 'Flip the loft ceiling light brightness to 73'
+-
+  name: light_loft_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.loft_ceiling
+      attributes:
+        color: green
+  sentences:
+    - 'Turn the loft ceiling light green'
+    - 'Flick on green for the loft ceiling'
+    - 'Please change the loft ceiling to green for me'
+    - "If you don't mind, set the loft ceiling light to green"
+    - 'Make the loft ceiling green'
+    - 'Flip the loft ceiling light to green'
+    - 'Set loft ceiling to green please'

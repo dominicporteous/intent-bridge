@@ -1,0 +1,15 @@
+name: entryway_light_on_front_door_open
+sentences:
+- Create an automation that turns on the entry chandelier when the front door opens
+- Set up a rule so the entry chandelier switches on whenever the front door is opened
+- Make an automation to turn on the entryway chandelier when the front door opens
+- Automate the entryway chandelier to come on whenever the front door opens
+- When the front door opens I want the entryway chandelier to turn on automatically
+expected:
+  trigger:
+    platform: state
+    entity_id: binary_sensor.front_door_sensor
+    to: 'on'
+  actions:
+  - action: light.turn_on
+    entity_id: light.entryway_chandelier

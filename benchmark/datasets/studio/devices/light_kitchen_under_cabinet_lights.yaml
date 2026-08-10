@@ -1,0 +1,64 @@
+-
+  name: light_kitchen_under_cabinet_lights_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+  sentences:
+    - 'Turn on the under cabinet lights'
+    - 'Flick on the kitchen under cabinet lights'
+    - 'Please flip on the under cabinet lights for me'
+    - "If you don't mind, turn on the kitchen under cabinet lights"
+    - 'Activate the under cabinet lights'
+    - 'Could you switch on the kitchen under cabinet lights please'
+    - 'Turn on the under cabinet lights in the kitchen'
+-
+  name: light_kitchen_under_cabinet_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the under cabinet lights'
+    - 'Please switch off the kitchen under cabinet lights'
+    - "Flick off the under cabinet lights if you don't mind"
+    - 'Flip the kitchen under cabinet lights off'
+    - 'Could you turn off the under cabinet lights for me'
+    - 'Deactivate the kitchen under cabinet lights'
+    - 'Shut off the under cabinet lights please'
+-
+  name: light_kitchen_under_cabinet_lights_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      attributes:
+        brightness: 25
+  sentences:
+    - 'Set the under cabinet lights in the kitchen to 25%'
+    - 'Please dim the kitchen under cabinet lights to 25 for me'
+    - 'Flick the under cabinet lights down to 25 percent'
+    - "If you don't mind, adjust the kitchen under cabinet lights brightness to 25"
+    - 'Turn the under cabinet lights to 25%'
+    - 'Could you set the kitchen under cabinet lights brightness level to 25 please'
+    - 'Flip the under cabinet lights down to 25 percent'
+    - 'Make the kitchen under cabinet lights 25 brightness'
+-
+  name: light_kitchen_under_cabinet_lights_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      attributes:
+        color: yellow
+  sentences:
+    - 'Turn the under cabinet lights in the kitchen to yellow'
+    - 'Flick on the kitchen under cabinet lights yellow please'
+    - "If you don't mind, set the under cabinet lights to yellow for me"
+    - 'Change kitchen under cabinet lights color to yellow'
+    - 'Quickly make the under cabinet lights yellow in the kitchen'
+    - 'Flip the kitchen under cabinet lights to yellow'
+    - 'Please change the color of the under cabinet lights to yellow'
+    - 'Set under cabinet lights in kitchen to yellow now'

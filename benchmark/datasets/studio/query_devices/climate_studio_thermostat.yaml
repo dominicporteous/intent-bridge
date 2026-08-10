@@ -1,0 +1,15 @@
+-
+  name: climate_studio_thermostat_get_temperature
+  conditions:
+    -
+      type: query
+      entity_id: climate.studio_thermostat
+  sentences:
+    - "What's the temperature in the studio?"
+    - 'Get the current temperature of the climate studio thermostat'
+    - "Please tell me the temperature in the studio if you don't mind"
+    - 'Studio temperature check'
+    - 'Could you check the thermostat temperature for me please'
+    - "What's the studio thermostat reading"
+    - 'Temperature in the studio right now'
+    - 'If you could get the studio temperature that would be great'

@@ -1,0 +1,46 @@
+-
+  name: cover_garage_door_right_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: open
+  sentences:
+    - 'Open the right garage door'
+    - 'Please open the right garage door for me'
+    - "If you don't mind, open the right garage door"
+    - 'Flick on the right garage door'
+    - 'Flip on the right garage door'
+    - 'Open the right garage door in the garage'
+    - 'Could you open the right garage door please'
+-
+  name: cover_garage_door_right_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: closed
+  sentences:
+    - 'Close the right garage door'
+    - 'Shut the garage door right'
+    - 'Please close the right garage door for me'
+    - "If you don't mind, shut the right garage door"
+    - 'Flick the right garage door closed'
+    - 'Close the garage door right in the garage'
+    - 'Shut the right garage door in the garage area'
+-
+  name: cover_garage_door_right_change_position
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      attributes:
+        position: 13
+  sentences:
+    - 'Set the right garage door to 13%'
+    - 'Please move the right garage door to 13 percent for me'
+    - 'Flick the garage door right to 13'
+    - "If you don't mind, adjust the right garage door to 13%"
+    - 'Set cover garage door right to 13 in the garage'
+    - 'Quickly position the right garage door at 13 percent'
+    - 'Change the garage door right to 13'

@@ -1,0 +1,28 @@
+-
+  name: light_kitchen_island_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_island
+  sentences:
+    - "What's the status of the kitchen island light?"
+    - 'Kitchen island light state'
+    - "Please tell me the current state of the kitchen island light if you don't mind"
+    - 'Get kitchen island light status'
+    - 'Could you check the kitchen island light for me please'
+    - 'Kitchen island light current state'
+    - "If possible, what's the kitchen island light doing right now"
+-
+  name: light_kitchen_island_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_island
+  sentences:
+    - "What's the brightness of the kitchen island light?"
+    - 'Kitchen island brightness please'
+    - "If you don't mind, what's the current brightness of the kitchen island light for me?"
+    - 'Tell me kitchen island light level'
+    - 'Could you check the brightness on the kitchen island please?'
+    - 'Kitchen island light brightness status'
+    - "What's the kitchen island light brightness right now?"

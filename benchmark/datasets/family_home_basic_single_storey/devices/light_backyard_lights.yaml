@@ -1,0 +1,64 @@
+-
+  name: light_backyard_lights_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      state: 'on'
+  sentences:
+    - 'Turn on the backyard lights'
+    - 'Flick on backyard lights'
+    - 'Please turn on the backyard lights for me'
+    - "Flip on the lights in the backyard if you don't mind"
+    - 'Activate backyard lighting'
+    - 'Could you turn on the backyard lights please'
+    - 'Switch on the backyard lights'
+    - 'Turn the backyard lights on'
+-
+  name: light_backyard_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the backyard lights'
+    - 'Please switch off the backyard lights for me'
+    - 'Flick off backyard lights'
+    - "If you don't mind, turn off the lights in the backyard"
+    - 'Flip off the backyard lights'
+    - 'Deactivate backyard lights'
+    - 'Could you please shut off the backyard lights'
+-
+  name: light_backyard_lights_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      attributes:
+        brightness: 31
+  sentences:
+    - 'Set the backyard lights to 31%'
+    - 'Please adjust the brightness of the backyard lights to 31 for me'
+    - 'Flick the backyard lights down to 31%'
+    - "If you don't mind, dim the backyard lights to 31"
+    - 'Turn the backyard lights brightness to 31%'
+    - 'Can you set backyard lights brightness level to 31'
+    - 'Quickly change backyard lights to 31 percent'
+    - 'Flip the backyard lights brightness down to 31'
+-
+  name: light_backyard_lights_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the backyard lights white'
+    - 'Set backyard lights to white'
+    - 'Please change the backyard lights to white for me'
+    - "Flick the backyard lights to white if you don't mind"
+    - 'Flip on white for the backyard lights'
+    - 'Make the backyard lights white'
+    - 'Could you set the backyard lights to white please'

@@ -1,0 +1,15 @@
+-
+  name: switch_coffee_maker_get_status
+  conditions:
+    -
+      type: query
+      entity_id: switch.coffee_maker
+  sentences:
+    - "What's the status of the coffee maker"
+    - 'Coffee maker state please'
+    - "If you don't mind, can you check the coffee maker for me"
+    - 'Kitchen coffee maker status'
+    - 'Tell me if the coffee maker is on'
+    - 'Quick check on the coffee maker'
+    - 'Please check the kitchen coffee maker status'
+    - 'Is the coffee maker running right now'

@@ -1,0 +1,239 @@
+-
+  name: living_and_kitchen_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.living_room_lamp
+        area_id: living
+        name: 'Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 50
+          rgb_color:
+            - 255
+            - 190
+            - 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.living_room_lamp
+        area_id: living
+        name: 'Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 50
+          rgb_color:
+            - 255
+            - 190
+            - 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in the living room and kitchen?'
+      - 'Please flick them on for me.'
+    -
+      - 'Are the lights on in the living room and kitchen?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Check the lights status for living room and kitchen.'
+      - 'Turn them on please.'
+    -
+      - "What's the current state of the lights in living and kitchen?"
+      - 'Switch them on for me.'
+    -
+      - 'Tell me if the lights are on in the living room and kitchen.'
+      - 'Could you flick them on please.'
+    -
+      - 'Living room and kitchen lights status?'
+      - 'Turn them on.'
+    -
+      - 'How are the lights doing in the living room and kitchen?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Lights status in living and kitchen areas?'
+      - 'Please switch them on for me.'
+-
+  name: living_and_kitchen_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.living_room_lamp
+        area_id: living
+        name: 'Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 50
+          rgb_color:
+            - 255
+            - 190
+            - 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.living_room_lamp
+        area_id: living
+        name: 'Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 50
+          rgb_color:
+            - 255
+            - 190
+            - 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - 'What is the status of the lights in the living room and kitchen?'
+      - 'flick them off' # Changed from: flick them on
+    -
+      - 'lights living kitchen status'
+      - 'flip off' # Changed from: flip on
+    -
+      - "please tell me the status of the lights in the living room and kitchen if you don't mind"
+      - 'turn them off for me' # Changed from: turn them on for me
+    -
+      - 'living kitchen lights state'
+      - 'switch off' # Changed from: switch on
+    -
+      - 'could you check the lights status in living room and kitchen please'
+      - 'power them off' # Changed from: power them on
+    -
+      - "what's the current state of the living and kitchen lights"
+      - 'deactivate them' # Changed from: activate them
+    -
+      - 'living room kitchen lights status report'
+      - 'disable' # Changed from: enable
+-
+  name: living_and_kitchen_lights_set_brightness
+  setup:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 64
+    -
+      entity_id: light.kitchen_ceiling_lights
+      brightness: 64
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      brightness: 64
+  conditions:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 94
+    -
+      entity_id: light.kitchen_ceiling_lights
+      brightness: 94
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      brightness: 94
+  sentences:
+    -
+      - 'What is the brightness of the lights in the living room and kitchen?'
+      - 'Set it to 94.'
+    -
+      - "Please tell me the current brightness levels in the living and kitchen areas if you don't mind."
+      - 'Flick it up to 94 for me.'
+    -
+      - 'Can you check how bright the lights are in the living room and kitchen right now?'
+      - 'Flip it to 94.'
+    -
+      - "What's the brightness setting for the living and kitchen lights?"
+      - 'Crank it to 94.'
+    -
+      - 'Could you tell me the brightness of the lights in the living room and kitchen please?'
+      - 'Adjust it to 94.'
+    -
+      - 'Report the brightness levels in the living and kitchen zones.'
+      - 'Bump it to 94.'
+    -
+      - 'How bright are the lights in the living room and kitchen at the moment?'
+      - 'Make it 94.'

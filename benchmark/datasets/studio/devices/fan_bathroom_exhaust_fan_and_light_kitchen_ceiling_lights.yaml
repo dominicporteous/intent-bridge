@@ -1,0 +1,38 @@
+-
+  name: fan_bathroom_exhaust_fan_and_light_kitchen_ceiling_lights_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+  sentences:
+    - 'Turn on the exhaust fan and ceiling lights'
+    - 'Please flick on the bathroom exhaust fan and kitchen ceiling lights for me'
+    - "Flip on the fan bathroom exhaust fan and light kitchen ceiling lights if you don't mind"
+    - 'Activate the exhaust fan and ceiling lights'
+    - 'Could you turn on the bathroom exhaust fan and kitchen ceiling lights please'
+    - 'Switch on the exhaust fan and kitchen ceiling lights'
+    - 'Turn on fan bathroom exhaust fan and light kitchen ceiling lights'
+-
+  name: fan_bathroom_exhaust_fan_and_light_kitchen_ceiling_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the exhaust fan and kitchen ceiling lights'
+    - 'Please switch off the bathroom exhaust fan and kitchen lights for me'
+    - "If you don't mind, flick off the exhaust fan and ceiling lights"
+    - 'Deactivate the bathroom exhaust fan and kitchen ceiling lights'
+    - 'Flip off the exhaust fan and kitchen ceiling lights if you could'
+    - 'Shut down the bathroom exhaust fan and ceiling lights'
+    - 'Could you turn off the exhaust fan and kitchen ceiling lights please'

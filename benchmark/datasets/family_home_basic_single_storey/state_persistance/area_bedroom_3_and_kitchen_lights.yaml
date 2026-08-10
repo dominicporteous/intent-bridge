@@ -1,0 +1,208 @@
+-
+  name: bedroom_3_and_kitchen_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.bedroom3_ceiling
+        area_id: bedroom_3
+        name: 'Bedroom 3 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_bench
+        area_id: kitchen
+        name: 'Bench Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bedroom3_ceiling
+        area_id: bedroom_3
+        name: 'Bedroom 3 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_bench
+        area_id: kitchen
+        name: 'Bench Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in bedroom 3 and the kitchen?'
+      - 'Turn them on.'
+    -
+      - 'Can you check the lights in bedroom 3 and kitchen?'
+      - 'Flick them on please.'
+    -
+      - "Please report the light status for bedroom 3 and kitchen if you don't mind."
+      - 'Flip them on for me.'
+    -
+      - 'Status of bedroom 3 and kitchen lights?'
+      - 'Switch them on.'
+    -
+      - 'Tell me about the lights in bedroom 3 and the kitchen.'
+      - 'Activate them.'
+    -
+      - 'Lights status bedroom 3 kitchen?'
+      - 'Power them on.'
+    -
+      - 'Could you check bedroom 3 and kitchen lights status?'
+      - 'Turn them on now.'
+    -
+      - 'What are the light states in bedroom 3 and kitchen?'
+      - 'Enable them please.'
+-
+  name: bedroom_3_and_kitchen_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.bedroom3_ceiling
+        area_id: bedroom_3
+        name: 'Bedroom 3 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_bench
+        area_id: kitchen
+        name: 'Bench Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bedroom3_ceiling
+        area_id: bedroom_3
+        name: 'Bedroom 3 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_bench
+        area_id: kitchen
+        name: 'Bench Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - 'What is the status of the lights in bedroom 3 and the kitchen?'
+      - 'Please flick them off for me.' # Changed from: Please flick them on for me.
+    -
+      - 'Check the lights in bedroom 3 and kitchen.'
+      - "Flip them off if you don't mind." # Changed from: Flip them on if you don't mind.
+    -
+      - 'Status of bedroom 3 and kitchen lights?'
+      - 'Turn them off please.' # Changed from: Turn them on please.
+    -
+      - 'Are the lights on in bedroom 3 and the kitchen?'
+      - 'Switch them off for me.' # Changed from: Switch them on for me.
+    -
+      - 'Lights status bedroom 3 and kitchen?'
+      - 'Can you flick them off?' # Changed from: Can you flick them on?
+    -
+      - 'Tell me the status of the lights in bedroom 3 and kitchen.'
+      - 'Go ahead and flip them off.' # Changed from: Go ahead and flip them on.
+-
+  name: bedroom_3_and_kitchen_lights_set_brightness
+  setup:
+    -
+      entity_id: light.bedroom3_ceiling
+      brightness: 62
+    -
+      entity_id: light.kitchen_ceiling
+      brightness: 62
+    -
+      entity_id: light.kitchen_bench
+      brightness: 62
+  conditions:
+    -
+      entity_id: light.bedroom3_ceiling
+      brightness: 52
+    -
+      entity_id: light.kitchen_ceiling
+      brightness: 52
+    -
+      entity_id: light.kitchen_bench
+      brightness: 52
+  sentences:
+    -
+      - 'What is the brightness of the lights in bedroom 3 and the kitchen?'
+      - 'Set it to 52.'
+    -
+      - 'Please check the brightness levels for bedroom 3 and kitchen lights for me.'
+      - "Make it 52 if you don't mind."
+    -
+      - 'Can you tell me how bright the bedroom 3 and kitchen lights are?'
+      - 'Flick them to 52.'
+    -
+      - 'Report the current brightness for bedroom 3 and kitchen.'
+      - 'Flip it to 52 please.'
+    -
+      - "What's the brightness setting in bedroom 3 and kitchen right now?"
+      - 'Adjust to 52.'
+    -
+      - 'Tell me the brightness of the lights in bedroom 3 and kitchen.'
+      - 'Change it to 52 for me.'
+    -
+      - 'How bright are the bedroom 3 and kitchen lights currently?'
+      - 'Set brightness to 52.'

@@ -1,0 +1,74 @@
+-
+  name: bathroom_and_living_fans_get_state
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the fans in the bathroom and living room?"
+    - 'Check bathroom and living room fans'
+    - "Please tell me the fan states for bathroom and living if you don't mind"
+    - 'Could you check the fans in the bathroom and living room for me?'
+    - 'Get current state of bathroom and living fans'
+    - 'Are the fans running in bathroom and living?'
+-
+  name: bathroom_and_living_fans_list_on_fans
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the fans in the bathroom and living room"
+    - 'Check bathroom and living room fan states'
+    - "Please tell me the current fan status for bathroom and living if you don't mind"
+    - 'Could you check the fans in the bathroom and living room for me'
+    - 'Get me the current state of bathroom and living room fans'
+    - 'Bathroom living fans status please'
+-
+  name: bathroom_and_living_fans_list_off_fans
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the fans in the bathroom and living room?"
+    - 'Get fan states for bathroom and living'
+    - 'Please check the fans in the bathroom and living room for me'
+    - "If you don't mind, could you tell me the current state of the bathroom and living room fans?"
+    - 'Fan status bathroom living'
+    - 'Report fan conditions in bathroom and living area'
+    - 'Can you show me if the fans are on in the bathroom and living room?'
+-
+  name: bathroom_and_living_fans_get_fan_speed
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the fans in the bathroom and living room"
+    - 'Get fan states for bathroom and living'
+    - 'Please check the bathroom and living room fans for me'
+    - 'Fan status bathroom living'
+    - "If you don't mind, could you tell me about the fans in the bathroom and living room"
+    - 'Current state of bathroom and living fans'
+    - 'Show me the fan states in bathroom and living'

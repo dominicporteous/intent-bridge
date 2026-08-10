@@ -1,0 +1,30 @@
+-
+  name: switch_garden_irrigation_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.garden_irrigation
+      state: 'on'
+  sentences:
+    - 'Turn on the garden irrigation'
+    - 'Please flick on the backyard irrigation for me'
+    - "Flip on the garden irrigation if you don't mind"
+    - 'Activate the backyard irrigation system'
+    - 'Could you turn on the garden irrigation please'
+    - 'Switch on the backyard irrigation'
+    - 'Start the garden irrigation now'
+-
+  name: switch_garden_irrigation_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.garden_irrigation
+      state: 'off'
+  sentences:
+    - 'Turn off the garden irrigation'
+    - 'Please switch off the backyard irrigation for me'
+    - "If you don't mind, flick off the garden irrigation"
+    - 'Deactivate the backyard irrigation system'
+    - 'Flip off the garden irrigation please'
+    - 'Stop the backyard irrigation if you can'
+    - 'Shut down the garden irrigation for me'

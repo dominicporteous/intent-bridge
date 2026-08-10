@@ -1,0 +1,21 @@
+name: theater_mode_on_projector_start
+sentences:
+- Create an automation that dims the theater bias lighting to 10 percent when the
+  projector turns on
+- Set up a rule so the theater bias lighting dims to 10 whenever the projector switches
+  on
+- Make an automation to dim the bias lighting down to 10 percent when the projector
+  comes on
+- Automate the theater bias lighting to dim to 10 when the projector turns on
+- When the projector turns on I want the bias lighting to dim to 10 percent automatically
+- Please create a rule that dims the theater bias lights to 10 whenever the projector
+  starts
+expected:
+  trigger:
+    platform: state
+    entity_id: media_player.projector
+    to: 'on'
+  actions:
+  - action: light.turn_on
+    entity_id: light.theater_bias
+    brightness_pct: 10

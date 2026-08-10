@@ -1,0 +1,40 @@
+-
+  name: cover_garage_door_and_cover_living_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: open
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: open
+  sentences:
+    - 'Open the garage door'
+    - 'Please open the living room blinds for me'
+    - "Flick on the garage door if you don't mind"
+    - 'Flip open the living blinds'
+    - 'Could you open the garage door for me'
+    - 'Raise the living room blinds please'
+    - 'Open up the garage door'
+    - 'Pull up the living blinds'
+-
+  name: cover_garage_door_and_cover_living_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: closed
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: closed
+  sentences:
+    - 'Close the garage door'
+    - 'Shut the living room blinds'
+    - 'Please close the garage door for me'
+    - "If you don't mind, close the living blinds"
+    - 'Flick the garage door closed'
+    - 'Roll down the living room blinds'
+    - 'Close the garage cover'
+    - 'Pull the living blinds down'

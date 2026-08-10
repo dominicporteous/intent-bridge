@@ -1,0 +1,29 @@
+-
+  name: light_kitchen_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_ceiling
+  sentences:
+    - "What's the status of the kitchen ceiling light?"
+    - 'Kitchen ceiling light state please'
+    - "If you don't mind, could you check the kitchen ceiling for me?"
+    - 'Current state of kitchen ceiling light'
+    - 'Please tell me if the kitchen ceiling is on or off'
+    - "Kitchen ceiling light - what's it doing right now?"
+    - 'Get me the kitchen ceiling status'
+-
+  name: light_kitchen_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_ceiling
+  sentences:
+    - "What's the brightness of the kitchen ceiling light?"
+    - 'Kitchen ceiling brightness please'
+    - "If you don't mind, could you tell me the current brightness of the kitchen ceiling light for me?"
+    - 'Get kitchen ceiling light brightness'
+    - 'Please check kitchen ceiling brightness'
+    - "What's the kitchen ceiling light level right now?"
+    - 'Tell me kitchen ceiling brightness'
+    - 'Kitchen ceiling light brightness status'

@@ -1,0 +1,18 @@
+-
+  name: light_bedroom2_ceiling_and_light_upper_hallway_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.bedroom2_ceiling
+    -
+      type: query
+      entity_id: light.upper_hallway_light
+  sentences:
+    - "What's the status of the Bedroom 2 Ceiling light?"
+    - 'Is the Upper Hallway Light on?' # Changed from: Turn on the Upper Hallway Light
+    - 'Please check the Bedroom 2 Ceiling light for me'
+    - "If you don't mind, what's the state of the Upper Hallway Light?"
+    - 'Get the current state of the Bedroom 2 Ceiling'
+    - 'Can you tell me if the Upper Hallway Light is on?'
+    - 'Bedroom 2 Ceiling light status please'
+    - 'Upper Hallway Light state check'

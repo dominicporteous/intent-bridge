@@ -1,0 +1,64 @@
+-
+  name: master_bath_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bath lights'
+    - 'Flick on the lights in the master bathroom'
+    - 'Please flip on the master bath lights for me'
+    - "If you don't mind, turn on the lights in the master bath"
+    - 'Activate the master bathroom lighting'
+    - 'Could you switch on the master bath lights please'
+    - "Flip on the lights in the master bathroom if you don't mind"
+-
+  name: master_bath_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the master bath lights'
+    - 'Please switch off the lights in the master bathroom for me'
+    - "If you don't mind, flick off the master bath lights"
+    - 'Kill the lights in the master bath'
+    - 'Flip off the master bathroom lights'
+    - 'Could you please turn off the lights in the master bath'
+    - 'Shut off the master bath lights'
+-
+  name: master_bath_lights_change_brightness
+  conditions:
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        brightness: 33
+  sentences:
+    - 'Set master bath lights to 33 percent brightness'
+    - 'Please dim the master bathroom lights to 33 for me'
+    - "If you don't mind, flick the master bath lights down to 33%"
+    - 'Turn master bathroom brightness to 33'
+    - 'Could you adjust the master bath lights to 33 percent please'
+    - 'Flip master bath lights to 33 brightness'
+    - 'Set master bathroom illumination to 33 if you would'
+-
+  name: master_bath_lights_change_color
+  conditions:
+    -
+      area: master_bath
+      domain: light
+      attributes:
+        color: blue
+  sentences:
+    - 'Change the master bath lights to blue'
+    - 'Please set the master bathroom lights to blue for me'
+    - "Flick the master bath lights on blue if you don't mind"
+    - 'Flip the master bath lights to blue'
+    - 'Turn the master bathroom lights blue'
+    - 'Could you make the master bath lights blue please'
+    - 'Set master bath lights to blue color'

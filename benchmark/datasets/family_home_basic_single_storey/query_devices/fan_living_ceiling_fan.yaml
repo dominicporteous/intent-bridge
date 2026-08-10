@@ -1,0 +1,29 @@
+-
+  name: fan_living_ceiling_fan_get_status
+  conditions:
+    -
+      type: query
+      entity_id: fan.living_ceiling_fan
+  sentences:
+    - "What's the status of the ceiling fan in the living room?"
+    - 'Ceiling fan living room state'
+    - 'Please check the ceiling fan for me'
+    - "If you don't mind, what's the living ceiling fan doing?"
+    - 'Fan living ceiling fan status'
+    - 'Could you tell me if the ceiling fan is on?'
+    - 'Living room ceiling fan current state please'
+    - 'Get me the ceiling fan info'
+-
+  name: fan_living_ceiling_fan_get_fan_speed
+  conditions:
+    -
+      type: query
+      entity_id: fan.living_ceiling_fan
+  sentences:
+    - "What's the current speed of the ceiling fan in the living room?"
+    - 'fan living ceiling fan percentage'
+    - 'Could you please tell me the fan speed for the living room ceiling fan?'
+    - "If you don't mind, what's the percentage on the living room ceiling fan?"
+    - 'living room ceiling fan speed'
+    - 'Get me the current percentage of the living ceiling fan'
+    - 'Please check the living room ceiling fan speed for me'

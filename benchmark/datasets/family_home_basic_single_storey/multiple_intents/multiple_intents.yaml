@@ -1,0 +1,419 @@
+-
+  name: multi_0
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: master_bedroom
+      domain: cover
+      state: open
+  sentences:
+    - 'Turn off the bathroom lights and then turn on the master bedroom blinds'
+    - 'Could you also close the master bedroom curtains while you turn off the bathroom lights'
+    - "Hey turn on the master bedroom shades and turn off the bathroom lights if you don't mind"
+    - 'Turn off the bathroom lights plus turn on the master bedroom curtains'
+    - 'Oh and turn on the master bedroom blinds after turning off the bathroom lights'
+    - 'Turn on the master bedroom shades and turn off the bathroom lights please'
+    - "While you're at it turn off the bathroom lights and turn on the master bedroom curtains"
+-
+  name: multi_1
+  conditions:
+    -
+      type: action
+      entity_id: scene.morning
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn on the Morning scene and turn off the Living Room Ceiling'
+    - 'Turn off the Living Room Ceiling and turn on the Morning scene'
+    - 'Hey could you turn on the Morning scene and also turn off the Living Room Ceiling'
+    - "Turn off the Living Room Ceiling while you're at it turn on the Morning scene"
+    - 'Please turn on the Morning scene and then turn off the Living Room Ceiling'
+    - 'Oh and turn off the Living Room Ceiling plus turn on the Morning scene'
+    - "Turn on the Morning scene if you don't mind and turn off the Living Room Ceiling"
+    - 'Turn off the Living Room Ceiling and then turn on the Morning scene'
+-
+  name: multi_2
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+    -
+      type: action
+      entity_id: light.garage_light
+      state: 'on'
+  sentences:
+    - 'Turn off the lights in Bedroom 3 and turn on the Garage Light'
+    - "Turn on the Garage Light while you're at it turn off the lights in Bedroom 3"
+    - 'Hey turn off the lights in Bedroom 3 and also turn on the Garage Light'
+    - 'Could you turn on the Garage Light and then turn off the lights in Bedroom 3 please'
+    - "Turn off the lights in Bedroom 3 plus turn on the Garage Light if you don't mind"
+    - 'Oh and turn on the Garage Light after turning off the lights in Bedroom 3'
+    - 'Turn off the lights in Bedroom 3 and turn on the Garage Light right away'
+    - 'Turn on the Garage Light and turn off the lights in Bedroom 3'
+-
+  name: multi_3
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      state: 'off'
+    -
+      type: action
+      entity_id: light.living_lamp
+      attributes:
+        brightness: 70
+  sentences:
+    - 'Turn off the Bedroom 2 Ceiling and set the Living Room Lamp to seventy percent brightness'
+    - "Set the Living Room Lamp to seventy percent and turn off the Bedroom 2 Ceiling while you're at it"
+    - 'Hey could you also turn off the Bedroom 2 Ceiling and adjust the Living Room Lamp to seventy'
+    - 'Turn the Living Room Lamp to seventy percent brightness and then switch off the Bedroom 2 Ceiling please'
+    - 'Oh and set the Living Room Lamp brightness to seventy plus turn off the Bedroom 2 Ceiling'
+    - "If you don't mind set the Living Room Lamp to seventy percent and turn off the Bedroom 2 Ceiling"
+    - 'Turn off the Bedroom 2 Ceiling and also change the Living Room Lamp to seventy percent'
+    - 'Could you turn the Living Room Lamp to seventy and turn off the Bedroom 2 Ceiling'
+-
+  name: multi_4
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: living_room
+      domain: light
+      state: 'off'
+    -
+      type: query
+      entity_id: switch.bathroom_fan
+  sentences:
+    - 'Turn off the lights in the Kitchen and Living Room and also check the state of the bathroom fan.'
+    - "Could you please turn off the lights in the Kitchen and Living Room while you're at it tell me if the bathroom fan is on."
+    - 'Hey turn off the lights in the Kitchen and Living Room and then let me know the state of the bathroom fan.'
+    - 'Oh and turn off the lights in the Kitchen and Living Room plus tell me whether the bathroom fan is currently on.'
+    - "If you don't mind turn off the lights in the Kitchen and Living Room and check the state of the bathroom fan."
+    - 'Turn off the lights in the Kitchen and Living Room and also give me the state of the bathroom fan.'
+    - 'Check the state of the bathroom fan and then turn off the lights in the Kitchen and Living Room.'
+    - 'Could you tell me the state of the bathroom fan and turn off the lights in the Kitchen and Living Room.'
+-
+  name: multi_5
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+    -
+      type: action
+      entity_id: scene.dinner_time
+  sentences:
+    - 'Turn on the Dinner Time scene and also check the state of the covers in the Master Bedroom'
+    - 'Could you also tell me if the covers are open in the Master Bedroom while you activate the Dinner Time scene'
+    - 'Activate the Dinner Time scene and then let me know the state of the covers in the Master Bedroom'
+    - "Hey if you don't mind, check the covers state in the Master Bedroom and turn on the Dinner Time scene"
+    - 'Turn on the Dinner Time scene plus tell me whether the covers are closed in the Master Bedroom'
+    - "While you're at it, get the state of the covers in the Master Bedroom and start the Dinner Time scene"
+    - 'Oh and also turn on the Dinner Time scene after you check the covers in the Master Bedroom'
+    - 'Please turn on the Dinner Time scene and report the state of the covers in the Master Bedroom'
+-
+  name: multi_6
+  conditions:
+    -
+      type: query
+      entity_id: media_player.living_tv
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the ceiling fan and also tell me the state of the living tv'
+    - 'Could you please turn on the living ceiling fan and check what the living tv is doing'
+    - 'Hey turn on the living ceiling fan and then let me know the living tv state'
+    - "While you're at it turn on the living ceiling fan and give me the living tv status"
+    - 'Oh and turn on the living ceiling fan plus tell me the living tv state'
+    - "Turn on the living ceiling fan if you don't mind and what's the living tv state"
+    - 'Please turn on the living ceiling fan and report the living tv state'
+    - "Turn on the living ceiling fan and what's the living tv doing right now"
+-
+  name: multi_7
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      attributes:
+        brightness: 80
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the living room ceiling light and set the entryway light to eighty percent brightness.'
+    - 'Could you also set the entryway light to eighty percent while you turn on the living room ceiling light?'
+    - 'Hey, turn on the living room ceiling light and then set the entryway light to eighty percent brightness please.'
+    - 'Set the entryway light to eighty percent brightness and also turn on the living room ceiling light.'
+    - "Turn on the living room ceiling light plus set the entryway light to eighty percent if you don't mind."
+    - 'Set the entryway light to eighty percent brightness and then turn on the living room ceiling light.'
+    - "Oh and set the entryway light to eighty percent while you're turning on the living room ceiling light."
+    - 'Turn on the living room ceiling light and set the entryway light to eighty percent brightness please.'
+-
+  name: multi_8
+  conditions:
+    -
+      type: action
+      entity_id: light.laundry_light
+      state: 'off'
+    -
+      type: action
+      entity_id: cover.garage_door
+      attributes:
+        position: 80
+  sentences:
+    - 'Turn off the laundry light and also set the garage door to eighty percent.'
+    - 'Set the garage door to eighty percent and then turn off the laundry light.'
+    - 'Hey could you turn off the laundry light and set the garage door to eighty percent please.'
+    - "Set the garage door to eighty percent and turn off the laundry light while you're at it."
+    - "Turn off the laundry light plus set the garage door to eighty percent if you don't mind."
+    - 'Oh and set the garage door to eighty percent then turn off the laundry light.'
+    - 'Turn off the laundry light and set the garage door to eighty percent.'
+    - 'Set the garage door to eighty percent and turn off the laundry light too.'
+-
+  name: multi_9
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      state: 'off'
+    -
+      type: query
+      entity_id: switch.washing_machine
+  sentences:
+    - 'Turn off the master bedroom fan and also check the washing machine state'
+    - 'Could you also tell me the washing machine state while you turn off the master bedroom fan'
+    - 'Hey turn off the master bedroom fan and then let me know if the washing machine is running'
+    - 'Please check the washing machine state and turn off the master bedroom fan'
+    - 'Oh and turn off the master bedroom fan plus tell me the washing machine state'
+    - "If you don't mind, check the washing machine state and turn off the master bedroom fan"
+    - 'Turn off the master bedroom fan and also give me the washing machine state'
+    - 'Tell me the washing machine state and then turn off the master bedroom fan'
+-
+  name: multi_10
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: closed
+    -
+      type: action
+      entity_id: light.bathroom_light
+      state: 'on'
+  sentences:
+    - 'Close the garage door and turn on the bathroom light'
+    - 'Turn on the bathroom light and then close the garage door'
+    - 'Hey could you close the garage door and also turn on the bathroom light'
+    - "Please turn on the bathroom light while you're at it close the garage door"
+    - "Close the garage door plus turn on the bathroom light if you don't mind"
+    - 'Oh and turn on the bathroom light after you close the garage door'
+    - 'Turn on the bathroom light and close the garage door please'
+    - 'Close the garage door and turn on the bathroom light thanks'
+-
+  name: multi_11
+  conditions:
+    -
+      type: action
+      entity_id: script.leaving_home
+    -
+      type: todo_list
+      list_name: Chores
+      item: 'Take out the trash'
+      complete: false
+  sentences:
+    - 'Turn on the Leaving Home script and also add take out the trash to the Chores list.'
+    - 'Hey could you please add take out the trash to the Chores list and then run the Leaving Home script.'
+    - "While you're at it start the Leaving Home script and add take out the trash to the Chores list."
+    - "Add take out the trash to the Chores list and turn on the Leaving Home script if you don't mind."
+    - 'Oh and run the Leaving Home script plus add take out the trash to the Chores list.'
+    - "Start the Leaving Home script and while you're at it add take out the trash to the Chores list."
+    - 'Could you add take out the trash to the Chores list and then activate the Leaving Home script.'
+    - 'Turn on the Leaving Home script and also add take out the trash to the Chores list please.'
+-
+  name: multi_12
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+    -
+      type: query
+      area: living
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - 'Turn off the lights in Bedroom 3 and also tell me the state of the lights in the Living Room and Kitchen'
+    - "While you're at it could you also check the state of the lights in the Living Room and Kitchen after turning off the lights in Bedroom 3"
+    - 'Hey turn off the lights in Bedroom 3 and please tell me if the lights are on in the Living Room and Kitchen'
+    - 'Oh and check the state of the lights in the Living Room and Kitchen plus turn off the lights in Bedroom 3'
+    - 'Turn off the lights in Bedroom 3 and then let me know the state of the lights in the Living Room and Kitchen'
+    - 'Could you also check the state of the lights in the Living Room and Kitchen while turning off the lights in Bedroom 3'
+    - 'Please turn off the lights in Bedroom 3 and tell me the state of the lights in the Living Room and Kitchen'
+    - "Lights off in Bedroom 3 and what's the state of the lights in the Living Room and Kitchen"
+-
+  name: multi_13
+  conditions:
+    -
+      type: query
+      entity_id: fan.bedroom2_fan
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: playing
+  sentences:
+    - 'Turn on the bedroom 2 fan and unpause the living tv'
+    - 'Unpause the living tv and also turn on the bedroom 2 fan'
+    - "Hey, could you turn on the bedroom 2 fan while you're at it unpause the living tv"
+    - 'Please unpause the living tv and then turn on the bedroom 2 fan'
+    - 'Oh and turn on the bedroom 2 fan plus unpause the living tv'
+    - "Unpause the living tv if you don't mind and turn on the bedroom 2 fan"
+    - 'Turn on the bedroom 2 fan, and then unpause the living tv'
+    - 'Could you unpause the living tv and also turn on the bedroom 2 fan'
+-
+  name: multi_14
+  conditions:
+    -
+      type: action
+      area: laundry
+      domain: light
+      state: 'off'
+    -
+      type: action
+      entity_id: light.laundry_light
+      attributes:
+        brightness: 10
+  sentences:
+    - 'Turn off the lights in the Laundry and also set the Laundry Light to 10 brightness'
+    - "Set the Laundry Light to 10 brightness while you're at it turn off the lights in the Laundry"
+    - 'Hey turn off the lights in the Laundry and set the Laundry Light to 10 brightness'
+    - 'Could you also turn off the lights in the Laundry after setting the Laundry Light to 10 brightness'
+    - 'Turn off the lights in the Laundry plus set the Laundry Light to 10 brightness'
+    - 'Set the Laundry Light to 10 brightness and then turn off the lights in the Laundry'
+    - 'Oh and turn off the lights in the Laundry while setting the Laundry Light to 10 brightness'
+    - "If you don't mind set the Laundry Light to 10 brightness and turn off the lights in the Laundry"
+-
+  name: multi_15
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      attributes:
+        position: 30
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Set the master bedroom blinds to thirty percent and turn off the bathroom lights.'
+    - 'Could you turn off the bathroom lights and also set the master bedroom blinds to thirty percent please.'
+    - "Hey turn off the bathroom lights while you're at it set the master bedroom blinds to thirty percent."
+    - "Set the master bedroom blinds to thirty percent plus turn off the bathroom lights if you don't mind."
+    - 'Oh and turn off the bathroom lights and set the master bedroom blinds to thirty percent.'
+    - 'Turn off the bathroom lights and then set the master bedroom blinds to thirty percent.'
+    - 'Set the master bedroom blinds to thirty percent and could you also turn off the bathroom lights.'
+-
+  name: multi_16
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door
+      state: open
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+  sentences:
+    - 'Open the garage door and also tell me the state of the covers in the Master Bedroom.'
+    - 'Could you also check the state of the covers in the Master Bedroom while you open the garage door?'
+    - 'Hey, open the garage door and then give me the state of the covers in the Master Bedroom.'
+    - "Tell me the state of the covers in the Master Bedroom and open the garage door if you don't mind."
+    - 'Please open the garage door and check the state of the covers in the Master Bedroom.'
+    - 'Oh and tell me the state of the covers in the Master Bedroom after you open the garage door.'
+    - 'Open the garage door plus let me know the state of the covers in the Master Bedroom.'
+    - "While you're at it, check the state of the covers in the Master Bedroom and open the garage door."
+-
+  name: multi_17
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: paused
+  sentences:
+    - 'Turn off the lights in the Living Room and Kitchen and pause the TV'
+    - 'Pause the living tv and turn off the lights in the Living Room and Kitchen'
+    - "Hey turn off the lights in the Living Room and Kitchen while you're at it pause the TV"
+    - 'Could you pause the living tv and also turn off the lights in the Living Room and Kitchen'
+    - 'Turn off the lights in the Living Room and Kitchen plus pause the TV'
+    - 'Oh and pause the living tv after you turn off the lights in the Living Room and Kitchen'
+    - "If you don't mind turn off the lights in the Living Room and Kitchen and then pause the TV"
+    - 'Pause the living tv and turn off the lights in the Living Room and Kitchen please'
+-
+  name: multi_18
+  conditions:
+    -
+      type: action
+      entity_id: light.master_ceiling
+      attributes:
+        brightness: 70
+    -
+      type: query
+      entity_id: light.entryway_light
+  sentences:
+    - 'Set the Master Bedroom Ceiling to seventy percent and also tell me if the Entryway Light is on.'
+    - 'Could you check the state of the Entryway Light and then set the Master Bedroom Ceiling brightness to seventy.'
+    - "Turn the Master Bedroom Ceiling up to seventy percent and while you're at it let me know whether the Entryway Light is on."
+    - 'Hey, what is the state of the Entryway Light and please set the Master Bedroom Ceiling to seventy percent.'
+    - "If you don't mind, tell me if the Entryway Light is on and set the Master Bedroom Ceiling brightness to seventy."
+    - 'Oh and set the Master Bedroom Ceiling to seventy percent plus tell me the state of the Entryway Light.'
+    - 'First check if the Entryway Light is on and then set the Master Bedroom Ceiling to seventy percent.'
+    - 'Please set the Master Bedroom Ceiling to seventy percent and also let me know the state of the Entryway Light.'
+-
+  name: multi_19
+  conditions:
+    -
+      type: query
+      entity_id: light.master_ceiling
+    -
+      type: action
+      area: bedroom_2
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the fan in Bedroom 2 and also tell me the state of the Master Bedroom Ceiling light.'
+    - 'Could you please turn on the Bedroom 2 fan and check the state of the Master Bedroom Ceiling light?'
+    - "Hey, what's the state of the Master Bedroom Ceiling light and while you're at it turn on the fan in Bedroom 2."
+    - "Turn on the fan in Bedroom 2, oh and what's the state of the Master Bedroom Ceiling light?"
+    - 'Check the state of the Master Bedroom Ceiling light and then turn on the fan in Bedroom 2.'
+    - 'Turn on the Bedroom 2 fan and also give me the state of the Master Bedroom Ceiling light.'
+    - "What's the state of the Master Bedroom Ceiling light plus turn on the fan in Bedroom 2 if you don't mind."
+    - 'Turn on the fan in Bedroom 2 and tell me the state of the Master Bedroom Ceiling light.'

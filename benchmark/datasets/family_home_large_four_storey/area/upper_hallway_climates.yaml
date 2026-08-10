@@ -1,0 +1,16 @@
+-
+  name: upper_hallway_climates_set_temperature
+  conditions:
+    -
+      area: upper_hallway
+      domain: climate
+      attributes:
+        temperature: 16
+  sentences:
+    - 'Set the upper hallway climate to 16 degrees'
+    - 'Please adjust the upstairs hallway temperature to 16 for me'
+    - "If you don't mind, set the hallway climate upstairs to 16"
+    - 'Flick the upper hallway climate down to 16'
+    - 'Turn the upstairs hallway temperature to 16 please'
+    - 'Change the upper hallway climate to 16 if you could'
+    - 'Set hallway climate upstairs to 16 degrees'

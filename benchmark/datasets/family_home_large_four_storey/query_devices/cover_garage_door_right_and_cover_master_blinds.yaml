@@ -1,0 +1,18 @@
+-
+  name: cover_garage_door_right_and_cover_master_blinds_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_right
+    -
+      type: query
+      entity_id: cover.master_blinds
+  sentences:
+    - "What's the status of the right garage door?"
+    - 'Tell me if the master blinds are open or closed'
+    - 'Please check the garage door right for me'
+    - "If you don't mind, what's the current state of the master bedroom blinds?"
+    - 'Garage door right status'
+    - 'Are the master blinds up or down right now?'
+    - 'Check cover garage door right please'
+    - 'Master bedroom blinds position'

@@ -1,0 +1,105 @@
+-
+  name: fan_living_room_ceiling_fan_turn_on
+  setup:
+    -
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the living room light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the living room light on or off?'
+      - 'Flick it on.'
+    -
+      - 'Can you tell me the living room light state?'
+      - "Flip it on if you don't mind."
+    -
+      - 'Living room light status?'
+      - 'Turn it on please.'
+    -
+      - "What's happening with the living room light?"
+      - 'Switch it on for me.'
+    -
+      - 'Living room light - on or off?'
+      - 'Hit it on.'
+    -
+      - 'Report the living room light condition.'
+      - 'Activate it please.'
+    -
+      - 'Living room light state check.'
+      - "Power it on if you don't mind."
+-
+  name: fan_living_room_ceiling_fan_turn_off
+  setup:
+    -
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the living room light?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the living room light on or off?'
+      - 'Flick it off.'
+    -
+      - 'Can you check the living room light?'
+      - "If you don't mind, flip it off."
+    -
+      - 'Living room light status?'
+      - 'Quickly turn it off.'
+    -
+      - 'Tell me about the living room light.'
+      - 'Switch it off please.'
+    -
+      - "How's the living room light doing?"
+      - "Shut it off if you don't mind."
+    -
+      - 'Living room light check.'
+      - 'Turn it off for me.'
+-
+  name: fan_living_room_ceiling_fan_persistance_percentage
+  setup:
+    -
+      entity_id: fan.living_room_ceiling_fan
+      percentage: 17
+  conditions:
+    -
+      entity_id: fan.living_room_ceiling_fan
+      attributes:
+        percentage: 89
+  sentences:
+    -
+      - "What's the percentage of the ceiling fan?"
+      - 'Set it to 89.'
+    -
+      - 'Can you tell me the percentage of the living room ceiling fan?'
+      - 'Please change it to 89 for me.'
+    -
+      - 'Ceiling fan percentage?'
+      - "Adjust to 89 if you don't mind."
+    -
+      - "What's the living room ceiling fan at right now?"
+      - 'Make it 89.'
+    -
+      - 'Percentage of the ceiling fan in the living room?'
+      - 'Change it to 89 please.'
+    -
+      - 'Tell me the ceiling fan percentage.'
+      - 'Set to 89.'
+    -
+      - 'Living room ceiling fan percentage?'
+      - 'Adjust it to 89 for me.'
+    -
+      - "What's the percentage on the ceiling fan?"
+      - "Change to 89 if you don't mind."

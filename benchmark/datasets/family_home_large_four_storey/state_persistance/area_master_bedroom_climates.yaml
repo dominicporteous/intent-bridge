@@ -1,0 +1,35 @@
+-
+  name: master_bedroom_climates_set_temperature
+  setup:
+    -
+      entity_id: climate.master_ac
+      temperature: 20
+  conditions:
+    -
+      entity_id: climate.master_ac
+      temperature: 66
+  sentences:
+    -
+      - "What's the temperature in the master bedroom?"
+      - 'Set it to 66.'
+    -
+      - 'Can you tell me the temperature of the master bedroom climates please?'
+      - 'Please set it to 66 for me.'
+    -
+      - 'Master bedroom temperature?'
+      - 'Flick it to 66.'
+    -
+      - "If you don't mind, what's the temperature in the master bedroom?"
+      - "Flip it to 66 if you don't mind."
+    -
+      - 'Tell me the master bedroom temperature.'
+      - 'Quickly set it to 66.'
+    -
+      - 'Could you check the temperature in the master bedroom?'
+      - 'Turn it to 66.'
+    -
+      - "What's the temperature of the master bedroom climates?"
+      - 'Set it to 66 please.'
+    -
+      - 'Master bedroom climates temperature?'
+      - 'Make it 66.'

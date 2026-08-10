@@ -1,0 +1,63 @@
+-
+  name: light_bedroom3_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Bedroom 3 Ceiling'
+    - 'Flick on bedroom_3 ceiling light'
+    - 'Please flip on the Bedroom 3 Ceiling for me'
+    - "If you don't mind, turn on bedroom_3 ceiling"
+    - 'Switch on the ceiling light in Bedroom 3'
+    - 'Activate bedroom_3 ceiling light'
+    - 'Could you please turn on the Bedroom 3 Ceiling'
+-
+  name: light_bedroom3_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      state: 'off'
+  sentences:
+    - 'turn off bedroom 3 ceiling'
+    - 'flick off the ceiling light in bedroom_3'
+    - 'please switch off bedroom 3 ceiling light for me'
+    - "if you don't mind, flip off the light in bedroom_3"
+    - 'kill the bedroom 3 ceiling'
+    - 'shut off bedroom_3 ceiling light'
+    - 'turn the bedroom 3 ceiling off now'
+    - 'disable the ceiling light in bedroom_3'
+-
+  name: light_bedroom3_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      attributes:
+        brightness: 39
+  sentences:
+    - 'Set the Bedroom 3 Ceiling light to 39 percent'
+    - 'Please dim bedroom_3 ceiling to thirty-nine for me'
+    - 'Flick the bedroom 3 ceiling brightness down to 39'
+    - "If you don't mind, turn bedroom_3 ceiling to 39 percent"
+    - 'Quickly adjust Bedroom 3 Ceiling light to thirty-nine'
+    - 'Change the brightness of bedroom_3 ceiling to 39'
+    - 'Flip bedroom 3 ceiling light to 39 percent'
+-
+  name: light_bedroom3_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      attributes:
+        color: blue
+  sentences:
+    - 'Turn bedroom3 ceiling blue'
+    - 'Flick on blue for the Bedroom 3 Ceiling please'
+    - "If you don't mind, set the light bedroom3 ceiling to blue for me"
+    - 'Change Bedroom 3 Ceiling color to blue'
+    - 'Quickly make bedroom_3 ceiling blue'
+    - 'Flip the Bedroom 3 Ceiling to blue now'
+    - 'Set bedroom3 ceiling color blue'

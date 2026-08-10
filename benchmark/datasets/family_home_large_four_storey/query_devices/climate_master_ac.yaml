@@ -1,0 +1,14 @@
+-
+  name: climate_master_ac_get_temperature
+  conditions:
+    -
+      type: query
+      entity_id: climate.master_ac
+  sentences:
+    - "What's the temperature of the Master AC?"
+    - 'climate master ac temperature'
+    - "if you don't mind, could you tell me the current temperature for the master ac please"
+    - 'get temp master_bedroom climate master ac'
+    - 'please check the temperature on the Master AC for me'
+    - 'master ac temp'
+    - "what's the temperature in the master bedroom right now"

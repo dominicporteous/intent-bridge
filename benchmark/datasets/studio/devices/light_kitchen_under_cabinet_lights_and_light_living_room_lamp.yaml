@@ -1,0 +1,38 @@
+-
+  name: light_kitchen_under_cabinet_lights_and_light_living_room_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the under cabinet lights and floor lamp'
+    - 'Please flick on the kitchen under cabinet lights and living room lamp for me'
+    - "If you don't mind, flip on the under cabinet lights and floor lamp"
+    - 'Activate kitchen under cabinet lights and living room lamp'
+    - 'Could you switch on the under cabinet lights and floor lamp please'
+    - 'Turn the kitchen under cabinet lights and living room lamp on'
+    - 'Quickly enable under cabinet lights and floor lamp'
+-
+  name: light_kitchen_under_cabinet_lights_and_light_living_room_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the under cabinet lights and floor lamp'
+    - 'Please disable the kitchen under cabinet lights and living room lamp for me'
+    - "If you don't mind, flick off the under cabinet lights and floor lamp"
+    - 'Quickly switch off kitchen under cabinet lights and living room lamp'
+    - 'Flip off the under cabinet lights and floor lamp please'
+    - 'Could you turn off the kitchen under cabinet lights and living room lamp'
+    - 'Shut down the under cabinet lights and floor lamp if possible'

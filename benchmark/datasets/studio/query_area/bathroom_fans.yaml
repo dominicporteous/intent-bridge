@@ -1,0 +1,60 @@
+-
+  name: bathroom_fans_get_state
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+  sentences:
+    - "What's the status of the bathroom fans?"
+    - 'Are the bathroom fans on or off?'
+    - 'Please check the bathroom fan state for me'
+    - "If you don't mind, could you tell me if the bathroom fans are running?"
+    - 'Bathroom fans status'
+    - 'Get current state of bathroom fans'
+    - 'Quick check on bathroom fans please'
+-
+  name: bathroom_fans_list_on_fans
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+  sentences:
+    - "What's the status of the bathroom fans?"
+    - 'Are the bathroom fans on?'
+    - 'Check bathroom fan states'
+    - 'Please tell me if the bathroom fans are running'
+    - 'Could you check the bathroom fans for me?'
+    - 'Bathroom fans status please'
+    - "If you don't mind, what's the bathroom fan situation?"
+-
+  name: bathroom_fans_list_off_fans
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+  sentences:
+    - "What's the status of the bathroom fans?"
+    - 'Tell me the current state of the bathroom fans'
+    - 'Please check the bathroom fans for me'
+    - "If you don't mind, what's going on with the bathroom fans?"
+    - 'Bathroom fans status'
+    - 'Could you tell me if the bathroom fans are on or off?'
+    - 'Quick check on bathroom fans please'
+-
+  name: bathroom_fans_get_fan_speed
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: fan
+  sentences:
+    - "What's the status of the bathroom fans?"
+    - 'Are the bathroom fans on or off?'
+    - 'Please check the bathroom fans for me'
+    - "If you don't mind, what's the current state of the bathroom fans?"
+    - 'Bathroom fans status'
+    - 'Could you tell me if the bathroom fans are running?'
+    - 'Get bathroom fan states'

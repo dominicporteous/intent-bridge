@@ -1,0 +1,23 @@
+name: good_morning_blinds_and_coffee
+sentences:
+- Create an automation at 7am on weekdays to open the living room blinds and turn
+  on the coffee maker
+- Set up a weekday morning routine at 7am that opens the blinds and starts the coffee
+  maker
+- Automate the blinds to open and the coffee maker to turn on at 7 in the morning
+  on weekdays
+- Make a rule for weekday mornings at seven to open the living room blinds and switch
+  on the coffee maker
+- Can you create an automation to open the blinds and start the coffee at 7am Monday
+  through Friday
+- Set up a morning automation for weekdays at 7am opening the blinds and turning the
+  coffee maker on
+expected:
+  trigger:
+    platform: time
+    at: 07:00:00
+  actions:
+  - action: cover.open_cover
+    entity_id: cover.living_room_blinds
+  - action: switch.turn_on
+    entity_id: switch.coffee_maker

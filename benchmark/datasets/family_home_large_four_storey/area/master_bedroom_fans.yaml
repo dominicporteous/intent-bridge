@@ -1,0 +1,49 @@
+-
+  name: master_bedroom_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the master bedroom fans'
+    - 'Flick on the fans in the master bedroom'
+    - 'Please flip on the master bedroom fans for me'
+    - "If you don't mind, could you turn on the fans in the master bedroom"
+    - 'Activate the master bedroom fans'
+    - 'Switch on the fans in the master bedroom please'
+    - 'Hey, turn on the master bedroom fans'
+    - 'Can you start the fans in the master bedroom'
+-
+  name: master_bedroom_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the master bedroom fans'
+    - 'Please turn off the fans in the master bedroom for me'
+    - "If you don't mind, switch off the master bedroom fans"
+    - 'Flick off the fans in the master bedroom'
+    - 'Flip off the master bedroom fans please'
+    - 'Deactivate the fans in the master bedroom'
+    - 'Shut down the master bedroom fans if you could'
+-
+  name: master_bedroom_fans_set_fan_speed
+  conditions:
+    -
+      area: master_bedroom
+      domain: fan
+      attributes:
+        percentage: 54
+  sentences:
+    - 'Set the master bedroom fans to 54'
+    - 'Please set the master bedroom fans to 54 for me'
+    - "If you don't mind, set the master bedroom fans to 54"
+    - 'Flick the master bedroom fans to 54'
+    - 'Flip the master bedroom fans to 54'
+    - 'Adjust the master bedroom fans to 54'
+    - 'Change the master bedroom fans to 54'

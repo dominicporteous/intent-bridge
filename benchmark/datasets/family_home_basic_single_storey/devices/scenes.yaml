@@ -1,0 +1,59 @@
+-
+  name: movie_night
+  conditions:
+    -
+      type: action
+      entity_id: scene.movie_night
+  sentences:
+    - 'Turn on the Movie Night scene'
+    - 'Flick on scene.movie_night'
+    - 'Please flip on the Movie Night scene for me'
+    - "If you don't mind, could you activate scene.movie_night"
+    - 'Quickly start Movie Night'
+    - 'Engage the Movie Night scene now'
+    - 'Turn on Movie Night in the ~area~'
+-
+  name: dinner_time
+  conditions:
+    -
+      type: action
+      entity_id: scene.dinner_time
+  sentences:
+    - 'Turn on the Dinner Time scene'
+    - 'Activate scene.dinner_time'
+    - 'Please flick on dinner time for me'
+    - "If you don't mind, flip on the Dinner Time scene in the ~area~"
+    - 'Quickly turn on dinner time'
+    - 'Set scene.dinner_time now'
+    - 'Activate the Dinner Time scene please'
+    - 'Turn on scene.dinner_time in the ~area~'
+-
+  name: morning
+  conditions:
+    -
+      type: action
+      entity_id: scene.morning
+  sentences:
+    - 'Turn on the Morning scene'
+    - 'Flick on scene.morning'
+    - 'Please activate the Morning scene for me'
+    - "If you don't mind, flip on the Morning scene in ~area~"
+    - 'Activate scene.morning'
+    - 'Quickly turn on Morning scene'
+    - 'Can you start the Morning scene please'
+    - 'Engage the Morning scene in ~area~'
+-
+  name: away_mode
+  conditions:
+    -
+      type: action
+      entity_id: scene.away_mode
+  sentences:
+    - 'Turn on Away Mode'
+    - 'Activate scene.away_mode'
+    - 'Please flick on the Away Mode scene for me'
+    - "If you don't mind, flip on Away Mode"
+    - 'Activate away mode scene in ~area~'
+    - 'Engage Away Mode scene'
+    - 'Turn on the Away Mode scene please'
+    - 'Quickly enable Away Mode'

@@ -1,0 +1,77 @@
+-
+  name: bedroom_5_and_home_theater_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bedroom_5
+      domain: light
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 5 and the home theater?"
+    - 'Lights bedroom 5 home theater state'
+    - 'Please check the lights in bedroom 5 and home theater for me'
+    - "If you don't mind, could you tell me if the lights are on in bedroom 5 and the home theater?"
+    - 'Get current light states bedroom 5 home theater'
+    - 'Are the lights on in bedroom 5 and home theater right now?'
+    - 'Quick check lights bedroom 5 and theater status'
+-
+  name: bedroom_5_and_home_theater_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_5
+      domain: light
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 5 and the home theater"
+    - 'lights bedroom 5 home theater state'
+    - 'please check the lights in bedroom 5 and home theater for me'
+    - "if you don't mind, can you tell me if the lights are on in bedroom 5 and the home theater"
+    - 'bedroom 5 and home theater lights status'
+    - 'quick check lights bedroom 5 home theater'
+    - 'could you please report the current state of the lights in bedroom 5 and home theater'
+    - 'lights bedroom 5 home theater on or off'
+-
+  name: bedroom_5_and_home_theater_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_5
+      domain: light
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 5 and the home theater"
+    - 'Lights bedroom 5 home theater state'
+    - 'Please check the lights for me in bedroom 5 and home theater'
+    - "If you don't mind, could you tell me the current state of the lights in bedroom 5 and the home theater"
+    - 'Bedroom 5 and home theater lights status please'
+    - 'Get me the light states for bedroom 5 and home theater'
+    - 'Quick check lights bedroom 5 home theater'
+-
+  name: bedroom_5_and_home_theater_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bedroom_5
+      domain: light
+    -
+      type: query
+      area: home_theater
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 5 and the home theater?"
+    - 'Lights bedroom 5 and home theater state please'
+    - "If you don't mind, could you tell me the current state of the lights in bedroom 5 and the home theater for me?"
+    - 'Bedroom 5 and home theater lights status'
+    - 'Please check the lights state for bedroom 5 and home theater'
+    - 'Get me the current light status in bedroom 5 and home theater'
+    - "Lights in bedroom 5 and home theater - what's their state?"

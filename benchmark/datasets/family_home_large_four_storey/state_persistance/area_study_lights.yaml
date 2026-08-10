@@ -1,0 +1,38 @@
+-
+  name: study_lights_set_brightness
+  setup:
+    -
+      entity_id: light.study_ceiling
+      brightness: 43
+    -
+      entity_id: light.study_desk_lamp
+      brightness: 43
+  conditions:
+    -
+      entity_id: light.study_ceiling
+      brightness: 86
+    -
+      entity_id: light.study_desk_lamp
+      brightness: 86
+  sentences:
+    -
+      - 'What is the brightness of the lights in the study?'
+      - 'Set it to 86.'
+    -
+      - "What's the study light brightness right now?"
+      - 'Make it 86 please.'
+    -
+      - 'Can you tell me the brightness level for the study lights?'
+      - "If you don't mind, set it to 86 for me."
+    -
+      - 'Study lights brightness?'
+      - 'Flick it up to 86.'
+    -
+      - 'How bright are the study lights?'
+      - 'Please adjust to 86.'
+    -
+      - 'Tell me the brightness in the study.'
+      - 'Flip it to 86.'
+    -
+      - "What's the brightness setting for the study lights?"
+      - 'Set brightness to 86.'

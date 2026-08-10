@@ -1,0 +1,63 @@
+-
+  name: light_living_room_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the floor lamp'
+    - 'Please turn on the living room lamp for me'
+    - "Flick on the floor lamp if you don't mind"
+    - 'Flip on the living room lamp'
+    - 'Could you turn on the floor lamp please'
+    - 'Activate the living room lamp'
+    - 'Switch on the floor lamp in the living room'
+-
+  name: light_living_room_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the floor lamp'
+    - 'Please turn off the living room lamp for me'
+    - "If you don't mind, could you flick off the floor lamp"
+    - 'Kill the living room light'
+    - 'Flip off the floor lamp please'
+    - "Switch off the living room lamp if you don't mind"
+    - 'Turn the floor lamp off'
+    - 'Shut off the living room lamp for me'
+-
+  name: light_living_room_lamp_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      attributes:
+        brightness: 51
+  sentences:
+    - 'Set the floor lamp in the living room to 51 percent brightness'
+    - 'Please dim the living room lamp to 51 for me'
+    - "If you don't mind, could you adjust the floor lamp brightness to 51%"
+    - 'Flick the living room floor lamp brightness down to 51'
+    - 'Hey, turn the living room lamp to 51 brightness'
+    - 'Change the floor lamp in living area to fifty one percent'
+    - 'Quickly set living room floor lamp brightness level to 51'
+-
+  name: light_living_room_lamp_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      attributes:
+        color: red
+  sentences:
+    - 'Turn the floor lamp in the living room red'
+    - 'Please change the living room lamp to red for me'
+    - "If you don't mind, could you flick the floor lamp red"
+    - 'Make the living room floor lamp red please'
+    - 'Flip the living room lamp to red'
+    - 'Quickly set the floor lamp red'
+    - 'Change the living room lamp color to red if possible'

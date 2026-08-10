@@ -1,0 +1,29 @@
+-
+  name: light_backyard_lights_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.backyard_lights
+  sentences:
+    - "What's the status of the backyard lights?"
+    - 'Backyard lights state'
+    - 'Please tell me if the backyard lights are on or off'
+    - "If you don't mind, could you check the backyard lights for me?"
+    - 'Are the backyard lights currently on?'
+    - 'Get the current state of backyard lights'
+    - 'Quick check on backyard lights status'
+    - 'Can you tell me the state of the lights in the backyard?'
+-
+  name: light_backyard_lights_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.backyard_lights
+  sentences:
+    - "What's the brightness of the backyard lights?"
+    - 'How bright are the backyard lights right now?'
+    - "Please tell me the brightness level of the backyard lights if you don't mind."
+    - 'Get current brightness for backyard lights.'
+    - 'Could you check the brightness of the backyard lights for me?'
+    - 'Backyard lights brightness status.'
+    - 'What is the current brightness setting for the backyard lights?'

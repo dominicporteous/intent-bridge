@@ -1,0 +1,41 @@
+-
+  name: entryway_and_master_bath_lights_set_brightness
+  setup:
+    -
+      entity_id: light.entryway_chandelier
+      brightness: 96
+    -
+      entity_id: light.master_bath_light
+      brightness: 96
+  conditions:
+    -
+      entity_id: light.entryway_chandelier
+      brightness: 47
+    -
+      entity_id: light.master_bath_light
+      brightness: 47
+  sentences:
+    -
+      - 'What is the brightness of the lights in the entryway and master bath?'
+      - 'Set it to 47.'
+    -
+      - "Please tell me the brightness level for the entryway and master bath lights if you don't mind."
+      - 'Adjust to 47.'
+    -
+      - 'Can you check the brightness in the entryway and master bath?'
+      - 'Make it 47.'
+    -
+      - "What's the current brightness of the lights in the entryway and master bath?"
+      - 'Change to 47.'
+    -
+      - 'Tell me the brightness for the entryway and master bath lights please.'
+      - 'Set brightness to 47.'
+    -
+      - 'Check the brightness level in the entryway and master bath for me.'
+      - 'Turn it to 47.'
+    -
+      - "What's the brightness of the entryway and master bath lights?"
+      - 'Flick it to 47.'
+    -
+      - 'Could you report the brightness in the entryway and master bath?'
+      - 'Flip to 47.'

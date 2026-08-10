@@ -1,0 +1,15 @@
+-
+  name: upper_hallway_climates_get_temperature
+  conditions:
+    -
+      type: query
+      area: upper_hallway
+      domain: climate
+  sentences:
+    - "What's the temperature in the upper hallway?"
+    - 'Check the climate upstairs hallway'
+    - "Please tell me the current state of the upper hallway climate if you don't mind"
+    - 'Upper hallway climate status'
+    - 'Could you check the temperature upstairs hallway for me'
+    - 'Get climate info upper hallway'
+    - "What's going on with the climate control in the upper hallway"

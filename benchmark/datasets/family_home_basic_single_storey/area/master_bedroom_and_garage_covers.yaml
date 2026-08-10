@@ -1,0 +1,65 @@
+-
+  name: master_bedroom_and_garage_covers_open
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: cover
+      state: open
+    -
+      type: action
+      area: garage
+      domain: cover
+      state: open
+  sentences:
+    - 'Open the master bedroom blinds and garage door'
+    - 'Please open the windows in the master bedroom and garage for me'
+    - "If you don't mind, could you flick on the curtains in the master bedroom and garage"
+    - 'Open up the blinds in the master bedroom and garage'
+    - 'Flip on the windows in the master bedroom and garage if possible'
+    - 'Quickly open the curtains in the master bedroom and garage'
+    - 'Turn on the blinds for the master bedroom and garage'
+    - 'Would you mind opening the windows in the master bedroom and garage for me'
+-
+  name: master_bedroom_and_garage_covers_close
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: cover
+      state: closed
+    -
+      type: action
+      area: garage
+      domain: cover
+      state: closed
+  sentences:
+    - 'Close the master bedroom and garage windows'
+    - 'Shut the blinds in the master bedroom and garage'
+    - 'Please close the curtains for me in the master bedroom and garage'
+    - "If you don't mind, shut the garage and master bedroom windows"
+    - 'Flick the blinds closed in the master bedroom and garage'
+    - 'Flip the curtains shut in the master bedroom and garage'
+    - 'Close up the master bedroom and garage blinds'
+    - 'Shut the windows and curtains in the master bedroom and garage'
+-
+  name: master_bedroom_and_garage_covers_set_position
+  conditions:
+    -
+      area: master_bedroom
+      domain: cover
+      attributes:
+        position: 55
+    -
+      area: garage
+      domain: cover
+      attributes:
+        position: 55
+  sentences:
+    - 'Set the master bedroom and garage blinds to 55%'
+    - "Please adjust the windows and curtains in the master bedroom and garage to 55 if you don't mind"
+    - 'Flick the master bedroom and garage shades to position 55'
+    - 'Can you set the master bedroom and garage windows to 55 for me'
+    - 'Move the blinds and curtains in the master bedroom and garage to 55%'
+    - 'Set master bedroom and garage window positions to 55 please'
+    - 'Adjust the garage and master bedroom curtains to 55'

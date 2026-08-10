@@ -1,0 +1,51 @@
+-
+  name: movie_mode
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+      attributes:
+        brightness: 20
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      state: closed
+  sentences:
+    - 'Turn on the Movie Mode scene'
+    - 'Please flick on movie mode for me'
+    - "If you don't mind, flip on the Movie Mode scene"
+    - 'Activate Movie Mode'
+    - 'Could you switch on movie mode please'
+    - 'Turn on Movie Mode'
+    - 'Quickly enable the Movie Mode scene'
+-
+  name: good_morning
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+      attributes:
+        brightness: 100
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      state: open
+  sentences:
+    - 'Turn on the Good Morning scene'
+    - 'Flip on good morning scene'
+    - 'Please activate the Good Morning scene for me'
+    - "If you don't mind, could you flick on the Good Morning scene"
+    - 'Start Good Morning scene'
+    - 'Engage good morning scene now'
+    - 'Turn the Good Morning scene on please'
+    - 'Activate Good Morning scene if you would'

@@ -1,0 +1,80 @@
+-
+  name: master_bedroom_and_garage_lights_get_state
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and garage"
+    - 'Lights master bedroom garage state'
+    - "Could you please tell me the current state of the lights in the master bedroom and garage if you don't mind"
+    - 'Get light status master bedroom garage'
+    - "If it's not too much trouble, what's the light situation in the master bedroom and garage right now"
+    - 'Master bedroom garage lights current state'
+    - 'Please check the lights status for the master bedroom and garage for me'
+    - 'Lights on or off master bedroom garage'
+-
+  name: master_bedroom_and_garage_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and garage?"
+    - 'Lights master bedroom garage state'
+    - "Please check the lights for me in the master bedroom and garage if you don't mind"
+    - 'Are the master bedroom and garage lights on or off right now?'
+    - 'Get light status master bedroom garage'
+    - 'Could you tell me about the lighting situation in the master bedroom and garage please'
+    - 'Master bedroom garage lights current state'
+    - "If it's not too much trouble, what's happening with the lights in the master bedroom and garage?"
+-
+  name: master_bedroom_and_garage_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and garage"
+    - 'Lights master bedroom garage'
+    - "Please tell me the current state of the lights in the master bedroom and garage if you don't mind"
+    - 'Check lights in master bedroom and garage'
+    - 'Could you show me the light status for master bedroom and garage please'
+    - 'Master bedroom garage lights state'
+    - "If you wouldn't mind, what's the light situation in the master bedroom and garage"
+    - 'Lights status master bedroom garage'
+-
+  name: master_bedroom_and_garage_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and garage?"
+    - 'Lights master bedroom garage state'
+    - "Please check the lights for me in the master bedroom and garage if you don't mind"
+    - 'Get current light state master bedroom garage'
+    - 'Could you tell me if the lights are on in the master bedroom and garage?'
+    - 'Master bedroom garage lights status please'
+    - 'Report light states for master bedroom and garage'
+    - 'Are the lights on or off in the master bedroom and garage?'

@@ -1,0 +1,17 @@
+-
+  name: lock_front_door_and_lock_garage_entry_get_status
+  conditions:
+    -
+      type: query
+      entity_id: lock.front_door
+    -
+      type: query
+      entity_id: lock.garage_entry
+  sentences:
+    - "What's the status of the front door lock?"
+    - 'Check the garage entry door lock please'
+    - "If you don't mind, tell me if the front door is locked"
+    - 'Lock status for entryway and garage'
+    - 'Are both the front door and garage entry locked right now?'
+    - 'Quick check on front door and garage entry door locks'
+    - 'Please confirm the lock states for entryway and garage'

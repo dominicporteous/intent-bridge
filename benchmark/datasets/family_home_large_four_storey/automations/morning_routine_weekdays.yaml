@@ -1,0 +1,16 @@
+name: morning_routine_weekdays
+sentences:
+- Create an automation at 7am on weekdays to turn on the kitchen ceiling and open the left garage door # Changed from: Create an automation at 7am on weekdays to turn on the kitchen ceiling and open the garage doors
+- Set up a weekday morning rule at seven to switch on the kitchen ceiling and open the left garage door # Changed from: Set up a weekday morning rule at seven to switch on the kitchen ceiling and open both garage doors
+- Make an automation that turns the kitchen ceiling light on and opens the left garage door at 7am Monday to Friday # Changed from: Make an automation that turns the kitchen lights on and opens the garage at 7am Monday to Friday
+- Automate the kitchen ceiling to turn on and the left garage door to open every weekday morning at seven # Changed from: Automate the kitchen ceiling and garage doors every weekday morning at seven
+- Can you create a weekday routine at 7am to switch on the kitchen ceiling light and open the left garage door # Changed from: Can you create a weekday routine at 7am to switch on the kitchen light and open the garage
+expected:
+  trigger:
+    platform: time
+    at: 07:00:00
+  actions:
+  - action: light.turn_on
+    entity_id: light.kitchen_ceiling
+  - action: cover.open_cover
+    entity_id: cover.garage_door_left

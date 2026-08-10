@@ -1,0 +1,61 @@
+-
+  name: backyard_lights_get_state
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the backyard lights?"
+    - 'Are the backyard lights on or off?'
+    - 'Please check the backyard lights for me'
+    - 'Backyard lights state'
+    - "If you don't mind, could you tell me if the backyard lights are on?"
+    - 'Get current backyard lighting status'
+    - 'Quick check: backyard lights?'
+-
+  name: backyard_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the backyard lights?"
+    - 'Are the backyard lights on?'
+    - 'Please check the backyard lights for me'
+    - 'Backyard lights state'
+    - "If you don't mind, could you tell me if the backyard lights are on?"
+    - 'Get backyard lights status'
+    - 'Quick check on backyard lights please'
+    - 'Tell me the current state of the backyard lights'
+-
+  name: backyard_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the backyard lights?"
+    - 'Are the backyard lights on or off?'
+    - 'Please check the backyard lights for me.'
+    - "If you don't mind, could you tell me if the backyard lights are on?"
+    - 'Backyard lights status.'
+    - 'Get me the current state of the backyard lights.'
+    - 'Can you check if the backyard lights are on?'
+-
+  name: backyard_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the backyard lights?"
+    - 'Are the backyard lights on or off?'
+    - 'Please check the backyard lights for me'
+    - 'Backyard lights state'
+    - "If you don't mind, could you tell me about the backyard lights?"
+    - 'Get backyard lighting status'
+    - 'Quick check on backyard lights please'

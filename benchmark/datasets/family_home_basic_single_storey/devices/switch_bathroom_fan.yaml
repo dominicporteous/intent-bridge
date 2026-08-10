@@ -1,0 +1,30 @@
+-
+  name: switch_bathroom_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.bathroom_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom fan'
+    - 'Please flick on the bathroom fan for me'
+    - "If you don't mind, flip on the bathroom fan"
+    - 'Activate the bathroom fan'
+    - 'Switch on the bathroom fan'
+    - 'Could you turn on the bathroom fan please'
+    - 'Start the bathroom fan'
+-
+  name: switch_bathroom_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.bathroom_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom fan'
+    - 'Please switch off the bathroom fan for me'
+    - "Flick off the bathroom fan if you don't mind"
+    - 'Flip the bathroom fan off'
+    - 'Could you turn off the fan in the bathroom'
+    - 'Deactivate the bathroom fan please'
+    - 'Shut off the bathroom fan'

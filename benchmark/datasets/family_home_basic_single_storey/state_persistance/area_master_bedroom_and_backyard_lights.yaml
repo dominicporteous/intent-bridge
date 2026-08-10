@@ -1,0 +1,211 @@
+-
+  name: master_bedroom_and_backyard_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.backyard_lights
+        area_id: backyard
+        name: 'Backyard Lights'
+        state: 'off'
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.backyard_lights
+        area_id: backyard
+        name: 'Backyard Lights'
+        state: 'off'
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in the master bedroom and backyard?'
+      - 'Please flick them on for me.'
+    -
+      - 'Can you tell me if the lights are on in the master bedroom and backyard?'
+      - 'Turn them on.'
+    -
+      - 'Check the light status for the master bedroom and backyard.'
+      - "Flip them on if you don't mind."
+    -
+      - 'Are the lights in the master bedroom and backyard currently on or off?'
+      - 'Switch them on please.'
+    -
+      - 'Give me the current state of the lights in the master bedroom and backyard.'
+      - 'Activate them for me.'
+    -
+      - "What's the status of the lights in the master bedroom and backyard right now?"
+      - 'Turn them on.'
+    -
+      - 'Report the light status for the master bedroom and backyard.'
+      - 'Please flick them on.'
+-
+  name: master_bedroom_and_backyard_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.backyard_lights
+        area_id: backyard
+        name: 'Backyard Lights'
+        state: 'off'
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.backyard_lights
+        area_id: backyard
+        name: 'Backyard Lights'
+        state: 'off'
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - 'What is the status of the lights in the master bedroom and backyard?'
+      - 'Flick them off.' # Changed from: Flick them on.
+    -
+      - "Please tell me the current state of the lights in the master bedroom and backyard if you don't mind."
+      - 'Flip them off for me.' # Changed from: Flip them on for me.
+    -
+      - 'Master bedroom and backyard lights status?'
+      - 'Turn them off.' # Changed from: Turn them on.
+    -
+      - 'Could you check the lights status for the master bedroom and backyard please?'
+      - 'Switch them off.' # Changed from: Switch them on.
+    -
+      - "What's the light status in the master bedroom and backyard?"
+      - 'Power them off.' # Changed from: Power them on.
+    -
+      - 'Report the status of the lights in the master bedroom and backyard.'
+      - 'Deactivate them.' # Changed from: Activate them.
+    -
+      - 'Lights status master bedroom backyard?'
+      - 'Extinguish them.' # Changed from: Ignite them.
+-
+  name: master_bedroom_and_backyard_lights_set_brightness
+  setup:
+    -
+      entity_id: light.master_ceiling
+      brightness: 84
+    -
+      entity_id: light.master_lamp
+      brightness: 84
+    -
+      entity_id: light.backyard_lights
+      brightness: 84
+  conditions:
+    -
+      entity_id: light.master_ceiling
+      brightness: 60
+    -
+      entity_id: light.master_lamp
+      brightness: 60
+    -
+      entity_id: light.backyard_lights
+      brightness: 60
+  sentences:
+    -
+      - 'What is the brightness of the lights in the master bedroom and backyard?'
+      - 'Set it to around 60.'
+    -
+      - 'Please tell me the brightness level for the master bedroom and backyard lights.'
+      - "If you don't mind, adjust it to about 60 for me."
+    -
+      - 'Can you check how bright the master bedroom and backyard lights are?'
+      - 'Flick it up to roughly 60.'
+    -
+      - "What's the current brightness in the master bedroom and backyard?"
+      - 'Flip it to 60 please.'
+    -
+      - 'Report the brightness of the lights in the master bedroom and backyard.'
+      - 'Turn it to about 60.'
+    -
+      - 'How bright are the master bedroom and backyard lights right now?'
+      - 'Please set it around 60 for me.'
+    -
+      - 'Tell me the brightness level of the master bedroom and backyard lights.'
+      - 'Quickly adjust it to 60.'
+    -
+      - 'Check the brightness for the master bedroom and backyard lights.'
+      - 'Make it about 60.'

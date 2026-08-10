@@ -1,0 +1,64 @@
+-
+  name: top_bath_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: top_bath
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in the top bath'
+    - 'Please flick on the top bathroom lights for me'
+    - "If you don't mind, flip on the upstairs bath lights"
+    - 'Activate top bath illumination'
+    - 'Could you switch on the lights in the top bathroom'
+    - 'Turn the top bath lights on please'
+    - 'Quickly enable the upstairs bathroom lighting'
+-
+  name: top_bath_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: top_bath
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the top bath'
+    - 'Please switch off the top floor bathroom lights for me' # Changed from: Please switch off the upstairs bathroom lights for me
+    - "Flick off the top bath lights if you don't mind"
+    - 'Flip the lights off in the upstairs bathroom'
+    - 'Can you turn off the lights in the top bath please'
+    - 'Deactivate the top bathroom lights'
+    - 'Kill the lights in the upstairs bath'
+-
+  name: top_bath_lights_change_brightness
+  conditions:
+    -
+      area: top_bath
+      domain: light
+      attributes:
+        brightness: 77
+  sentences:
+    - 'Set the top bath lights to 77 percent brightness'
+    - 'Please dim the upstairs bathroom lights to 77 for me'
+    - "If you don't mind, could you adjust the top bath lighting to 77%"
+    - 'Flick the top bathroom lights down to 77 brightness'
+    - 'Hey, turn the upstairs bath lights to 77 percent'
+    - 'Quickly set top bath illumination to 77'
+    - 'Change the top bathroom lights brightness to 77 if possible'
+-
+  name: top_bath_lights_change_color
+  conditions:
+    -
+      area: top_bath
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Turn the top bath lights yellow'
+    - 'Flick on yellow for the upstairs bathroom lights'
+    - "Please set the top bathroom to yellow if you don't mind"
+    - 'Flip the top bath lights to yellow for me'
+    - 'Make the upstairs bathroom lights yellow'
+    - 'Quickly change top bath to yellow'
+    - 'Set top bathroom lights yellow please'

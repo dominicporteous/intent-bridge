@@ -1,0 +1,102 @@
+-
+  name: media_player_projector_turn_on
+  setup:
+    -
+      entity_id: media_player.projector
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the projector?"
+      - 'Please turn it on for me.'
+    -
+      - "How's the projector doing?"
+      - "Flick it on if you don't mind."
+    -
+      - 'Can you check the projector in the home_theater?'
+      - 'Flip it on please.'
+    -
+      - 'Projector status?'
+      - 'Turn it on.'
+    -
+      - 'Tell me about the projector.'
+      - 'Switch it on for me.'
+    -
+      - "What's up with the projector?"
+      - "Power it on if you don't mind."
+    -
+      - 'Projector check in home_theater?'
+      - 'Flip it on please.'
+    -
+      - 'How is the projector?'
+      - 'Turn it on for me.'
+-
+  name: media_player_projector_turn_off
+  setup:
+    -
+      entity_id: media_player.projector
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the projector?"
+      - 'Turn it off.'
+    -
+      - 'Can you check the projector in the home_theater?'
+      - 'Please shut it down for me.'
+    -
+      - 'Projector state?'
+      - 'Flick it off.'
+    -
+      - "What's happening with the projector?"
+      - "If you don't mind, turn it off."
+    -
+      - 'Tell me about the projector in the home_theater.'
+      - 'Flip it off please.'
+    -
+      - 'Projector status check.'
+      - 'Switch it off.'
+    -
+      - "How's the projector doing?"
+      - 'Power it down for me.'
+-
+  name: media_player_projector_persistance_volume_level
+  setup:
+    -
+      entity_id: media_player.projector
+      volume_level: 31
+  conditions:
+    -
+      entity_id: media_player.projector
+      attributes:
+        volume_level: 67
+  sentences:
+    -
+      - 'What is the volume level of the projector?'
+      - 'Set it to 67.'
+    -
+      - "What's the current volume on the projector?"
+      - 'Change it to 67 please.'
+    -
+      - 'Can you tell me the volume level in the home_theater for the projector?'
+      - "Adjust it to 67 if you don't mind."
+    -
+      - 'Projector volume level?'
+      - 'Make it 67.'
+    -
+      - "What's the volume at for the projector in home_theater?"
+      - 'Turn it up or down to 67.'
+    -
+      - 'Tell me the volume_level of the projector please.'
+      - 'Set the volume to 67 for me.'
+    -
+      - 'Volume level on the projector?'
+      - 'Change volume to 67.'

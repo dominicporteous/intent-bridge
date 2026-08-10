@@ -1,0 +1,61 @@
+-
+  name: living_fans_get_state
+  conditions:
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the living room fans?"
+    - 'Are the fans in the living room on?'
+    - 'Please check the living room fans for me'
+    - 'Living room fan status'
+    - "If you don't mind, could you tell me about the living room fans?"
+    - 'Quick check on living room fans'
+    - 'Fan state living room'
+    - 'Tell me if the living room fans are running'
+-
+  name: living_fans_list_on_fans
+  conditions:
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the living room fans?"
+    - 'Are the living room fans on or off?'
+    - 'Please check the living room fans for me'
+    - "If you don't mind, could you tell me about the living room fans?"
+    - 'Living room fans state'
+    - 'Get me the current fan status in the living room'
+    - 'Quick check on living room fans'
+-
+  name: living_fans_list_off_fans
+  conditions:
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the living room fans?"
+    - 'Living room fans state please'
+    - 'Could you check the fans in the living room for me?'
+    - 'Fan status living room'
+    - "If you don't mind, what's happening with the living room fans?"
+    - 'Living room fans - current state'
+    - 'Please tell me about the living room fans'
+-
+  name: living_fans_get_fan_speed
+  conditions:
+    -
+      type: query
+      area: living
+      domain: fan
+  sentences:
+    - "What's the status of the living room fans?"
+    - 'Are the living room fans on or off?'
+    - 'Please check the fans in the living room for me'
+    - 'Living room fans state'
+    - "If you don't mind, could you tell me about the living room fans?"
+    - 'Current fan status living room'
+    - "Hey, what's up with the fans in the living room?"

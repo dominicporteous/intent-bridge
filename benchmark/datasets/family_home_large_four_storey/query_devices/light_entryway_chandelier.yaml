@@ -1,0 +1,28 @@
+-
+  name: light_entryway_chandelier_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.entryway_chandelier
+  sentences:
+    - "What's the status of the Entry Chandelier?"
+    - 'Entryway chandelier state please'
+    - "If you don't mind, could you check the light entryway chandelier for me?"
+    - 'Entry Chandelier'
+    - 'Please tell me if the entryway chandelier is on or off'
+    - 'Current state of Entry Chandelier'
+    - "Hey, what's up with the Entry Chandelier?"
+-
+  name: light_entryway_chandelier_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.entryway_chandelier
+  sentences:
+    - "What's the brightness of the Entry Chandelier?"
+    - 'How bright is the light entryway chandelier right now?'
+    - "Please tell me the current brightness of the Entry Chandelier if you don't mind."
+    - 'Entryway chandelier brightness level?'
+    - 'Could you check the brightness on the Entry Chandelier for me?'
+    - "What's the light level on the entryway chandelier?"
+    - 'Tell me how bright the Entry Chandelier is.'

@@ -1,0 +1,64 @@
+-
+  name: bedroom_2_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on bedroom 2 lights'
+    - 'Flick on the lights in bedroom 2'
+    - 'Please flip on bedroom 2 lights for me'
+    - "If you don't mind, turn on the lights in bedroom 2"
+    - 'Activate bedroom 2 lighting'
+    - 'Could you switch on bedroom 2 lights please'
+    - 'Hey, turn on the lights in bedroom 2'
+-
+  name: bedroom_2_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 2'
+    - 'Please switch off bedroom 2 lights for me'
+    - "If you don't mind, flick off the lights in bedroom 2"
+    - 'Kill the lights in bedroom 2'
+    - 'Could you flip off bedroom 2 lights please'
+    - 'Turn bedroom 2 lights off'
+    - "Deactivate the lights in bedroom 2 if you don't mind"
+-
+  name: bedroom_2_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        brightness: 25
+  sentences:
+    - 'Set bedroom 2 lights to 25 percent'
+    - 'Dim bedroom 2 to 25'
+    - 'Please turn down the bedroom 2 lights to 25 for me'
+    - "Flick bedroom 2 brightness to 25 if you don't mind"
+    - 'Change bedroom 2 lights to 25%'
+    - 'Could you set bedroom 2 to 25 brightness please'
+    - 'Adjust bedroom 2 lights down to 25'
+-
+  name: bedroom_2_lights_change_color
+  conditions:
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        color: black
+  sentences:
+    - 'Turn the bedroom 2 lights black'
+    - 'Please set bedroom 2 lights to black for me'
+    - 'Flick bedroom 2 lights to black'
+    - "If you don't mind, flip the bedroom 2 lights to black"
+    - 'Make bedroom 2 lights black'
+    - 'Could you change bedroom 2 lights to black please'
+    - 'Set bedroom 2 lights black now'

@@ -1,0 +1,126 @@
+-
+  name: media_player_living_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the living TV'
+    - 'Please flick on the living room TV for me'
+    - "Flip on the living TV if you don't mind"
+    - 'Activate the living TV'
+    - 'Could you power on the living TV please'
+    - 'Turn the living TV on'
+    - 'Switch on the living TV'
+-
+  name: media_player_living_tv_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: paused
+  sentences:
+    - 'Pause the living TV'
+    - 'Stop the living room TV'
+    - 'Pause the TV in the living room'
+    - 'Please pause the living TV for me'
+    - "If you don't mind, stop the living room TV"
+    - 'Flick pause on the living TV'
+    - 'Hold the living room TV'
+    - 'Pause the living TV please'
+-
+  name: media_player_living_tv_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: playing
+  sentences:
+    - 'unpause living tv'
+    - 'please resume the living room tv for me'
+    - "flick the living tv back on if you don't mind"
+    - 'resume playback on living tv'
+    - 'flip the living room television back on'
+    - 'hey could you unpause the living tv'
+    - 'start the living tv again please'
+-
+  name: media_player_living_tv_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the living TV'
+    - 'Please mute the living TV for me'
+    - "If you don't mind, mute the living TV"
+    - 'Turn off the sound on the living TV'
+    - 'Quiet the living TV'
+    - 'Silence the living TV please'
+    - 'Flip the living TV to mute'
+    - 'Can you mute the living TV for me'
+-
+  name: media_player_living_tv_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'Unmute the living TV'
+    - 'Please unmute the living room TV for me'
+    - 'Turn the sound back on for the living TV'
+    - "If you don't mind, could you unmute the living TV"
+    - 'Flip the mute off on the living TV'
+    - 'Hey, unmute the living TV'
+    - 'Can you turn the volume back on for the living TV'
+-
+  name: media_player_living_tv_set_volume
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        volume_level: 14
+  sentences:
+    - 'set living tv volume to 14'
+    - 'please adjust the living room tv volume to 14 for me'
+    - 'flick living tv volume to 14'
+    - "if you don't mind, set the living tv volume to 14"
+    - 'turn living tv volume down to 14'
+    - 'quickly change living tv volume to 14'
+    - 'set volume of living tv to 14 please'
+-
+  name: media_player_living_tv_increase_volume_by_10
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        volume_level: 24
+  sentences:
+    - 'Increase the volume on the living TV by 10 to 24'
+    - 'Turn up the living TV volume to 24'
+    - 'Please bump the living TV volume up to 24 for me' # Changed from: Please bump the living TV volume up by 10 for me
+    - "If you don't mind, set the living TV to volume 24"
+    - 'Crank the living TV volume to 24'
+    - 'Raise the living TV volume by 10 to 24'
+    - 'Flick the living TV volume up to 24'
+-
+  name: media_player_living_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'off'
+  sentences:
+    - 'turn off the living tv'
+    - 'please turn off the living tv for me'
+    - 'flick off the living tv'
+    - "if you don't mind, flip off the living tv"
+    - 'shut down the living tv'
+    - 'power off the living tv'
+    - 'switch off the living tv please'

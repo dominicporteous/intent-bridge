@@ -1,0 +1,17 @@
+-
+  name: light_kitchen_ceiling_lights_and_media_player_main_lg_tv_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_ceiling_lights
+    -
+      type: query
+      entity_id: media_player.main_lg_tv
+  sentences:
+    - "What's the status of the ceiling lights and LG TV?"
+    - 'Get state of kitchen ceiling lights and main LG TV'
+    - 'Please check the ceiling lights and LG TV for me'
+    - "If you don't mind, what's the current state of the ceiling lights and LG TV?"
+    - 'Ceiling lights and LG TV status'
+    - 'Tell me if the kitchen ceiling lights and main LG TV are on or off'
+    - 'Could you check the state of the ceiling lights and LG TV please?'

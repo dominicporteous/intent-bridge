@@ -1,0 +1,85 @@
+-
+  name: bedroom_3_and_kitchen_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 3 and kitchen'
+    - 'Flick on bedroom 3 and kitchen lights'
+    - 'Please turn on the lights in bedroom 3 and kitchen for me'
+    - "Flip on the lights in the bedroom 3 and kitchen if you don't mind"
+    - 'Activate bedroom 3 and kitchen lighting'
+    - 'Could you please switch on the lights in bedroom 3 and kitchen'
+    - 'Turn the bedroom 3 and kitchen lights on'
+    - "If it's not too much trouble, turn on bedroom 3 and kitchen lights"
+-
+  name: bedroom_3_and_kitchen_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 3 and the kitchen'
+    - 'Please switch off the lights in bedroom 3 and kitchen for me'
+    - "Flick off bedroom 3 and kitchen lights if you don't mind"
+    - 'Deactivate the lights in bedroom 3 and kitchen'
+    - 'Flip off the bedroom 3 and kitchen lights'
+    - 'Could you turn off bedroom 3 and kitchen lights please'
+    - 'Shut off the lights in bedroom 3 and the kitchen'
+-
+  name: bedroom_3_and_kitchen_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        brightness: 75
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        brightness: 75
+  sentences:
+    - 'Set bedroom 3 and kitchen lights to 75 percent'
+    - 'Please adjust the brightness in bedroom 3 and kitchen to 75 for me'
+    - 'Flick bedroom 3 and kitchen lights to seventy-five'
+    - "If you don't mind, turn the lights in bedroom 3 and kitchen to 75%"
+    - 'Quickly set bedroom 3 and kitchen brightness to 75'
+    - 'Flip bedroom 3 and kitchen lights to 75 percent please'
+    - 'Change brightness of bedroom 3 and kitchen to 75 right now'
+-
+  name: bedroom_3_and_kitchen_lights_change_color
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        color: yellow
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change bedroom 3 and kitchen lights to yellow'
+    - 'Flick on yellow lights in bedroom 3 and kitchen'
+    - 'Please set bedroom 3 and kitchen lights to yellow for me'
+    - "If you don't mind, flip the bedroom 3 and kitchen lights to yellow"
+    - 'Turn bedroom 3 and kitchen lights yellow'
+    - 'Quickly set bedroom 3 and kitchen lights to yellow'
+    - 'Can you change bedroom 3 and kitchen lights to yellow please'

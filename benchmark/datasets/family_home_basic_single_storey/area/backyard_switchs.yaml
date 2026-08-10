@@ -1,0 +1,32 @@
+-
+  name: backyard_switchs_turn_on
+  conditions:
+    -
+      type: action
+      area: backyard
+      domain: switch
+      state: 'on'
+  sentences:
+    - 'Turn on the backyard switches'
+    - 'Flick on the backyard switches'
+    - 'Please flip on the backyard switches for me'
+    - "If you don't mind, turn on the backyard switches"
+    - 'Activate the backyard switches'
+    - 'Switch on the backyard switches'
+    - 'Can you please flick on the backyard switches'
+-
+  name: backyard_switchs_turn_off
+  conditions:
+    -
+      type: action
+      area: backyard
+      domain: switch
+      state: 'off'
+  sentences:
+    - 'Turn off the backyard switches'
+    - 'Please switch off the backyard switches for me'
+    - "If you don't mind, could you flick off the backyard switches"
+    - 'Deactivate all backyard switches'
+    - 'Quickly flip the backyard switches to off'
+    - 'Shut down the backyard switches please'
+    - 'Turn the backyard switches off if possible'

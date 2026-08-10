@@ -1,0 +1,238 @@
+-
+  name: bedroom_5_and_home_theater_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.bedroom5_ceiling
+        area_id: bedroom_5
+        name: 'Bedroom 5 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_ceiling
+        area_id: home_theater
+        name: 'Theater Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_bias
+        area_id: home_theater
+        name: 'Bias Lighting'
+        state: 'off'
+        attributes:
+          brightness: 30
+          rgb_color:
+            - 100
+            - 0
+            - 200
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bedroom5_ceiling
+        area_id: bedroom_5
+        name: 'Bedroom 5 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.theater_ceiling
+        area_id: home_theater
+        name: 'Theater Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.theater_bias
+        area_id: home_theater
+        name: 'Bias Lighting'
+        state: 'off'
+        attributes:
+          brightness: 30
+          rgb_color:
+            - 100
+            - 0
+            - 200
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in bedroom 5 and the home theater?'
+      - 'Please flick them on for me.'
+    -
+      - 'Can you tell me the current state of the lights in bedroom 5 and home theater?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Status of bedroom 5 and home theater lights?'
+      - 'Turn them on.'
+    -
+      - 'Are the lights in bedroom 5 and the home theater on or off?'
+      - 'Switch them on, please.'
+    -
+      - 'Check the lights status for bedroom 5 and home theater.'
+      - 'Flick them on for me.'
+    -
+      - "What's the light status in bedroom 5 and home theater?"
+      - 'Please turn them on.'
+    -
+      - 'Report the state of the lights in bedroom 5 and home theater.'
+      - "Flip them on if you don't mind."
+    -
+      - 'Lights status bedroom 5 and home theater?'
+      - 'Switch them on.'
+-
+  name: bedroom_5_and_home_theater_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.bedroom5_ceiling
+        area_id: bedroom_5
+        name: 'Bedroom 5 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_ceiling
+        area_id: home_theater
+        name: 'Theater Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_bias
+        area_id: home_theater
+        name: 'Bias Lighting'
+        state: 'off'
+        attributes:
+          brightness: 30
+          rgb_color:
+            - 100
+            - 0
+            - 200
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bedroom5_ceiling
+        area_id: bedroom_5
+        name: 'Bedroom 5 Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_ceiling
+        area_id: home_theater
+        name: 'Theater Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.theater_bias
+        area_id: home_theater
+        name: 'Bias Lighting'
+        state: 'off'
+        attributes:
+          brightness: 30
+          rgb_color:
+            - 100
+            - 0
+            - 200
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - 'What is the status of the lights in bedroom 5 and the home theater?'
+      - 'Flick them off.' # Changed from: Flick them on.
+    -
+      - 'Status of bedroom 5 and home theater lights please?'
+      - "Flip them off if you don't mind." # Changed from: Flip them on if you don't mind.
+    -
+      - 'Can you tell me the current state of the lights in bedroom 5 and home theater?'
+      - 'Please turn them off for me.' # Changed from: Please turn them on for me.
+    -
+      - 'Lights status in bedroom 5 and home theater?'
+      - 'Switch them off.' # Changed from: Switch them on.
+    -
+      - 'Report the light status for bedroom 5 and the home theater.'
+      - 'Go ahead and flick them off.' # Changed from: Go ahead and flick them on.
+    -
+      - "What's the status of the lights in bedroom 5 and home theater?"
+      - 'Turn them off please.' # Changed from: Turn them on please.
+    -
+      - 'Give me the light status for bedroom 5 and home theater.'
+      - 'Flip them off for me.' # Changed from: Flip them on for me.
+    -
+      - 'Status check on bedroom 5 and home theater lights?'
+      - 'Please switch them off.' # Changed from: Please switch them on.
+-
+  name: bedroom_5_and_home_theater_lights_set_brightness
+  setup:
+    -
+      entity_id: light.bedroom5_ceiling
+      brightness: 18
+    -
+      entity_id: light.theater_ceiling
+      brightness: 18
+    -
+      entity_id: light.theater_bias
+      brightness: 18
+  conditions:
+    -
+      entity_id: light.bedroom5_ceiling
+      brightness: 31
+    -
+      entity_id: light.theater_ceiling
+      brightness: 31
+    -
+      entity_id: light.theater_bias
+      brightness: 31
+  sentences:
+    -
+      - 'What is the brightness of the lights in bedroom 5 and the home theater?'
+      - 'Set it to 31.'
+    -
+      - "Please tell me the brightness for bedroom 5 and home theater if you don't mind."
+      - 'Flick it up to 31.'
+    -
+      - 'Can you check the brightness in bedroom 5 and the home theater for me?'
+      - 'Flip it to 31.'
+    -
+      - 'Brightness levels for bedroom 5 and home theater?'
+      - 'Make it 31.'
+    -
+      - "What's the current brightness in bedroom 5 and home theater please?"
+      - 'Turn it to 31.'
+    -
+      - 'Report brightness for bedroom 5 and home theater.'
+      - 'Set to 31.'
+    -
+      - 'Could you give me the brightness of bedroom 5 and home theater lights?'
+      - 'Adjust it to 31.'

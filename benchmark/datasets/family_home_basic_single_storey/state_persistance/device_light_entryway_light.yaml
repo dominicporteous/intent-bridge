@@ -1,0 +1,105 @@
+-
+  name: light_entryway_light_turn_on
+  setup:
+    -
+      entity_id: light.entryway_light
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the entryway light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the entryway light on or off?'
+      - 'Flick it on.'
+    -
+      - 'Can you check the entryway light status?'
+      - "Flip it on if you don't mind."
+    -
+      - 'Entryway light status please?'
+      - 'Turn it on.'
+    -
+      - "What's happening with the entryway light?"
+      - 'Switch it on for me please.'
+    -
+      - 'Tell me about the entryway light state.'
+      - 'Go ahead and turn it on.'
+    -
+      - "How's the entryway light doing?"
+      - 'Light it up.'
+-
+  name: light_entryway_light_turn_off
+  setup:
+    -
+      entity_id: light.entryway_light
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the entryway light?"
+      - 'Turn it off.'
+    -
+      - 'Is the entryway light on?'
+      - 'Please switch it off for me.'
+    -
+      - 'Check the light in the entryway.'
+      - "Flick it off if you don't mind."
+    -
+      - "How's the entryway light doing?"
+      - 'Flip it off.'
+    -
+      - 'Can you tell me if the entryway light is on?'
+      - 'Shut it off please.'
+    -
+      - 'Entryway light status?'
+      - 'Turn it off for me.'
+    -
+      - "What's going on with the light in the entryway?"
+      - "If you don't mind, switch it off."
+    -
+      - 'Is the entryway light currently on or off?'
+      - 'Please flick it off.'
+-
+  name: light_entryway_light_persistance_brightness
+  setup:
+    -
+      entity_id: light.entryway_light
+      brightness: 99
+  conditions:
+    -
+      entity_id: light.entryway_light
+      attributes:
+        brightness: 19
+  sentences:
+    -
+      - "What's the brightness of the Entryway Light?"
+      - 'Set it to 19.'
+    -
+      - 'How bright is the light in the entryway?'
+      - 'Change it to 19 please.'
+    -
+      - 'Can you tell me the brightness level of the Entryway Light?'
+      - "Adjust it to 19 if you don't mind."
+    -
+      - 'Entryway Light brightness?'
+      - 'Make it 19.'
+    -
+      - "What's the current brightness in the entryway?"
+      - 'Turn it up to 19.'
+    -
+      - 'How bright is the Entryway Light right now?'
+      - 'Set brightness to 19 for me.'
+    -
+      - 'Tell me the brightness of the light in the entryway.'
+      - 'Change it to 19 please.'
+    -
+      - "Entryway Light, what's your brightness?"
+      - 'Adjust to 19.'

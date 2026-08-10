@@ -1,0 +1,108 @@
+-
+  name: fan_bathroom_exhaust_fan_turn_on
+  setup:
+    -
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the bathroom light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the bathroom light?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Tell me if the bathroom light is on.'
+      - 'Flip it on quickly.'
+    -
+      - 'Is the bathroom light working?'
+      - 'Turn it on please.'
+    -
+      - "What's happening with the bathroom light?"
+      - 'Switch it on for me.'
+    -
+      - 'Check the bathroom light status.'
+      - 'Please flick it on.'
+    -
+      - "How's the bathroom light doing?"
+      - "If you don't mind, flip it on."
+    -
+      - 'Report on the bathroom light.'
+      - 'Turn it on right away.'
+-
+  name: fan_bathroom_exhaust_fan_turn_off
+  setup:
+    -
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the bathroom light?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the bathroom light on right now?'
+      - 'Flick it off.'
+    -
+      - 'Can you check the bathroom light?'
+      - "If you don't mind, flip it off."
+    -
+      - 'Tell me the bathroom light status.'
+      - 'Turn it off please.'
+    -
+      - "How's the bathroom light doing?"
+      - 'Quickly switch it off.'
+    -
+      - "What's up with the bathroom light?"
+      - "Shut it off if you don't mind."
+    -
+      - 'Bathroom light status please?'
+      - 'Flip it off for me.'
+    -
+      - 'Is the bathroom light currently active?'
+      - 'Turn it off.'
+-
+  name: fan_bathroom_exhaust_fan_persistance_percentage
+  setup:
+    -
+      entity_id: fan.bathroom_exhaust_fan
+      percentage: 53
+  conditions:
+    -
+      entity_id: fan.bathroom_exhaust_fan
+      attributes:
+        percentage: 59
+  sentences:
+    -
+      - 'What is the percentage of the Exhaust Fan?'
+      - 'Set it to 59.'
+    -
+      - "What's the Exhaust Fan percentage in the bathroom?"
+      - 'Please change it to 59 for me.'
+    -
+      - 'Tell me the Exhaust Fan level.'
+      - "Adjust to 59 if you don't mind."
+    -
+      - 'Exhaust Fan percentage?'
+      - 'Make it 59.'
+    -
+      - 'Can you tell me the percentage of the Exhaust Fan in the bathroom?'
+      - 'Please set it to 59.'
+    -
+      - "What's the Exhaust Fan at right now?"
+      - 'Change it to 59 please.'
+    -
+      - 'Exhaust Fan percentage in the bathroom?'
+      - 'Adjust to 59 for me.'
+    -
+      - 'Tell me the Exhaust Fan percentage.'
+      - 'Set to 59.'

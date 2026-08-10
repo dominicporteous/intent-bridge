@@ -1,0 +1,59 @@
+-
+  name: basement_bathroom_lights_get_state
+  conditions:
+    -
+      type: query
+      area: basement_bathroom
+      domain: light
+  sentences:
+    - "What's the status of the lights in the basement bathroom?"
+    - 'Basement bathroom lights state'
+    - 'Please check the basement bathroom lights for me'
+    - "If you don't mind, could you tell me if the basement bathroom lights are on or off?"
+    - 'Lights basement bath'
+    - "Hey, what's going on with the basement bathroom lighting?"
+-
+  name: basement_bathroom_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: basement_bathroom
+      domain: light
+  sentences:
+    - "What's the status of the basement bathroom lights?"
+    - 'Are the basement bathroom lights on or off?'
+    - 'Please check the lights in the basement bathroom for me.'
+    - "If you don't mind, could you tell me if the basement bathroom lights are on?"
+    - 'Basement bathroom lights state.'
+    - 'Hey, can you check the basement bathroom lights real quick?'
+    - 'Tell me the current state of the lights downstairs in the bathroom.'
+-
+  name: basement_bathroom_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: basement_bathroom
+      domain: light
+  sentences:
+    - "What's the light status in the basement bathroom?"
+    - 'Tell me if the basement bathroom lights are on or off'
+    - 'Please check the basement bathroom lights for me'
+    - "If you don't mind, what's the state of the lights downstairs in the bathroom?"
+    - 'Basement bathroom lights status'
+    - 'Could you tell me whether the lights are on in the basement bathroom?'
+    - 'Quick check: basement bathroom lights?'
+-
+  name: basement_bathroom_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: basement_bathroom
+      domain: light
+  sentences:
+    - "What's the status of the basement bathroom lights?"
+    - 'Are the lights on in the basement bathroom?'
+    - 'Please check the basement bathroom lights for me.'
+    - "If you don't mind, could you tell me if the basement bathroom lights are on?"
+    - 'Basement bathroom lights state.'
+    - 'Hey, can you check the lights in the basement bathroom?'
+    - 'Tell me the current state of the basement bathroom lights.'

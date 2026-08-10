@@ -1,0 +1,39 @@
+-
+  name: fan_bathroom_exhaust_fan_and_light_bathroom_mirror_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan and mirror light'
+    - 'Please flick on the exhaust fan and bathroom mirror light for me'
+    - "If you don't mind, flip on the fan bathroom exhaust fan and light bathroom mirror light"
+    - 'Activate exhaust fan and mirror light now'
+    - 'Could you switch on the bathroom exhaust fan and mirror light please'
+    - 'Quickly turn on fan bathroom exhaust fan and light bathroom mirror light'
+    - 'Enable the exhaust fan and bathroom mirror light'
+-
+  name: fan_bathroom_exhaust_fan_and_light_bathroom_mirror_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom exhaust fan and mirror light'
+    - 'Please turn off the exhaust fan and mirror light for me'
+    - "If you don't mind, could you flick off the bathroom fan and mirror light"
+    - 'Deactivate the exhaust fan and mirror light'
+    - 'Shut down the bathroom exhaust fan and mirror light please'
+    - "Flip off the exhaust fan and mirror light if you don't mind"
+    - 'Quickly turn off the bathroom fan and mirror light'
+    - 'Disable the exhaust fan and mirror light for me'

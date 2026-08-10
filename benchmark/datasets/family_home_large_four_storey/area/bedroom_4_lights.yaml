@@ -1,0 +1,64 @@
+-
+  name: bedroom_4_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_4
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 4'
+    - 'Flick on bedroom 4 lights'
+    - 'Please flip on the lights in bedroom 4 for me'
+    - "If you don't mind, turn on bedroom 4 lights"
+    - 'Activate the lights in bedroom 4'
+    - 'Could you switch on bedroom 4 lights please'
+    - 'Quickly turn on the lights in bedroom 4'
+-
+  name: bedroom_4_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_4
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 4'
+    - 'Please switch off bedroom 4 lights for me'
+    - "If you don't mind, flick off the lights in bedroom 4"
+    - 'Kill the bedroom 4 lights'
+    - 'Flip off bedroom 4 lighting'
+    - 'Can you turn off the lights in bedroom 4 please'
+    - 'Shut off bedroom 4 lights if possible'
+-
+  name: bedroom_4_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_4
+      domain: light
+      attributes:
+        brightness: 67
+  sentences:
+    - 'Set bedroom 4 lights to 67 percent brightness'
+    - 'Please adjust the bedroom 4 lights to 67% for me'
+    - "Flick bedroom 4 lights brightness to 67 if you don't mind"
+    - 'Change bedroom 4 lights to 67 percent'
+    - 'Could you set the bedroom 4 lights brightness to 67 please'
+    - 'Turn bedroom 4 lights to 67 percent brightness'
+    - 'Quickly adjust bedroom 4 lights to 67%'
+-
+  name: bedroom_4_lights_change_color
+  conditions:
+    -
+      area: bedroom_4
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Turn the lights in bedroom 4 to orange'
+    - 'Flick bedroom 4 lights orange please'
+    - "If you don't mind, flip on orange for the bedroom 4 lights"
+    - 'Set bedroom 4 lights to orange'
+    - 'Please change the color of bedroom 4 lights to orange for me'
+    - 'Quickly make bedroom 4 lights orange'
+    - 'Could you turn bedroom 4 lights orange'

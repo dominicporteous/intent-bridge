@@ -1,0 +1,495 @@
+name: Family Home Large Four Storey
+difficulty: medium
+floors:
+  - id: basement
+    name: Basement
+    level: -1
+  - id: ground
+    name: Ground Floor
+    level: 0
+  - id: upper
+    name: Upper Floor
+    level: 1
+  - id: top
+    name: Top Floor
+    level: 2
+areas:
+  # Basement
+  - id: home_theater
+    name: Home Theater
+    floor: basement
+  - id: gym
+    name: Gym
+    floor: basement
+  - id: basement_bathroom
+    name: Basement Bathroom
+    floor: basement
+  - id: storage
+    name: Storage Room
+    floor: basement
+  # Ground floor
+  - id: entryway
+    name: Entryway
+    floor: ground
+  - id: living
+    name: Living Room
+    floor: ground
+  - id: dining
+    name: Dining Room
+    floor: ground
+  - id: kitchen
+    name: Kitchen
+    floor: ground
+  - id: study
+    name: Study
+    floor: ground
+  - id: powder_room
+    name: Powder Room
+    floor: ground
+  - id: garage
+    name: Garage
+    floor: ground
+  # Upper floor
+  - id: master_bedroom
+    name: Master Bedroom
+    floor: upper
+  - id: bedroom_2
+    name: Bedroom 2
+    floor: upper
+  - id: bedroom_3
+    name: Bedroom 3
+    floor: upper
+  - id: master_bath
+    name: Master Bathroom
+    floor: upper
+  - id: upper_bath
+    name: Upper Bathroom
+    floor: upper
+  - id: upper_hallway
+    name: Upper Hallway
+    floor: upper
+  # Top floor
+  - id: loft
+    name: Loft
+    floor: top
+  - id: bedroom_4
+    name: Bedroom 4
+    floor: top
+  - id: bedroom_5
+    name: Bedroom 5
+    floor: top
+  - id: top_bath
+    name: Top Floor Bathroom
+    floor: top
+devices:
+  # Basement - Home Theater
+  - id: light.theater_ceiling
+    area_id: home_theater
+    name: Theater Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: light.theater_bias
+    area_id: home_theater
+    name: Bias Lighting
+    state: "off"
+    attributes:
+      brightness: 30
+      rgb_color: [100, 0, 200]
+  - id: media_player.projector
+    area_id: home_theater
+    name: Projector
+    state: "off"
+  - id: media_player.theater_receiver
+    area_id: home_theater
+    name: AV Receiver
+    state: "off"
+
+  # Basement - Gym
+  - id: light.gym_lights
+    area_id: gym
+    name: Gym Lights
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: switch.gym_ventilation
+    area_id: gym
+    name: Gym Ventilation
+    state: "off"
+
+  # Basement - Bathroom
+  - id: light.basement_bath_light
+    area_id: basement_bathroom
+    name: Basement Bath Light
+    state: "off"
+
+  # Ground - Entryway
+  - id: light.entryway_chandelier
+    area_id: entryway
+    name: Entry Chandelier
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: lock.front_door
+    area_id: entryway
+    name: Front Door
+    state: locked
+  - id: binary_sensor.front_door_sensor
+    area_id: entryway
+    name: Front Door Sensor
+    state: "off"
+    attributes:
+      device_class: door
+
+  # Ground - Living Room
+  - id: light.living_ceiling
+    area_id: living
+    name: Living Room Ceiling
+    state: "on"
+    attributes:
+      brightness: 80
+  - id: light.living_floor_lamp
+    area_id: living
+    name: Living Room Floor Lamp
+    state: "on"
+    attributes:
+      brightness: 60
+      rgb_color: [255, 200, 120]
+  - id: media_player.living_tv
+    area_id: living
+    name: Living Room TV
+    state: "off"
+  - id: cover.living_blinds
+    area_id: living
+    name: Living Room Blinds
+    state: open
+    attributes:
+      current_position: 100
+
+  # Ground - Dining Room
+  - id: light.dining_chandelier
+    area_id: dining
+    name: Dining Chandelier
+    state: "off"
+    attributes:
+      brightness: 100
+
+  # Ground - Kitchen
+  - id: light.kitchen_ceiling
+    area_id: kitchen
+    name: Kitchen Ceiling
+    state: "off"
+  - id: light.kitchen_island
+    area_id: kitchen
+    name: Kitchen Island
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: light.kitchen_under_cabinet
+    area_id: kitchen
+    name: Under Cabinet Lights
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: switch.rangehood
+    area_id: kitchen
+    name: Rangehood
+    state: "off"
+  - id: switch.dishwasher
+    area_id: kitchen
+    name: Dishwasher
+    state: "off"
+
+  # Ground - Study
+  - id: light.study_ceiling
+    area_id: study
+    name: Study Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: light.study_desk_lamp
+    area_id: study
+    name: Desk Lamp
+    state: "off"
+    attributes:
+      brightness: 80
+
+  # Ground - Powder Room
+  - id: light.powder_room_light
+    area_id: powder_room
+    name: Powder Room Light
+    state: "off"
+
+  # Ground - Garage
+  - id: light.garage_light
+    area_id: garage
+    name: Garage Light
+    state: "off"
+  - id: cover.garage_door_left
+    area_id: garage
+    name: Left Garage Door
+    state: closed
+    attributes:
+      current_position: 0
+  - id: cover.garage_door_right
+    area_id: garage
+    name: Right Garage Door
+    state: closed
+    attributes:
+      current_position: 0
+  - id: lock.garage_entry
+    area_id: garage
+    name: Garage Entry Door
+    state: locked
+
+  # Upper - Master Bedroom
+  - id: light.master_ceiling
+    area_id: master_bedroom
+    name: Master Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: light.master_bedside_left
+    area_id: master_bedroom
+    name: Left Bedside Lamp
+    state: "off"
+    attributes:
+      brightness: 25
+  - id: light.master_bedside_right
+    area_id: master_bedroom
+    name: Right Bedside Lamp
+    state: "off"
+    attributes:
+      brightness: 25
+  - id: fan.master_fan
+    area_id: master_bedroom
+    name: Master Fan
+    state: "off"
+    attributes:
+      percentage: 40
+  - id: cover.master_blinds
+    area_id: master_bedroom
+    name: Master Blinds
+    state: open
+    attributes:
+      current_position: 100
+  - id: climate.master_ac
+    area_id: master_bedroom
+    name: Master AC
+    state: "off"
+    attributes:
+      temperature: 21
+      current_temperature: 23
+      hvac_modes: ["cool", "heat", "off"]
+
+  # Upper - Bedroom 2
+  - id: light.bedroom2_ceiling
+    area_id: bedroom_2
+    name: Bedroom 2 Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: fan.bedroom2_fan
+    area_id: bedroom_2
+    name: Bedroom 2 Fan
+    state: "off"
+    attributes:
+      percentage: 40
+
+  # Upper - Bedroom 3
+  - id: light.bedroom3_ceiling
+    area_id: bedroom_3
+    name: Bedroom 3 Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+
+  # Upper - Bathrooms
+  - id: light.master_bath_light
+    area_id: master_bath
+    name: Master Bath Light
+    state: "off"
+  - id: switch.master_bath_fan
+    area_id: master_bath
+    name: Master Bath Fan
+    state: "off"
+  - id: light.upper_bath_light
+    area_id: upper_bath
+    name: Upper Bath Light
+    state: "off"
+  - id: switch.upper_bath_fan
+    area_id: upper_bath
+    name: Upper Bath Fan
+    state: "off"
+
+  # Upper - Hallway
+  - id: light.upper_hallway_light
+    area_id: upper_hallway
+    name: Upper Hallway Light
+    state: "off"
+
+  # Top - Loft
+  - id: light.loft_ceiling
+    area_id: loft
+    name: Loft Ceiling
+    state: "off"
+    attributes:
+      brightness: 80
+  - id: media_player.loft_tv
+    area_id: loft
+    name: Loft TV
+    state: "off"
+
+  # Top - Bedroom 4
+  - id: light.bedroom4_ceiling
+    area_id: bedroom_4
+    name: Bedroom 4 Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+
+  # Top - Bedroom 5
+  - id: light.bedroom5_ceiling
+    area_id: bedroom_5
+    name: Bedroom 5 Ceiling
+    state: "off"
+    attributes:
+      brightness: 100
+
+  # Top - Bathroom
+  - id: light.top_bath_light
+    area_id: top_bath
+    name: Top Bath Light
+    state: "off"
+
+  # Whole home
+  - id: climate.ground_thermostat
+    area_id: living
+    name: Ground Floor Thermostat
+    state: cool
+    attributes:
+      temperature: 23
+      current_temperature: 25
+      hvac_modes: ["cool", "heat", "off"]
+  - id: climate.upper_thermostat
+    area_id: upper_hallway
+    name: Upper Floor Thermostat
+    state: "off"
+    attributes:
+      temperature: 21
+      current_temperature: 22
+      hvac_modes: ["cool", "heat", "off"]
+
+scenes:
+  - id: home_theater_mode
+    name: Home Theater Mode
+    entities:
+      light.theater_ceiling:
+        state: "off"
+      light.theater_bias:
+        state: "on"
+        brightness: 30
+        rgb_color: [100, 0, 200]
+      media_player.projector:
+        state: "on"
+      media_player.theater_receiver:
+        state: "on"
+
+  - id: dinner_party
+    name: Dinner Party
+    entities:
+      light.dining_chandelier:
+        state: "on"
+        brightness: 80
+      light.kitchen_ceiling:
+        state: "on"
+      light.kitchen_island:
+        state: "on"
+        brightness: 100
+      light.living_ceiling:
+        state: "on"
+        brightness: 60
+      light.living_floor_lamp:
+        state: "on"
+        brightness: 40
+
+  - id: kids_bedtime
+    name: Kids Bedtime
+    entities:
+      light.bedroom2_ceiling:
+        state: "off"
+      light.bedroom3_ceiling:
+        state: "off"
+      light.bedroom4_ceiling:
+        state: "off"
+      light.bedroom5_ceiling:
+        state: "off"
+      light.upper_hallway_light:
+        state: "on"
+        brightness: 10
+
+  - id: good_morning
+    name: Good Morning
+    entities:
+      light.kitchen_ceiling:
+        state: "on"
+      light.dining_chandelier:
+        state: "on"
+        brightness: 100
+      cover.living_blinds:
+        state: open
+      cover.master_blinds:
+        state: open
+
+scripts:
+  - id: good_night
+    name: Good Night
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.living_ceiling
+            - light.living_floor_lamp
+            - light.dining_chandelier
+            - light.kitchen_ceiling
+            - light.kitchen_island
+            - light.study_ceiling
+            - light.entryway_chandelier
+            - light.upper_hallway_light
+            - light.loft_ceiling
+      - action: lock.lock
+        target:
+          entity_id:
+            - lock.front_door
+            - lock.garage_entry
+      - action: climate.set_temperature
+        target:
+          entity_id: climate.upper_thermostat
+        data:
+          temperature: 20
+
+  - id: leaving_home
+    name: Leaving Home
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.living_ceiling
+            - light.living_floor_lamp
+            - light.kitchen_ceiling
+            - light.study_ceiling
+            - light.entryway_chandelier
+      - action: lock.lock
+        target:
+          entity_id:
+            - lock.front_door
+            - lock.garage_entry
+      - action: cover.close_cover
+        target:
+          entity_id:
+            - cover.garage_door_left
+            - cover.garage_door_right
+
+lists:
+  - id: chores
+    name: Chores

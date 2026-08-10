@@ -1,0 +1,28 @@
+-
+  name: cover_garage_door_right_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_right
+  sentences:
+    - "What's the status of the right garage door?"
+    - 'Garage door right state'
+    - 'Please check the right garage door for me'
+    - "If you don't mind, what's the current state of the right garage door in the garage?"
+    - 'Right garage door position'
+    - 'Tell me if the right garage door is open or closed'
+    - 'Can you check the right garage door status please'
+-
+  name: cover_garage_door_right_get_position
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_right
+  sentences:
+    - "What's the position of the right garage door"
+    - 'Garage door right status'
+    - 'Please tell me where the right garage door is'
+    - "If you don't mind, what's the current position of the right garage door in the garage"
+    - 'Right garage door position please'
+    - 'Can you check the right garage door for me'
+    - 'Status of garage door right'

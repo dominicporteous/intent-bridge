@@ -1,0 +1,48 @@
+-
+  name: living_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the living room fans'
+    - 'Flick on the fans in the living room'
+    - 'Please flip on the living room fans for me'
+    - "If you don't mind, could you turn on the fans in the living room"
+    - 'Activate the living room fans'
+    - 'Switch on the fans in the living room please'
+    - 'Can you turn on the living room fans'
+-
+  name: living_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the living room fans'
+    - 'Please switch off the fans in the living room for me'
+    - "If you don't mind, flick off the living room fans"
+    - 'Deactivate the fans in the living room'
+    - 'Flip off the living room fans if you could'
+    - 'Shut down the fans in the living room please'
+    - 'Turn the living room fans off for me'
+-
+  name: living_fans_set_fan_speed
+  conditions:
+    -
+      area: living
+      domain: fan
+      attributes:
+        percentage: 28
+  sentences:
+    - 'Set the living room fan speed to 28'
+    - 'Please adjust the fans in the living room to 28 for me'
+    - 'Flick the living room fans up to 28'
+    - "If you don't mind, set the living room fan speed to 28"
+    - 'Crank the living room fans to 28'
+    - 'Could you please change the living room fan speed to 28'
+    - 'Bump the living room fans up to 28'

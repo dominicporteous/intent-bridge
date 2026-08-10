@@ -1,0 +1,85 @@
+-
+  name: entryway_and_upper_hallway_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: upper_hallway
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway and upper hallway lights'
+    - 'Flick on the lights in the entryway and upper hallway'
+    - "Please flip on the lights for me in the entryway and upper hallway if you don't mind"
+    - 'Activate the entryway and upper hallway lights'
+    - 'Could you turn on the lights in the entryway and upper hallway please'
+    - 'Switch on the entryway and upper hallway lights'
+    - "If you don't mind, please turn on the lights in the entryway and upper hallway for me"
+-
+  name: entryway_and_upper_hallway_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: upper_hallway
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway and upper hallway lights'
+    - 'Please kill the lights in the entryway and upstairs hallway for me'
+    - 'Flick off the lights in the foyer and upper hallway'
+    - "If you don't mind, flip off the entryway and upstairs hallway lights"
+    - 'Shut off the lights in the entryway and upper hallway'
+    - 'Kill the lights in the foyer and upstairs hallway please'
+    - 'Turn the entryway and upper hallway lights off'
+    - 'Please switch off the lights in the entryway and upstairs hallway'
+-
+  name: entryway_and_upper_hallway_lights_change_brightness
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        brightness: 80
+    -
+      area: upper_hallway
+      domain: light
+      attributes:
+        brightness: 80
+  sentences:
+    - 'Set the entryway and upper hallway lights to 80%'
+    - 'Please adjust the brightness in the entryway and upper hallway to 80 for me'
+    - 'Flick the entryway and upper hallway lights to 80%'
+    - "If you don't mind, turn the entryway and upper hallway lights to 80"
+    - 'Change brightness of entryway and upper hallway to 80%'
+    - 'Could you set the entryway and upper hallway lights to 80 please'
+    - 'Flip the entryway and upper hallway lights to 80%'
+-
+  name: entryway_and_upper_hallway_lights_change_color
+  conditions:
+    -
+      area: entryway
+      domain: light
+      attributes:
+        color: yellow
+    -
+      area: upper_hallway
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Turn the entryway and upper hallway lights yellow'
+    - 'Flick on yellow for the entryway and upper hallway'
+    - 'Please set the entryway and upper hallway lights to yellow for me'
+    - "If you don't mind, flip the entryway and upper hallway lights to yellow"
+    - 'Change entryway and upper hallway lights to yellow'
+    - 'Make the entryway and upper hallway lights yellow please'
+    - 'Set entryway and upper hallway to yellow'

@@ -1,0 +1,105 @@
+-
+  name: media_player_living_tv_turn_on
+  setup:
+    -
+      entity_id: media_player.living_tv
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the TV in the living room?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the living TV on or off?'
+      - 'Flick it on.'
+    -
+      - 'Can you check the living room TV status?'
+      - "If you don't mind, flip it on for me."
+    -
+      - "How's the living TV doing?"
+      - 'Turn it on.'
+    -
+      - "What's up with the living room TV?"
+      - 'Switch it on, please.'
+    -
+      - 'Living TV status check?'
+      - 'Power it on.'
+    -
+      - 'Is the TV in the living room active?'
+      - 'Go ahead and turn it on for me.'
+-
+  name: media_player_living_tv_turn_off
+  setup:
+    -
+      entity_id: media_player.living_tv
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the TV in the living room?"
+      - 'Turn it off.'
+    -
+      - 'Can you check the living TV for me?'
+      - 'Please switch it off.'
+    -
+      - 'Living room TV state?'
+      - "Flick it off if you don't mind."
+    -
+      - 'Is the living TV on or off?'
+      - 'Flip it off for me.'
+    -
+      - 'Tell me the living room TV status please.'
+      - 'Shut it down.'
+    -
+      - 'Check living TV status.'
+      - 'Power it off.'
+    -
+      - "What's happening with the living room TV?"
+      - 'Turn it off now.'
+    -
+      - 'Living TV status update?'
+      - 'Kill the power.'
+-
+  name: media_player_living_tv_persistance_volume_level
+  setup:
+    -
+      entity_id: media_player.living_tv
+      volume_level: 25
+  conditions:
+    -
+      entity_id: media_player.living_tv
+      attributes:
+        volume_level: 14
+  sentences:
+    -
+      - "What's the volume on the living TV?"
+      - 'Set it to 14.'
+    -
+      - 'Can you tell me the volume level of the living TV?'
+      - 'Change it to 14 please.'
+    -
+      - "What's the current volume of the living TV?"
+      - "Adjust it to 14 if you don't mind."
+    -
+      - 'Volume level for the living TV?'
+      - 'Make it 14.'
+    -
+      - 'How loud is the living TV right now?'
+      - 'Turn it to 14.'
+    -
+      - 'Tell me the volume on the living TV.'
+      - 'Please set it to 14 for me.'
+    -
+      - 'Living TV volume?'
+      - 'Change it to 14.'
+    -
+      - "What's the volume level on the living TV?"
+      - 'Adjust it to 14 please.'

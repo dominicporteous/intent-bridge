@@ -1,0 +1,32 @@
+-
+  name: basement_bathroom_lights_set_brightness
+  setup:
+    -
+      entity_id: light.basement_bath_light
+      brightness: 70
+  conditions:
+    -
+      entity_id: light.basement_bath_light
+      brightness: 56
+  sentences:
+    -
+      - "What's the brightness of the lights in the basement bathroom?"
+      - 'Set it to fifty six.'
+    -
+      - 'Could you tell me the brightness level in the basement bathroom please?'
+      - "Make it fifty six if you don't mind."
+    -
+      - 'Basement bathroom light brightness?'
+      - 'Flick it to fifty six.'
+    -
+      - 'Please check the brightness for the basement bathroom lights.'
+      - 'Turn it up to fifty six for me.'
+    -
+      - "What's the current brightness in the basement bathroom?"
+      - 'Flip it to fifty six.'
+    -
+      - 'Can you read the brightness of the basement bathroom lights?'
+      - 'Adjust it to fifty six please.'
+    -
+      - 'Tell me the brightness level of the basement bathroom lights.'
+      - 'Set to fifty six.'

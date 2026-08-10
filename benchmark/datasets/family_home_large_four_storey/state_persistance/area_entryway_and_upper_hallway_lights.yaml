@@ -1,0 +1,41 @@
+-
+  name: entryway_and_upper_hallway_lights_set_brightness
+  setup:
+    -
+      entity_id: light.entryway_chandelier
+      brightness: 32
+    -
+      entity_id: light.upper_hallway_light
+      brightness: 32
+  conditions:
+    -
+      entity_id: light.entryway_chandelier
+      brightness: 19
+    -
+      entity_id: light.upper_hallway_light
+      brightness: 19
+  sentences:
+    -
+      - 'What is the brightness of the lights in the entryway and upper hallway?'
+      - 'Set it to 19.'
+    -
+      - 'Can you tell me the brightness level for the entryway and upper hallway lights?'
+      - 'Please change it to 19 for me.'
+    -
+      - 'Flick on the lights in the entryway and upper hallway and tell me their brightness.'
+      - "If you don't mind, set it to 19."
+    -
+      - "What's the current brightness in the entryway and upper hallway?"
+      - 'Turn it up to 19.'
+    -
+      - 'Could you check the brightness of the entryway and upper hallway lights?'
+      - 'Flip it to 19 please.'
+    -
+      - 'Tell me how bright the lights are in the entryway and upper hallway.'
+      - 'Make it 19.'
+    -
+      - 'Report the brightness for entryway and upper hallway lights.'
+      - "Adjust it to 19 if you don't mind."
+    -
+      - 'Check brightness levels in the entryway and upper hallway.'
+      - 'Set brightness to 19.'

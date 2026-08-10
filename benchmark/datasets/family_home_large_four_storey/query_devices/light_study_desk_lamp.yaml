@@ -1,0 +1,28 @@
+-
+  name: light_study_desk_lamp_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.study_desk_lamp
+  sentences:
+    - "What's the status of the study desk lamp?"
+    - 'Desk lamp state please'
+    - "If you don't mind, could you check the study desk lamp for me?"
+    - 'Light study desk lamp current state'
+    - 'Please tell me if the study desk lamp is on or off'
+    - 'Study desk lamp status check'
+    - 'Can you get the state of the desk lamp in the study?'
+-
+  name: light_study_desk_lamp_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.study_desk_lamp
+  sentences:
+    - "What's the brightness of the study desk lamp?"
+    - 'Desk lamp brightness please'
+    - "If you don't mind, tell me the current brightness of the desk lamp in the study"
+    - 'Study desk lamp brightness level'
+    - 'Could you check how bright the study desk lamp is for me?'
+    - "Desk lamp in study, what's the brightness?"
+    - 'Please tell me the study desk lamp brightness'

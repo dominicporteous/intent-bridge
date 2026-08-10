@@ -1,0 +1,105 @@
+-
+  name: cover_master_blinds_open
+  setup:
+    -
+      entity_id: cover.master_blinds
+      state: closed
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: open
+  sentences:
+    -
+      - "What's the status of the Master Bedroom Blinds?"
+      - 'Open them.'
+    -
+      - 'Can you check the cover master blinds?'
+      - 'Please open them for me.'
+    -
+      - 'Tell me if the master_bedroom blinds are open or closed.'
+      - "Flick them open if you don't mind."
+    -
+      - 'Status of the Master Bedroom Blinds please.'
+      - 'Flip them open.'
+    -
+      - 'Are the cover master blinds up or down?'
+      - "Open them if you don't mind."
+    -
+      - 'Check the master_bedroom blinds status.'
+      - 'Please open them.'
+    -
+      - "What's going on with the Master Bedroom Blinds?"
+      - 'Turn them open for me.'
+    -
+      - 'Give me the status on the cover master blinds.'
+      - 'Open them.'
+-
+  name: cover_master_blinds_close
+  setup:
+    -
+      entity_id: cover.master_blinds
+      state: open
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: closed
+  sentences:
+    -
+      - "What's the status of the master bedroom blinds?"
+      - 'Close them.'
+    -
+      - 'Please check the master bedroom blinds for me.'
+      - "Shut them if you don't mind."
+    -
+      - 'Can you tell me if the master bedroom blinds are open?'
+      - 'Close them please.'
+    -
+      - 'Flick on the master bedroom blinds status.'
+      - 'Shut them.'
+    -
+      - 'Report the state of the master bedroom blinds.'
+      - 'Close them for me.'
+    -
+      - "What's up with the master bedroom blinds?"
+      - "Shut them if you don't mind."
+    -
+      - 'Check the master bedroom blinds status please.'
+      - 'Close them.'
+-
+  name: cover_master_blinds_persistance_position
+  setup:
+    -
+      entity_id: cover.master_blinds
+      position: 88
+  conditions:
+    -
+      entity_id: cover.master_blinds
+      attributes:
+        position: 69
+  sentences:
+    -
+      - 'What is the position of the Master Bedroom Blinds?'
+      - 'Set them to 69.'
+    -
+      - 'Where are the master bedroom blinds at right now?'
+      - 'Change to 69.'
+    -
+      - "Please tell me the position of the blinds in the master bedroom if you don't mind."
+      - 'Adjust them to 69 for me.'
+    -
+      - 'Can you check the master_bedroom blinds position?'
+      - 'Make it 69.'
+    -
+      - "What's the current position of the Master Bedroom Blinds?"
+      - 'Please set to 69.'
+    -
+      - 'Tell me how open the master bedroom blinds are.'
+      - 'Change them to 69 please.'
+    -
+      - 'Check the position of the blinds in master_bedroom.'
+      - 'Adjust to 69.'
+    -
+      - "What's the status of the Master Bedroom Blinds?"
+      - "Set them to 69 if you don't mind."

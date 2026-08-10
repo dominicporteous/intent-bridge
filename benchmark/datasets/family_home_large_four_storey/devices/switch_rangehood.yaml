@@ -1,0 +1,32 @@
+-
+  name: switch_rangehood_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.rangehood
+      state: 'on'
+  sentences:
+    - 'Turn on the rangehood'
+    - 'Flick on the kitchen rangehood'
+    - 'Please flip on the rangehood for me'
+    - "If you don't mind, turn on the kitchen rangehood"
+    - 'Activate the rangehood now'
+    - 'Switch on the rangehood in the kitchen'
+    - 'Can you turn on the rangehood please'
+    - 'Quickly enable the kitchen rangehood'
+-
+  name: switch_rangehood_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.rangehood
+      state: 'off'
+  sentences:
+    - 'Turn off the rangehood'
+    - 'Please switch off the kitchen rangehood for me'
+    - "Flick off the rangehood if you don't mind"
+    - 'Flip the kitchen rangehood off'
+    - 'Deactivate the rangehood'
+    - 'Turn the kitchen rangehood off please'
+    - 'Shut off the rangehood'
+    - 'Kill the rangehood'

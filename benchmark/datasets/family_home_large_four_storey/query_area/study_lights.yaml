@@ -1,0 +1,60 @@
+-
+  name: study_lights_get_state
+  conditions:
+    -
+      type: query
+      area: study
+      domain: light
+  sentences:
+    - "What's the status of the study lights?"
+    - 'Are the study lights on?'
+    - 'Check study lights status please'
+    - "If you don't mind, tell me about the lights in the study"
+    - 'Study lights state'
+    - 'Could you check if the study lights are on for me'
+    - 'Get current state of study lights'
+-
+  name: study_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: study
+      domain: light
+  sentences:
+    - "What's the status of the study lights?"
+    - 'Study lights state please'
+    - "If you don't mind, could you check the lights in the study for me?"
+    - 'Lights study'
+    - 'Please tell me if the study lights are on or off'
+    - 'Get current state of study lighting'
+    - "Hey, what's going on with the study lights right now?"
+-
+  name: study_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: study
+      domain: light
+  sentences:
+    - "What's the light status in the study?"
+    - 'Study lights state please'
+    - "If you don't mind, could you check the study lights for me?"
+    - 'Lights study'
+    - 'Please tell me the current state of the study lights'
+    - 'Study lighting status'
+    - "Hey, what's going on with the study lights?"
+-
+  name: study_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: study
+      domain: light
+  sentences:
+    - "What's the light status in the study?"
+    - 'Study lights state please'
+    - "Could you check the study lights for me if you don't mind"
+    - 'Lights study'
+    - 'Tell me about the study lighting situation'
+    - 'Please report study light status'
+    - 'How are the lights doing in the study right now'

@@ -1,0 +1,64 @@
+-
+  name: light_kitchen_ceiling_lights_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen ceiling lights'
+    - 'Flick on the ceiling lights in the kitchen'
+    - 'Please flip on the kitchen ceiling lights for me'
+    - "If you don't mind, could you turn on the ceiling lights in the kitchen"
+    - 'Activate the kitchen ceiling lights'
+    - 'Quickly turn on the ceiling lights in the kitchen'
+    - 'Switch on the kitchen ceiling lights now'
+-
+  name: light_kitchen_ceiling_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the ceiling lights'
+    - 'Please switch off the kitchen ceiling lights for me'
+    - 'Flick off the lights in the kitchen'
+    - "If you don't mind, turn off the ceiling lights"
+    - 'Kill the kitchen ceiling lights' # Changed from: Kill the kitchen lights
+    - 'Can you shut off the ceiling lights for me'
+    - 'Flip off the lights in the kitchen please'
+    - 'Deactivate the kitchen ceiling lights'
+-
+  name: light_kitchen_ceiling_lights_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      attributes:
+        brightness: 85
+  sentences:
+    - 'Turn the kitchen ceiling lights to 85%'
+    - 'Set ceiling lights brightness to 85'
+    - 'Please adjust the kitchen lights to 85 for me'
+    - 'Flick the ceiling lights up to 85 percent'
+    - "If you don't mind, change kitchen ceiling lights to 85"
+    - 'Make the kitchen lights 85 brightness'
+    - 'Quickly set ceiling lights to 85'
+-
+  name: light_kitchen_ceiling_lights_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      attributes:
+        color: black
+  sentences:
+    - 'Turn the kitchen ceiling lights black'
+    - 'Set kitchen ceiling lights to black'
+    - 'Please change the kitchen ceiling lights to black for me'
+    - "If you don't mind, make the kitchen ceiling lights black"
+    - 'Flick the kitchen ceiling lights to black'
+    - 'Flip the kitchen ceiling lights black'
+    - 'Quickly set kitchen ceiling lights to black'
+    - 'Change kitchen ceiling lights color to black'

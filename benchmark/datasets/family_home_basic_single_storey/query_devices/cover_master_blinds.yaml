@@ -1,0 +1,28 @@
+-
+  name: cover_master_blinds_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.master_blinds
+  sentences:
+    - "What's the status of the master bedroom blinds?"
+    - 'master_bedroom cover master blinds state'
+    - "please tell me the current position of the blinds in the master bedroom if you don't mind"
+    - 'get master bedroom blinds status'
+    - 'could you check the master bedroom blinds for me'
+    - 'are the master bedroom blinds open or closed'
+    - 'show me the state of cover master blinds in master_bedroom'
+-
+  name: cover_master_blinds_get_position
+  conditions:
+    -
+      type: query
+      entity_id: cover.master_blinds
+  sentences:
+    - "What's the position of the master bedroom blinds?"
+    - 'cover master blinds position'
+    - 'Please tell me where the Master Bedroom Blinds are at'
+    - "If you don't mind, could you check the position of the master_bedroom blinds for me?"
+    - 'master bedroom blinds status'
+    - 'Get the current state of the Master Bedroom Blinds'
+    - 'Where are the master_bedroom blinds right now?'

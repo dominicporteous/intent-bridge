@@ -1,0 +1,38 @@
+-
+  name: master_bedroom_and_garage_covers_set_position
+  setup:
+    -
+      entity_id: cover.master_blinds
+      position: 22
+    -
+      entity_id: cover.garage_door
+      position: 22
+  conditions:
+    -
+      entity_id: cover.master_blinds
+      position: 30
+    -
+      entity_id: cover.garage_door
+      position: 30
+  sentences:
+    -
+      - 'What is the position of the windows in the master bedroom and garage?'
+      - 'Set them to 30.'
+    -
+      - 'Can you tell me where the blinds are in the master bedroom and garage please?'
+      - "If you don't mind, adjust to 30 for me."
+    -
+      - "Please report the curtain positions in the master bedroom and garage if you don't mind."
+      - 'Flick them to 30.'
+    -
+      - "What's the status of the windows and blinds in the master bedroom and garage?"
+      - 'Flip to 30.'
+    -
+      - 'Tell me the current position of the curtains in the master bedroom and garage.'
+      - 'Please set to 30.'
+    -
+      - 'Check the window positions in the master bedroom and garage for me.'
+      - 'Quickly move to 30.'
+    -
+      - 'Report the blind status in the master bedroom and garage.'
+      - 'Turn them to 30.'

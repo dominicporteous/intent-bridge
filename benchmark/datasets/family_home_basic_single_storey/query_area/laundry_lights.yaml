@@ -1,0 +1,60 @@
+-
+  name: laundry_lights_get_state
+  conditions:
+    -
+      type: query
+      area: laundry
+      domain: light
+  sentences:
+    - "What's the status of the laundry lights?"
+    - 'Are the laundry lights on?'
+    - 'Please tell me if the laundry lights are on.'
+    - "If you don't mind, could you check the laundry lights for me?"
+    - 'Laundry lights status.'
+    - 'Hey, can you see if the laundry lights are on right now?'
+-
+  name: laundry_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: laundry
+      domain: light
+  sentences:
+    - "What's the status of the laundry room lights?"
+    - 'Lights in laundry please'
+    - "If you don't mind, could you check the laundry lights for me?"
+    - 'Laundry lights state'
+    - 'Tell me if the laundry lights are on or off'
+    - 'Please check laundry lighting status'
+    - 'Current state of laundry lights?'
+-
+  name: laundry_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: laundry
+      domain: light
+  sentences:
+    - "What's the status of the laundry lights?"
+    - 'Are the laundry lights on or off?'
+    - 'Please check the laundry lights for me.'
+    - "If you don't mind, tell me about the laundry lights."
+    - 'Laundry lights state.'
+    - 'Could you check if the laundry lights are on?'
+    - 'Quick check on laundry lights please.'
+    - 'Report laundry lights status.'
+-
+  name: laundry_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: laundry
+      domain: light
+  sentences:
+    - "What's the status of the laundry lights?"
+    - 'Are the laundry lights on or off?'
+    - 'Please check the laundry lights for me'
+    - "If you don't mind, tell me about the laundry lights"
+    - 'Laundry lights status'
+    - 'Could you check if the laundry lights are on?'
+    - 'Get me the current state of the laundry lights please'

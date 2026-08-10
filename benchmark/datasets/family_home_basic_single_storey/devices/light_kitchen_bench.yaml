@@ -1,0 +1,62 @@
+-
+  name: light_kitchen_bench_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      state: 'on'
+  sentences:
+    - 'Turn on the bench lights'
+    - 'Flick on the kitchen bench lights'
+    - 'Please flip on the bench lights for me'
+    - "If you don't mind, turn on the kitchen bench lights"
+    - 'Activate the bench lights'
+    - 'Switch on the kitchen bench lights please'
+    - 'Can you turn on the bench lights in the kitchen'
+-
+  name: light_kitchen_bench_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      state: 'off'
+  sentences:
+    - 'Turn off the bench lights'
+    - 'Please turn off the kitchen bench lights for me'
+    - "Flick off the bench lights if you don't mind"
+    - 'Flip off the kitchen bench lights'
+    - 'Could you turn off the bench lights please'
+    - 'Switch off the kitchen bench lights'
+    - 'Turn the bench lights off in the kitchen'
+-
+  name: light_kitchen_bench_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      attributes:
+        brightness: 94
+  sentences:
+    - 'Set the Bench Lights to 94%'
+    - 'Flick the kitchen bench lights to 94'
+    - 'Please turn the Bench Lights to 94% for me'
+    - "If you don't mind, adjust the light kitchen bench to 94"
+    - 'Make the Bench Lights 94 percent'
+    - 'Can you set the kitchen bench lights to 94%'
+    - 'Flip the Bench Lights brightness to 94'
+-
+  name: light_kitchen_bench_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      attributes:
+        color: purple
+  sentences:
+    - 'Turn the kitchen bench lights purple'
+    - 'Flick on the bench lights to purple'
+    - 'Please set the kitchen bench lights to purple for me'
+    - "If you don't mind, change the bench lights to purple"
+    - 'Make the kitchen bench lights purple'
+    - 'Flip the bench lights to purple'
+    - 'Quickly turn the kitchen bench lights purple'

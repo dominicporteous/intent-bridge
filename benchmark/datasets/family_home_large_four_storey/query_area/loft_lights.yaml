@@ -1,0 +1,63 @@
+-
+  name: loft_lights_get_state
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+  sentences:
+    - "What's the status of the loft lights?"
+    - 'Loft lights state please'
+    - "Could you check the lights in the loft for me if you don't mind"
+    - 'Loft lights'
+    - 'Tell me if the loft lights are on or off'
+    - 'Please report the current state of the loft lights'
+    - 'Are the loft lights on'
+-
+  name: loft_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+  sentences:
+    - "What's the status of the loft lights?"
+    - 'Loft lights state please'
+    - 'Could you check the lights in the loft for me?'
+    - 'Tell me if the loft lights are on or off'
+    - "Hey, what's going on with the loft lighting?"
+    - 'Loft lights current state'
+    - "If you don't mind, can you show me the loft lights status?"
+    - 'Quick check on loft lights please'
+-
+  name: loft_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+  sentences:
+    - "What's the status of the loft lights?"
+    - 'Loft lights state please'
+    - 'Could you check the lights in the loft for me?'
+    - 'Tell me if the loft lights are on or off'
+    - "Hey, what's going on with the loft lighting?"
+    - 'Loft lights current status'
+    - "If you don't mind, can you show me the loft lights state?"
+    - 'Quick check on loft lights please'
+-
+  name: loft_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+  sentences:
+    - "What's the status of the loft lights?"
+    - 'Loft lights state please'
+    - 'Could you check the lights in the loft for me?'
+    - 'Are the loft lights on or off?'
+    - "If you don't mind, what's happening with the loft lighting?"
+    - 'Loft lights current state'
+    - 'Tell me about the lights upstairs'
+    - 'Quick check on loft illumination status'

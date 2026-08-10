@@ -1,0 +1,19 @@
+-
+  name: light_living_room_lamp_and_light_kitchen_ceiling_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the floor lamp and ceiling lights'
+    - 'Please switch off the living room lamp and kitchen ceiling lights for me'
+    - 'Flick off the floor lamp and kitchen lights'
+    - "If you don't mind, flip off the living room lamp and ceiling lights"
+    - 'Deactivate the floor lamp and kitchen ceiling lights'
+    - 'Shut off the living room lamp and kitchen lights please'
+    - 'Turn the floor lamp and ceiling lights off'

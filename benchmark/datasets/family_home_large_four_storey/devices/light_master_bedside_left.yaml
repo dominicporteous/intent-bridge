@@ -1,0 +1,65 @@
+-
+  name: light_master_bedside_left_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_left
+      state: 'on'
+  sentences:
+    - 'Turn on the Left Bedside Lamp'
+    - 'Flick on the master bedroom left bedside light'
+    - 'Please flip on the light master bedside left for me'
+    - "If you don't mind, turn on the master_bedroom Left Bedside Lamp"
+    - 'Activate the left bedside lamp in the master bedroom'
+    - 'Quickly switch on the master bedroom left bedside light'
+    - 'Could you please turn on the light master bedside left'
+-
+  name: light_master_bedside_left_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_left
+      state: 'off'
+  sentences:
+    - 'Turn off the Left Bedside Lamp'
+    - 'Please turn off the master_bedroom Left Bedside Lamp for me'
+    - 'Flick off the Left Bedside Lamp'
+    - "If you don't mind, flip off the master_bedroom Left Bedside Lamp"
+    - 'Switch off the Left Bedside Lamp'
+    - 'Could you turn off the master_bedroom Left Bedside Lamp please'
+    - 'Kill the Left Bedside Lamp'
+    - 'Shut off the master_bedroom Left Bedside Lamp'
+-
+  name: light_master_bedside_left_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_left
+      attributes:
+        brightness: 59
+  sentences:
+    - 'Set the Left Bedside Lamp in the master_bedroom to 59'
+    - "Please turn the light master bedside left to 59 if you don't mind"
+    - 'Flick the Left Bedside Lamp brightness to 59'
+    - 'Can you adjust the master_bedroom light master bedside left to 59 for me'
+    - 'Flip on the Left Bedside Lamp to 59 percent'
+    - 'Change the brightness of the master_bedroom light master bedside left to 59'
+    - 'Set the Left Bedside Lamp to 59'
+    - 'Adjust the light master bedside left brightness to 59 in the master_bedroom'
+-
+  name: light_master_bedside_left_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_left
+      attributes:
+        color: black
+  sentences:
+    - 'Set the Left Bedside Lamp to black'
+    - 'Turn the master_bedroom Left Bedside Lamp black please'
+    - "If you don't mind, flick the light master bedside left to black for me" # Changed from: flick the light master bedside left off to black
+    - 'Quickly change master_bedroom light master bedside left to black'
+    - 'Flip the Left Bedside Lamp color to black'
+    - 'Please set light master bedside left black in the master_bedroom'
+    - 'Make the Left Bedside Lamp black now'
+    - 'Change the master_bedroom bedside left light to black'

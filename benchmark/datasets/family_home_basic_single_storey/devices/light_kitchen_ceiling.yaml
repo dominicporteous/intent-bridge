@@ -1,0 +1,63 @@
+-
+  name: light_kitchen_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen ceiling light'
+    - 'Kitchen ceiling on'
+    - 'Please flick on the kitchen ceiling for me'
+    - "If you don't mind, flip on the kitchen ceiling light"
+    - 'Activate kitchen ceiling'
+    - 'Could you switch on the kitchen ceiling light please'
+    - 'Kitchen ceiling, turn on'
+    - 'Turn the kitchen ceiling light on'
+-
+  name: light_kitchen_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen ceiling light'
+    - 'Please switch off the kitchen ceiling for me'
+    - "If you don't mind, flick off the kitchen ceiling light"
+    - 'Kitchen ceiling off'
+    - 'Could you flip off the kitchen ceiling please'
+    - 'Deactivate the kitchen ceiling light'
+    - 'Turn the kitchen ceiling off if possible'
+-
+  name: light_kitchen_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      attributes:
+        brightness: 23
+  sentences:
+    - 'Set the Kitchen Ceiling light to 23 percent'
+    - 'Kitchen Ceiling brightness 23'
+    - 'Please dim the kitchen ceiling to 23 for me'
+    - "If you don't mind, flick the kitchen ceiling light down to 23"
+    - 'Turn the Kitchen Ceiling brightness to 23%'
+    - 'Quickly set kitchen ceiling to 23'
+    - 'Flip kitchen ceiling brightness to 23'
+-
+  name: light_kitchen_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      attributes:
+        color: white
+  sentences:
+    - 'Change the kitchen ceiling light to white'
+    - 'Please set kitchen ceiling to white for me'
+    - "Flick kitchen ceiling light to white if you don't mind"
+    - 'Turn kitchen ceiling white'
+    - 'Flip kitchen ceiling light to white please'
+    - 'Make the kitchen ceiling white'
+    - 'Set kitchen ceiling light color to white'

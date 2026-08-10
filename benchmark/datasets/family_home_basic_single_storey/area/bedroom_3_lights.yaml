@@ -1,0 +1,65 @@
+-
+  name: bedroom_3_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the bedroom 3 lights'
+    - 'Flick on the lights in bedroom 3'
+    - 'Please flip on the bedroom 3 lights for me'
+    - "If you don't mind, turn on the lights in bedroom 3"
+    - 'Switch on bedroom 3 lighting'
+    - 'Could you activate the lights in bedroom 3 please'
+    - 'Hey, light up bedroom 3'
+    - 'Activate bedroom 3 lights now'
+-
+  name: bedroom_3_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 3'
+    - 'Please switch off bedroom 3 lights for me'
+    - "If you don't mind, flick off the bedroom 3 lights"
+    - 'Kill the lights in bedroom 3'
+    - 'Could you flip off bedroom 3 lights please'
+    - 'Deactivate the bedroom 3 lighting'
+    - 'Shut off bedroom 3 lights if possible'
+-
+  name: bedroom_3_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        brightness: 59
+  sentences:
+    - 'Set bedroom 3 lights to 59 percent brightness'
+    - 'Please dim the bedroom 3 lights to 59 for me'
+    - "If you don't mind, flick the bedroom 3 lights down to 59 percent"
+    - 'Quickly adjust bedroom 3 brightness to 59'
+    - 'Turn bedroom 3 lights to 59 percent please'
+    - 'Flip bedroom 3 illumination down to 59 if possible'
+    - 'Make bedroom 3 lights 59 percent bright'
+-
+  name: bedroom_3_lights_change_color
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change bedroom 3 lights to pink'
+    - 'Flick bedroom 3 lights to pink'
+    - 'Please set the bedroom 3 lights to pink for me'
+    - "If you don't mind, flip the bedroom 3 lights to pink"
+    - 'Make bedroom 3 lights pink'
+    - 'Could you turn the bedroom 3 lights pink please'
+    - 'Bedroom 3 lights to pink now'

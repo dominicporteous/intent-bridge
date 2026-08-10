@@ -1,0 +1,37 @@
+-
+  name: light_kitchen_ceiling_lights_and_media_player_main_lg_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the ceiling lights and LG TV'
+    - 'Please flick on the kitchen ceiling lights and main LG TV for me'
+    - "Flip on the ceiling lights and TV if you don't mind"
+    - 'Activate kitchen ceiling lights and media player main LG TV'
+    - 'Switch on ceiling lights and main LG TV right now'
+    - 'Power up the kitchen ceiling lights and LG TV'
+-
+  name: light_kitchen_ceiling_lights_and_media_player_main_lg_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the ceiling lights and LG TV'
+    - 'Please switch off the kitchen ceiling lights and main LG TV for me'
+    - "Flick off the ceiling lights and lg TV if you don't mind"
+    - 'Flip off the kitchen lights and LG TV'
+    - 'Could you turn off the ceiling lights and main TV please'
+    - 'Shut down the ceiling lights and LG TV'
+    - 'Deactivate the kitchen ceiling lights and main LG TV for me'

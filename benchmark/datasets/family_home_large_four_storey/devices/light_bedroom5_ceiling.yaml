@@ -1,0 +1,62 @@
+-
+  name: light_bedroom5_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom5_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Bedroom 5 Ceiling light'
+    - 'Flick on bedroom_5 ceiling please'
+    - "If you don't mind, flip on the light in bedroom_5 for me"
+    - 'Activate Bedroom 5 Ceiling'
+    - 'Please turn on bedroom_5 ceiling light'
+    - 'Switch on the ceiling light in bedroom 5'
+    - 'Could you turn on bedroom_5 ceiling?'
+-
+  name: light_bedroom5_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom5_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the Bedroom 5 Ceiling'
+    - 'Please switch off bedroom_5 ceiling light for me'
+    - "Flick off the ceiling light in bedroom 5 if you don't mind"
+    - 'Kill the Bedroom 5 Ceiling'
+    - 'Can you flip off the light in bedroom_5 please'
+    - 'Shut off bedroom 5 ceiling light'
+    - 'Turn the bedroom_5 ceiling off now'
+-
+  name: light_bedroom5_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom5_ceiling
+      attributes:
+        brightness: 41
+  sentences:
+    - 'Set the brightness of the Bedroom 5 Ceiling to 41'
+    - 'Please dim the bedroom_5 light to 41 percent for me'
+    - "Flick the Bedroom 5 Ceiling down to 41 if you don't mind"
+    - 'Turn the bedroom_5 ceiling brightness to 41'
+    - 'Could you adjust the Bedroom 5 Ceiling light to 41%'
+    - 'Flip the bedroom_5 ceiling to 41 brightness please'
+    - 'Make the Bedroom 5 Ceiling 41 percent bright'
+-
+  name: light_bedroom5_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom5_ceiling
+      attributes:
+        color: white
+  sentences:
+    - 'Turn bedroom5 ceiling to white'
+    - 'Please set the Bedroom 5 Ceiling light to white for me'
+    - 'Flick on white for bedroom_5 ceiling light'
+    - "If you don't mind, change the Bedroom 5 Ceiling to white"
+    - 'Make bedroom5 ceiling white now'
+    - 'Flip the bedroom_5 ceiling light to white please'
+    - 'Set Bedroom 5 Ceiling color to white'

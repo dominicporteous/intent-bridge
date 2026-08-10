@@ -1,0 +1,60 @@
+-
+  name: upper_hallway_lights_get_state
+  conditions:
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the upper hallway lights?"
+    - 'Upper hallway lights state please'
+    - "If you don't mind, could you tell me about the lights in the upper hallway?"
+    - 'Check upper hallway lighting'
+    - 'Please get me the current state of the upper hallway lights'
+    - 'Upper hallway lights?'
+    - 'Could you check the lights upstairs in the hallway for me?'
+-
+  name: upper_hallway_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the upper hallway lights?"
+    - 'Upper hallway lights state'
+    - "Please tell me the current state of the lights in the upper hallway if you don't mind"
+    - 'Check lights upper hallway'
+    - 'Could you get me the status of the hallway lights upstairs please'
+    - 'Upper hallway lighting status'
+    - "Lights in the upper hallway - what's their state?"
+-
+  name: upper_hallway_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the upper hallway lights?"
+    - 'Tell me the current state of the lights upstairs hallway'
+    - 'Please check the upper hallway lights for me'
+    - "If you don't mind, what's going on with the hallway lights up there?"
+    - 'Upper hallway lights state'
+    - 'Could you tell me if the lights are on in the upper hallway?'
+    - 'Get me the light status for upstairs hallway please'
+-
+  name: upper_hallway_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the upper hallway lights?"
+    - 'Are the lights on upstairs hallway?'
+    - 'Please check the upper hallway lights for me'
+    - "If you don't mind, what's the current state of the hallway lights upstairs?"
+    - 'Upper hallway lights status'
+    - 'Could you tell me if the lights are on in the upper hallway?'
+    - 'Get light state for upper hallway'

@@ -1,0 +1,66 @@
+-
+  name: light_master_bedside_right_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_right
+      state: 'on'
+  sentences:
+    - 'Turn on the Right Bedside Lamp'
+    - 'Please flick on the light master bedside right for me'
+    - "If you don't mind, flip on the Right Bedside Lamp in the master_bedroom"
+    - 'Activate the light master bedside right'
+    - 'Could you turn on the Right Bedside Lamp please'
+    - 'Switch on the light master bedside right in master_bedroom'
+    - 'Quickly enable the Right Bedside Lamp'
+    - 'Turn on the bedside lamp on the right side of the master_bedroom'
+-
+  name: light_master_bedside_right_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_right
+      state: 'off'
+  sentences:
+    - 'Turn off the Right Bedside Lamp'
+    - 'Please turn off the master bedroom right bedside light for me'
+    - 'Flick off the right bedside lamp in the master bedroom'
+    - "If you don't mind, flip off the master_bedroom right bedside light"
+    - 'Switch off the Right Bedside Lamp'
+    - 'Could you turn off the right bedside lamp in master_bedroom please'
+    - 'Kill the master bedroom right bedside light'
+    - 'Deactivate the Right Bedside Lamp in the master bedroom'
+-
+  name: light_master_bedside_right_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_right
+      attributes:
+        brightness: 61
+  sentences:
+    - 'Set the right bedside lamp in the master bedroom to 61 percent brightness'
+    - 'Flick the master_bedroom right bedside light to 61'
+    - "Please turn the Right Bedside Lamp to 61% if you don't mind"
+    - 'Adjust light master bedside right brightness to 61 in master_bedroom'
+    - 'Quickly set master bedroom right lamp to sixty one percent'
+    - 'Flip on the right bedside light to 61 brightness'
+    - 'Could you change the Right Bedside Lamp brightness to 61 please'
+    - 'Set light.master.bedside.right to 61 in the master bedroom'
+-
+  name: light_master_bedside_right_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.master_bedside_right
+      attributes:
+        color: orange
+  sentences:
+    - 'Change the right bedside lamp to orange'
+    - 'Set the master bedroom right bedside light to orange'
+    - 'Please turn the right bedside lamp orange for me'
+    - "If you don't mind, could you flick the master bedroom right bedside light to orange"
+    - 'Make the right bedside lamp orange'
+    - 'Flip the master bedroom right bedside light to orange'
+    - 'Quickly change the right bedside lamp to orange'
+    - 'Turn the master bedroom right bedside light orange please'

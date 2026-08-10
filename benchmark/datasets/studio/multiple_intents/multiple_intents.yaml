@@ -1,0 +1,397 @@
+-
+  name: multi_0
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+  sentences:
+    - 'Turn on the under cabinet lights and turn off the bathroom exhaust fan.'
+    - 'Turn off the bathroom exhaust fan and turn on the under cabinet lights.'
+    - 'Hey, could you turn on the under cabinet lights and also turn off the bathroom exhaust fan?'
+    - "Turn on the under cabinet lights while you're at it turn off the bathroom exhaust fan."
+    - 'Please turn off the bathroom exhaust fan and then turn on the under cabinet lights.'
+    - 'Oh and turn on the under cabinet lights plus turn off the bathroom exhaust fan.'
+    - "Turn off the bathroom exhaust fan if you don't mind and turn on the under cabinet lights."
+-
+  name: multi_1
+  conditions:
+    -
+      type: timer
+      entity_id: timer.oven
+      minutes: 15
+    -
+      type: query
+      entity_id: media_player.main_lg_tv
+  sentences:
+    - 'Start a 15 minute oven timer and also check the state of the LG TV'
+    - 'Could you please check the LG TV state and then start the oven timer for 15 minutes'
+    - 'Hey set the oven timer for 15 minutes while you check the LG TV state'
+    - 'Check the LG TV state and oh and start a 15 minute oven timer'
+    - "If you don't mind check the LG TV state and then set the oven timer for 15 minutes"
+    - 'Start the oven timer for 15 minutes plus check the LG TV state'
+    - 'Check the LG TV state and also start a 15 minute oven timer'
+    - 'Could you start the oven timer for 15 minutes and check the LG TV state'
+-
+  name: multi_2
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: lock
+      state: locked
+    -
+      type: query
+      entity_id: fan.bathroom_exhaust_fan
+  sentences:
+    - 'Turn on the entryway lock and also tell me if the bathroom exhaust fan is on'
+    - "Could you lock the entryway and check the state of the bathroom exhaust fan while you're at it"
+    - 'Hey, lock the entryway and then let me know whether the bathroom exhaust fan is running'
+    - 'Please turn on the entryway lock plus give me the current state of the bathroom exhaust fan'
+    - "Lock the entryway if you don't mind and also report the status of the bathroom exhaust fan"
+    - 'Tell me the state of the bathroom exhaust fan and then turn on the entryway lock'
+    - 'Oh and check if the bathroom exhaust fan is on after you lock the entryway'
+    - 'Turn on the entryway lock and tell me the bathroom exhaust fan state right after'
+-
+  name: multi_3
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  sentences:
+    - 'Turn on the kitchen ceiling lights and turn off the living room ceiling fan.'
+    - 'Could you please switch off the living room ceiling fan and also turn on the kitchen ceiling lights?'
+    - "Hey, turn the kitchen ceiling lights on while you're at it turn the living room ceiling fan off."
+    - "Turn off the living room ceiling fan and then turn on the kitchen ceiling lights if you don't mind."
+    - 'Oh and turn on the kitchen ceiling lights plus turn off the living room ceiling fan.'
+    - 'Turn the living room ceiling fan off and turn the kitchen ceiling lights on.'
+    - 'Please turn off the living room ceiling fan and turn on the kitchen ceiling lights.'
+    - 'Turn the kitchen ceiling lights on and turn the living room ceiling fan off.'
+-
+  name: multi_4
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: script.goodnight
+  sentences:
+    - 'Turn off the under cabinet lights and then run the Goodnight script'
+    - 'Could you also start the Goodnight script after you turn off the under cabinet lights'
+    - 'Hey turn off the under cabinet lights and start the Goodnight script'
+    - 'Please run the Goodnight script and turn off the under cabinet lights'
+    - 'Turn off the under cabinet lights while you are at it and launch the Goodnight script'
+    - 'Oh and start the Goodnight script after turning off the under cabinet lights'
+    - 'Start the Goodnight script plus turn off the under cabinet lights'
+    - "If you don't mind, turn off the under cabinet lights and then run the Goodnight script"
+-
+  name: multi_5
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      attributes:
+        brightness: 30
+    -
+      type: query
+      area: bathroom
+      domain: fan
+  sentences:
+    - 'Set the floor lamp to thirty percent and also check the bathroom fan state'
+    - 'Could you also tell me if the bathroom fan is on while you set the floor lamp to thirty percent'
+    - 'Hey turn the floor lamp to thirty percent and then let me know the bathroom fan state'
+    - 'Please set the floor lamp to thirty percent plus check the bathroom fan state'
+    - 'Check the bathroom fan state and set the floor lamp to thirty percent'
+    - 'Oh and set the floor lamp to thirty percent while you check the bathroom fan state'
+    - 'Turn the floor lamp to thirty percent and tell me the bathroom fan state'
+    - "If you don't mind set the floor lamp to thirty percent and check the bathroom fan state"
+-
+  name: multi_6
+  conditions:
+    -
+      type: action
+      entity_id: script.goodnight
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      attributes:
+        percentage: 40
+  sentences:
+    - 'Turn on the Goodnight script and set the bathroom exhaust fan to forty percent.'
+    - 'Hey could you also start the Goodnight script while you set the bathroom exhaust fan to forty percent.'
+    - 'Set the bathroom exhaust fan to forty percent and then turn on the Goodnight script please.'
+    - 'Oh and turn on the Goodnight script after you set the bathroom exhaust fan to forty percent.'
+    - "If you don't mind, set the bathroom exhaust fan to forty percent and also run the Goodnight script."
+    - 'Start the Goodnight script plus set the bathroom exhaust fan to forty percent.'
+    - 'Could you set the bathroom exhaust fan to forty percent and then activate the Goodnight script.'
+    - "Turn on the Goodnight script while you're at it set the bathroom exhaust fan to forty percent."
+-
+  name: multi_7
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+    -
+      type: query
+      entity_id: binary_sensor.front_door_motion
+  sentences:
+    - 'Turn on the kitchen lights and also tell me the state of the Entryway Motion Sensor.'
+    - "Hey could you let me know if the Entryway Motion Sensor is active and while you're at it turn on the kitchen lights."
+    - 'Please turn on the kitchen lights plus give me the current state of the Entryway Motion Sensor.'
+    - "Check the state of the Entryway Motion Sensor and then turn on the kitchen lights if you don't mind."
+    - 'Oh and turn on the kitchen lights after you tell me whether the Entryway Motion Sensor is on.'
+    - 'Tell me the state of the Entryway Motion Sensor and turn on the kitchen lights.'
+    - 'Could you also turn on the kitchen lights after checking the Entryway Motion Sensor state.'
+    - 'Turn on the kitchen lights and report the state of the Entryway Motion Sensor.'
+-
+  name: multi_8
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_under_cabinet_lights
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+  sentences:
+    - "Could you tell me if the under cabinet lights are on and turn them on if they aren't?"
+    - 'Turn on the under cabinet lights and let me know their current state'
+    - "Hey, what's the state of the under cabinet lights and please switch them on"
+    - 'Check if the under cabinet lights are already on and then turn them on'
+    - "Oh and while you're at it, turn on the under cabinet lights and tell me their status"
+    - 'Please turn on the under cabinet lights and confirm their state for me'
+    - "What's the state of the under cabinet lights and could you also turn them on"
+    - "Turn on the under cabinet lights plus tell me if they're already on"
+-
+  name: multi_9
+  conditions:
+    -
+      type: query
+      entity_id: media_player.main_lg_tv
+    -
+      type: action
+      area: living
+      domain: cover
+      state: closed
+  sentences:
+    - "What's the state of the LG TV and close the living room covers"
+    - 'Close the living room covers and also tell me if the LG TV is on'
+    - 'Hey could you check the LG TV status while you close the living room covers'
+    - 'Turn off the living room covers and then let me know the LG TV state'
+    - "If you don't mind, what's the LG TV doing and close the living room covers"
+    - 'Close the living room covers plus give me the LG TV state'
+    - 'Oh and check the LG TV state after closing the living room covers'
+    - 'Tell me the LG TV state and then close the living room covers'
+-
+  name: multi_10
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+    -
+      type: timer
+      entity_id: timer.abstract
+      minutes: 15
+  sentences:
+    - 'Turn on the coffee maker and start a 15 minute timer.'
+    - 'Hey could you start a 15 minute timer and also turn on the coffee maker.'
+    - "Start a 15 minute timer while you're at it turn on the coffee maker."
+    - 'Oh and turn on the coffee maker plus start a 15 minute timer.'
+    - 'Could you also turn on the coffee maker and start a 15 minute timer.'
+    - 'Start a 15 minute timer and then turn on the coffee maker.'
+    - "Turn on the coffee maker if you don't mind and start a 15 minute timer."
+    - 'Please start a 15 minute timer and turn on the coffee maker.'
+-
+  name: multi_11
+  conditions:
+    -
+      type: action
+      entity_id: climate.studio_thermostat
+      attributes:
+        temperature: 20
+    -
+      type: action
+      area: living
+      domain: cover
+      state: open
+  sentences:
+    - 'Set the studio thermostat to 20 and open the living room blinds'
+    - 'Open the living room curtains and then set the studio thermostat to 20'
+    - 'Hey could you set the studio thermostat to 20 and also open the living room shades'
+    - "Open the living room covers and set the studio thermostat to 20 if you don't mind"
+    - 'Set the studio thermostat to 20 plus open the living room blinds'
+    - "Open the living room curtains while you're at it set the studio thermostat to 20"
+    - 'Set the studio thermostat to 20 and then open the living room shades'
+    - 'Could you open the living room blinds and set the studio thermostat to 20'
+-
+  name: multi_12
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: locked # Changed from: unlocked
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      state: closed
+  sentences:
+    - 'Lock the front door and close the living room blinds'
+    - 'Close the living room blinds and lock the front door'
+    - 'Hey could you lock the front door and also close the living room blinds'
+    - "If you don't mind, close the living room blinds and lock the front door"
+    - "Lock the front door while you're at it close the living room blinds"
+    - 'Oh and lock the front door plus close the living room blinds'
+    - 'Close the living room blinds then lock the front door'
+    - 'Please close the living room blinds and lock the front door'
+-
+  name: multi_13
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+    -
+      type: query
+      entity_id: fan.bathroom_exhaust_fan
+  sentences:
+    - 'Turn off the kitchen lights and also check the state of the bathroom exhaust fan'
+    - "While you're at it please turn off the kitchen lights and tell me the state of the bathroom exhaust fan"
+    - 'Hey turn off the kitchen lights plus what is the state of the bathroom exhaust fan'
+    - 'Could you also turn off the kitchen lights and check the state of the bathroom exhaust fan'
+    - 'Turn off the kitchen lights and then tell me the state of the bathroom exhaust fan'
+    - 'Oh and turn off the kitchen lights while checking the state of the bathroom exhaust fan'
+    - 'Please turn off the kitchen lights and give me the state of the bathroom exhaust fan'
+-
+  name: multi_14
+  conditions:
+    -
+      type: timer
+      entity_id: timer.abstract
+      minutes: 15
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan and set a 15 minute timer'
+    - 'Start a 15 minute timer while you turn on the bathroom exhaust fan'
+    - 'Hey could you also turn on the bathroom exhaust fan and start a 15 minute timer'
+    - 'Please turn on the bathroom exhaust fan and then start a 15 minute timer'
+    - 'Oh and set a 15 minute timer plus turn on the bathroom exhaust fan'
+    - "Turn on the bathroom exhaust fan if you don't mind and start a 15 minute timer"
+    - 'Start a 15 minute timer and then turn on the bathroom exhaust fan'
+    - 'Could you turn on the bathroom exhaust fan and also start a 15 minute timer'
+-
+  name: multi_15
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+    -
+      type: query
+      entity_id: cover.living_room_blinds
+  sentences:
+    - 'Turn on the floor lamp and also check the state of the window blinds'
+    - "Could you turn on the floor lamp if you don't mind and tell me the state of the window blinds"
+    - 'Hey check the state of the window blinds and then turn on the floor lamp'
+    - "Please turn on the floor lamp while you're at it and get the state of the window blinds"
+    - 'Oh and turn on the floor lamp plus tell me the state of the window blinds'
+    - 'Get the state of the window blinds and turn on the floor lamp'
+    - 'Turn on the floor lamp and then check the state of the window blinds'
+    - 'Could you get the state of the window blinds and turn on the floor lamp'
+-
+  name: multi_16
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: unlocked
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: playing
+  sentences:
+    - 'Turn off the front door lock and unpause the LG TV.'
+    - 'Could you also lock the front door while you unpause the LG TV?'
+    - "Hey unpause the LG TV and then lock the front door if you don't mind."
+    - 'Pause the LG TV no wait unpause it and lock the front door too.'
+    - 'Lock the front door plus unpause the LG TV please.'
+    - 'Oh and lock the front door after you unpause the LG TV.'
+    - 'Unpause the LG TV and lock the front door right now.'
+    - "While you're at it unpause the LG TV and lock the front door."
+-
+  name: multi_17
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'off'
+    -
+      type: action
+      entity_id: cover.living_room_blinds
+      attributes:
+        position: 60
+  sentences:
+    - 'Turn off the bathroom fan and set the window blinds to sixty percent.'
+    - 'Could you also close the window blinds to sixty percent while you turn off the bathroom fan?'
+    - 'Hey turn the bathroom fan off and then set the window blinds to sixty.'
+    - 'Set the window blinds to sixty percent and turn off the bathroom fan please.'
+    - "If you don't mind, turn off the bathroom fan and also set the window blinds to sixty."
+    - 'Oh and set the window blinds to sixty percent after you turn off the bathroom fan.'
+    - 'Turn off the bathroom fan plus set the window blinds to sixty percent.'
+    - 'Please set the window blinds to sixty and turn off the bathroom fan.'
+-
+  name: multi_18
+  conditions:
+    -
+      type: action
+      entity_id: script.goodnight
+    -
+      type: query
+      entity_id: sensor.studio_temperature
+  sentences:
+    - 'Turn on the Goodnight script and also tell me the Studio Temperature Sensor state.'
+    - "Hey could you run the Goodnight script and while you're at it what's the Studio Temperature Sensor reading?"
+    - 'Please start the Goodnight script and then give me the current Studio Temperature Sensor state.'
+    - "What's the Studio Temperature Sensor state and oh and turn on the Goodnight script too?"
+    - "If you don't mind, tell me the Studio Temperature Sensor state and then activate the Goodnight script."
+    - 'Run the Goodnight script plus check the Studio Temperature Sensor state for me.'
+    - 'Could you also give me the Studio Temperature Sensor state and turn on the Goodnight script?'
+    - 'Tell me the Studio Temperature Sensor state and then please run the Goodnight script.'
+-
+  name: multi_19
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: light
+    -
+      type: action
+      entity_id: climate.studio_thermostat
+      attributes:
+        temperature: 20
+  sentences:
+    - 'Turn off the kitchen lights and set the studio thermostat to 20.'
+    - 'Could you also set the studio thermostat to 20 while turning off the kitchen lights?'
+    - 'Hey, set the studio thermostat to 20 and turn off the kitchen lights please.'
+    - 'Set the studio thermostat to 20, and then turn off the kitchen lights.'
+    - 'Oh and set the studio thermostat to 20 plus turn off the kitchen lights.'
+    - "If you don't mind, turn off the kitchen lights and set the studio thermostat to 20."
+    - 'Set the studio thermostat to 20, and also turn off the kitchen lights.'

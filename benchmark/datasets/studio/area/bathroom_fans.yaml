@@ -1,0 +1,49 @@
+-
+  name: bathroom_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom fans'
+    - 'Please flick on the fans in the bathroom for me'
+    - "If you don't mind, flip on the bathroom fans"
+    - 'Activate the fans in the bathroom'
+    - 'Could you turn on the bathroom fans please'
+    - 'Switch on the fans in the bathroom'
+    - 'Start the bathroom fans'
+-
+  name: bathroom_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom fans'
+    - 'Please switch off the fans in the bathroom for me'
+    - 'Flick off the bathroom fans'
+    - "If you don't mind, could you turn off the fans in the bathroom"
+    - 'Deactivate the bathroom fans'
+    - 'Shut down the fans in the bathroom please'
+    - 'Flip off the bathroom fans'
+    - 'Would you mind turning off the bathroom fans for me'
+-
+  name: bathroom_fans_set_fan_speed
+  conditions:
+    -
+      area: bathroom
+      domain: fan
+      attributes:
+        percentage: 60
+  sentences:
+    - 'Set bathroom fans to 60%'
+    - 'Please set the bathroom fans to 60% for me'
+    - 'Flick the bathroom fans up to 60'
+    - "If you don't mind, set bathroom fans to 60%"
+    - 'Flip bathroom fans to 60 percent'
+    - 'Could you please set the bathroom fans to 60%'
+    - 'Adjust bathroom fans to 60%'

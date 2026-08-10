@@ -1,0 +1,32 @@
+-
+  name: living_lights_set_brightness
+  setup:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 15
+  conditions:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 19
+  sentences:
+    -
+      - "What's the brightness of the living room lights?"
+      - 'Set it to 19.'
+    -
+      - 'Can you tell me how bright the living room lights are right now?'
+      - 'Please change it to 19 for me.'
+    -
+      - 'Living room lights brightness level?'
+      - 'Flick it to 19.'
+    -
+      - 'How bright are the living room lights?'
+      - "If you don't mind, set it to 19."
+    -
+      - "What's the current brightness in the living room?"
+      - 'Flip it to 19 please.'
+    -
+      - 'Tell me the living room lights brightness.'
+      - 'Make it 19.'
+    -
+      - "Living room lights, what's the brightness?"
+      - 'Turn it to 19.'

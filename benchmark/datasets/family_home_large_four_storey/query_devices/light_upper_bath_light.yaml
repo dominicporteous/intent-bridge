@@ -1,0 +1,28 @@
+-
+  name: light_upper_bath_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.upper_bath_light
+  sentences:
+    - "What's the status of the Upper Bath Light?"
+    - 'Is the upper_bath light on?'
+    - 'Please check the Upper Bath Light for me'
+    - 'Can you tell me if the upper bath light is on?'
+    - 'Upper Bath Light status'
+    - "If you don't mind, what's the state of the light in upper_bath?"
+    - 'Tell me the current state of the Upper Bath Light'
+-
+  name: light_upper_bath_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.upper_bath_light
+  sentences:
+    - "What's the brightness of the Upper Bath Light?"
+    - 'Get brightness for light.upper_bath_light'
+    - "Please tell me the current brightness of the upper bath light if you don't mind"
+    - 'How bright is the Upper Bath Light right now?'
+    - 'upper_bath brightness status'
+    - 'Can you check the brightness level of the light in the upper bath for me?'
+    - 'Report brightness value for Upper Bath Light'

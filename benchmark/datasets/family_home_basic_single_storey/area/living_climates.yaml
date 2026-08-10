@@ -1,0 +1,16 @@
+-
+  name: living_climates_set_temperature
+  conditions:
+    -
+      area: living
+      domain: climate
+      attributes:
+        temperature: 17
+  sentences:
+    - 'Set living room climate to 17 degrees'
+    - 'Please adjust the living room temperature to 17 for me'
+    - "Turn the living room climate control to 17 if you don't mind"
+    - 'Flick the living room temp down to 17'
+    - 'Could you set the living room climate to 17 please'
+    - 'Flip living room temperature to 17'
+    - 'Make the living room climate 17 degrees'

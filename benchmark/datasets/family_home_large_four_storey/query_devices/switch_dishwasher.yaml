@@ -1,0 +1,15 @@
+-
+  name: switch_dishwasher_get_status
+  conditions:
+    -
+      type: query
+      entity_id: switch.dishwasher
+  sentences:
+    - "What's the status of the dishwasher"
+    - 'Dishwasher state'
+    - 'Can you check the dishwasher for me please'
+    - "If you don't mind, tell me if the dishwasher is running"
+    - 'Kitchen dishwasher status'
+    - 'Is the dishwasher on right now'
+    - 'Please check the kitchen dishwasher'
+    - 'Dishwasher on or off'

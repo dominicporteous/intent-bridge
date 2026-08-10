@@ -1,0 +1,63 @@
+-
+  name: light_bedroom2_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Bedroom 2 Ceiling'
+    - 'Flick on bedroom2 ceiling light'
+    - 'Please flip on the ceiling light in bedroom_2 for me'
+    - "If you don't mind, turn on the Bedroom 2 Ceiling"
+    - 'Activate bedroom_2 ceiling'
+    - 'Quickly switch on bedroom2 ceiling light'
+    - 'Can you turn on the ceiling light in bedroom_2 please'
+-
+  name: light_bedroom2_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the Bedroom 2 Ceiling light'
+    - 'Please switch off bedroom_2 ceiling for me'
+    - 'Flick off the light in bedroom 2'
+    - "If you don't mind, flip off the ceiling light in bedroom_2"
+    - 'Kill the Bedroom 2 Ceiling light'
+    - 'Can you turn off bedroom_2 ceiling please'
+    - 'Shut off the light in bedroom 2'
+    - 'Deactivate bedroom_2 ceiling light'
+-
+  name: light_bedroom2_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      attributes:
+        brightness: 76
+  sentences:
+    - 'Set bedroom 2 ceiling to 76 percent'
+    - 'Flick on bedroom_2 ceiling light to 76'
+    - 'Please turn the Bedroom 2 Ceiling up to 76 for me'
+    - "If you don't mind, adjust bedroom_2 ceiling brightness to 76"
+    - 'Flip bedroom 2 ceiling light to seventy six percent'
+    - 'Change the brightness of Bedroom 2 Ceiling to 76'
+    - 'Quickly set bedroom_2 ceiling to 76'
+-
+  name: light_bedroom2_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom2_ceiling
+      attributes:
+        color: black
+  sentences:
+    - 'Turn bedroom2 ceiling light to black'
+    - 'Set Bedroom 2 Ceiling to black please'
+    - "If you don't mind, change the color of the light in bedroom_2 to black for me"
+    - 'Flick bedroom 2 ceiling light to black'
+    - 'Please make the Bedroom 2 Ceiling black'
+    - 'Flip the bedroom_2 ceiling light color to black'
+    - 'Change bedroom2 ceiling to black now'

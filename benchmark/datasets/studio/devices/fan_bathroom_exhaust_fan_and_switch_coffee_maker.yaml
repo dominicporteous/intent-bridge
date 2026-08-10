@@ -1,0 +1,38 @@
+-
+  name: fan_bathroom_exhaust_fan_and_switch_coffee_maker_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan and kitchen coffee maker'
+    - 'Please flick on the exhaust fan in the bathroom and flip on the coffee maker for me'
+    - "If you don't mind, turn on the fan bathroom exhaust fan and switch coffee maker"
+    - 'Activate the exhaust fan in the bathroom and start the coffee maker in the kitchen'
+    - 'Quickly turn on the bathroom fan and kitchen coffee maker'
+    - 'Could you please turn on the exhaust fan and coffee maker'
+    - 'Flip on the bathroom exhaust fan and turn on the coffee maker'
+-
+  name: fan_bathroom_exhaust_fan_and_switch_coffee_maker_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom exhaust fan and coffee maker'
+    - 'Please switch off the exhaust fan in the bathroom and the coffee maker for me'
+    - 'Flick off the fan in the bathroom and the kitchen coffee maker'
+    - "If you don't mind, flip off the exhaust fan and coffee maker"
+    - 'Deactivate the bathroom fan and coffee maker please'
+    - 'Shut down the exhaust fan in the bathroom and the coffee maker'
+    - 'Can you turn off the bathroom fan and coffee maker for me'

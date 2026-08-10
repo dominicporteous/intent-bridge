@@ -1,0 +1,35 @@
+-
+  name: living_climates_set_temperature
+  setup:
+    -
+      entity_id: climate.studio_thermostat
+      temperature: 35
+  conditions:
+    -
+      entity_id: climate.studio_thermostat
+      temperature: 63
+  sentences:
+    -
+      - "What's the temperature in the living room?"
+      - 'Set it to 63.'
+    -
+      - 'Can you tell me the living room temperature?'
+      - 'Please set it to 63 for me.'
+    -
+      - 'Temperature in the living room please?'
+      - "Flick it to 63 if you don't mind."
+    -
+      - 'How warm is the living room?'
+      - 'Flip it to 63.'
+    -
+      - "What's the living room climate at?"
+      - 'Crank it to 63.'
+    -
+      - 'Living room temperature?'
+      - 'Turn it to 63 please.'
+    -
+      - 'Check the living room temp for me.'
+      - 'Adjust it to 63 if you could.'
+    -
+      - "How's the temperature in the living room?"
+      - 'Make it 63.'

@@ -1,0 +1,40 @@
+-
+  name: cover_garage_door_left_and_cover_living_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: open
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: open
+  sentences:
+    - 'Open the left garage door'
+    - 'Please open the living room blinds for me'
+    - "Flick on the garage door left if you don't mind"
+    - 'Flip open the living blinds'
+    - 'Open the left garage door in the garage'
+    - 'Raise the living room blinds please'
+    - 'Open the garage door left and living blinds'
+    - 'Could you open the living blinds in the living area'
+-
+  name: cover_garage_door_left_and_cover_living_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: closed
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: closed
+  sentences:
+    - 'Close the left garage door'
+    - 'Shut the living room blinds'
+    - 'Please close the garage door left for me'
+    - "If you don't mind, close the living blinds"
+    - 'Flick down the left garage cover'
+    - 'Roll down the living room blinds please'
+    - 'Close garage door left and living blinds'
+    - 'Shut the blinds in the living area'

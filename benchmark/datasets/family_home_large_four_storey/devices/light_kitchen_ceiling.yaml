@@ -1,0 +1,63 @@
+-
+  name: light_kitchen_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen ceiling light'
+    - 'Flick on kitchen ceiling'
+    - 'Please turn on the kitchen ceiling for me'
+    - "If you don't mind, flip on the kitchen ceiling light"
+    - 'Kitchen ceiling on'
+    - 'Activate the kitchen ceiling light'
+    - 'Can you switch on the kitchen ceiling please'
+-
+  name: light_kitchen_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen ceiling light'
+    - 'Kitchen ceiling off'
+    - 'Please turn off the kitchen ceiling light for me'
+    - "If you don't mind, could you flick off the kitchen ceiling"
+    - 'Deactivate kitchen ceiling light'
+    - 'Kitchen ceiling light off please'
+    - 'Flip off the ceiling light in the kitchen'
+-
+  name: light_kitchen_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      attributes:
+        brightness: 34
+  sentences:
+    - 'Set the kitchen ceiling light to 34 percent'
+    - 'Kitchen ceiling brightness 34'
+    - 'Please adjust the Kitchen Ceiling to 34 for me'
+    - "If you don't mind, flick the kitchen ceiling light to 34"
+    - 'Turn the Kitchen Ceiling down to 34%'
+    - 'Quickly set kitchen ceiling brightness to 34'
+    - 'Flip the kitchen ceiling light to 34 percent'
+-
+  name: light_kitchen_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change the kitchen ceiling light to yellow'
+    - 'Kitchen ceiling to yellow please'
+    - "If you don't mind, set the kitchen ceiling light to yellow for me"
+    - 'Flick the kitchen ceiling to yellow'
+    - 'Flip on yellow for the kitchen ceiling'
+    - 'Quickly make the kitchen ceiling light yellow'
+    - 'Set kitchen ceiling to yellow now'
+    - 'Please turn the kitchen ceiling light yellow'

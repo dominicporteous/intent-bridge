@@ -1,0 +1,63 @@
+-
+  name: living_and_bathroom_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'on'
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the living room and bathroom fans'
+    - 'Please flick on the fans in the living room and bathroom for me'
+    - "Flip on the fans in the living area and bathroom if you don't mind"
+    - 'Activate the living room and bathroom fans'
+    - 'Could you turn on the fans in the living room and bathroom please'
+    - 'Switch on the living room and bathroom fans for me'
+    - 'Start the fans in the living room and bathroom'
+-
+  name: living_and_bathroom_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'off'
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the living room and bathroom fans'
+    - 'Please shut down the fans in the living room and bathroom for me'
+    - 'Flick off the fans in living and bath'
+    - "If you don't mind, flip off the living room and bathroom fans"
+    - 'Stop the fans in the living and bathroom'
+    - 'Could you turn off the fans in living room and bathroom please'
+    - 'Kill the living and bathroom fans'
+-
+  name: living_and_bathroom_fans_set_fan_speed
+  conditions:
+    -
+      area: living
+      domain: fan
+      attributes:
+        percentage: 34
+    -
+      area: bathroom
+      domain: fan
+      attributes:
+        percentage: 34
+  sentences:
+    - 'Set the living room and bathroom fans to 34'
+    - 'Please set the fans in the living room and bathroom to 34 for me'
+    - 'Flick the living and bathroom fans up to 34'
+    - "If you don't mind, adjust the living room and bathroom fans to 34"
+    - 'Crank the fans in the living room and bathroom to 34'
+    - 'Turn the living and bathroom fans to speed 34 please'
+    - 'Flip the living room and bathroom fans to 34'

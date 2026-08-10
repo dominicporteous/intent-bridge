@@ -1,0 +1,49 @@
+-
+  name: cover_garage_door_left_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: open
+  sentences:
+    - 'Open the left garage door'
+    - 'Please open the garage door left for me'
+    - "If you don't mind, open the left garage door in the garage"
+    - 'Flick open the left garage door'
+    - 'Flip open the garage door left'
+    - 'Quickly open the left garage door in the garage'
+    - 'Could you open the left garage door please'
+    - 'Open the garage door left if possible'
+-
+  name: cover_garage_door_left_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: closed
+  sentences:
+    - 'Close the left garage door'
+    - 'Shut the garage door left'
+    - 'Please close the left garage door for me'
+    - "If you don't mind, shut the left garage door"
+    - 'Flick the left garage door closed'
+    - 'Flip the left garage door shut'
+    - 'Close the left garage door in the garage area' # Changed from: Close the garage door in the garage area
+    - 'Shut the left garage door please'
+-
+  name: cover_garage_door_left_change_position
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      attributes:
+        position: 66
+  sentences:
+    - 'Set the left garage door to 66%'
+    - 'Please move the left garage door to 66% for me'
+    - 'Flick the garage door left to 66'
+    - "If you don't mind, set the left garage door to 66%"
+    - 'Adjust the left garage door to 66 percent'
+    - 'Quickly set the garage door left to 66%'
+    - 'Move the left garage door to 66% in the garage'
+    - 'Change the left garage door to 66'

@@ -1,0 +1,65 @@
+-
+  name: bedroom_5_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_5
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on bedroom five lights'
+    - 'Flick on the lights in bedroom 5'
+    - 'Please flip on bedroom five lights for me'
+    - "If you don't mind, could you turn on the lights in bedroom 5"
+    - 'Activate bedroom five lighting'
+    - 'Switch on the lights in bedroom five please'
+    - 'Quickly turn on bedroom 5 lights'
+    - 'Would you mind turning on the lights in bedroom five'
+-
+  name: bedroom_5_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_5
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 5'
+    - 'Please switch off bedroom 5 lights for me'
+    - "Flick off the bedroom five lights if you don't mind"
+    - 'Flip off bedroom 5 lights'
+    - 'Could you turn off the lights in bedroom 5 please'
+    - 'Kill the lights in bedroom five'
+    - 'Deactivate bedroom 5 lighting'
+-
+  name: bedroom_5_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_5
+      domain: light
+      attributes:
+        brightness: 16
+  sentences:
+    - 'Set bedroom lights to 10%'
+    - 'Please dim the bedroom lights to 12% for me'
+    - 'Flick bedroom lights brightness to 8%'
+    - "If you don't mind, flip the bedroom lights to 15%"
+    - 'Turn bedroom lights down to 5%'
+    - 'Quickly adjust bedroom lights to 16%'
+    - 'Could you set bedroom brightness to 9% please'
+    - 'Change bedroom lights to 7%'
+-
+  name: bedroom_5_lights_change_color
+  conditions:
+    -
+      area: bedroom_5
+      domain: light
+      attributes:
+        color: red
+  sentences:
+    - 'Change the bedroom lights to red'
+    - 'Please set the bedroom lights to red for me'
+    - 'Flick the bedroom lights to red'
+    - "If you don't mind, turn the bedroom lights red"
+    - 'Flip the bedroom lights to red please'
+    - 'Make the bedroom lights red'

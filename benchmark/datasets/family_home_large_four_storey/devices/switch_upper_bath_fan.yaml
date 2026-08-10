@@ -1,0 +1,32 @@
+-
+  name: switch_upper_bath_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.upper_bath_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the upper bath fan'
+    - 'Please turn on the upper bath fan for me'
+    - "Flick on the upper_bath fan if you don't mind"
+    - 'Flip on the upper bath fan'
+    - 'Activate the upper_bath fan'
+    - 'Switch on the upper bath fan please'
+    - 'Turn the upper bath fan on'
+    - 'Can you turn on the upper_bath fan'
+-
+  name: switch_upper_bath_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.upper_bath_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the Upper Bath Fan'
+    - 'Please turn off the upper bath fan for me'
+    - "If you don't mind, switch off the Upper Bath Fan"
+    - 'Flick off the upper_bath fan'
+    - 'Flip the Upper Bath Fan off'
+    - 'Shut down the upper bath fan'
+    - 'Kill the Upper Bath Fan'
+    - 'Deactivate upper_bath fan'

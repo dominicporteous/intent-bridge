@@ -1,0 +1,15 @@
+-
+  name: switch_garden_irrigation_get_status
+  conditions:
+    -
+      type: query
+      entity_id: switch.garden_irrigation
+  sentences:
+    - "What's the status of the garden irrigation?"
+    - 'Is the garden irrigation on or off?'
+    - 'Please check the backyard garden irrigation for me'
+    - 'Garden irrigation state'
+    - "If you don't mind, could you tell me if the garden irrigation is running?"
+    - 'Quick check on garden irrigation'
+    - 'Garden irrigation status please'
+    - 'Can you confirm the current state of the backyard garden irrigation?'

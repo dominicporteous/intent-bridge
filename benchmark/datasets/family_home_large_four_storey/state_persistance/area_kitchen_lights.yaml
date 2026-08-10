@@ -1,0 +1,208 @@
+-
+  name: kitchen_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_island
+        area_id: kitchen
+        name: 'Kitchen Island'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_island
+        area_id: kitchen
+        name: 'Kitchen Island'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the lights in the kitchen?"
+      - 'Please flick them on for me.'
+    -
+      - 'Can you tell me the kitchen light status?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Kitchen lights status please?'
+      - 'Turn them on right now.'
+    -
+      - 'Are the kitchen lights on or off?'
+      - 'Switch them on please.'
+    -
+      - 'Check the kitchen light state.'
+      - 'Activate them for me.'
+    -
+      - "Kitchen lights, what's your status?"
+      - 'Power them on.'
+    -
+      - 'Report kitchen light status.'
+      - "Enable them if you don't mind."
+-
+  name: kitchen_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_island
+        area_id: kitchen
+        name: 'Kitchen Island'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.kitchen_ceiling
+        area_id: kitchen
+        name: 'Kitchen Ceiling'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_island
+        area_id: kitchen
+        name: 'Kitchen Island'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - 'What is the status of the lights in the kitchen?'
+      - 'Flick them off please.' # Changed from: Flick them on please.
+    -
+      - 'Can you tell me the kitchen light status?'
+      - 'Flip them off for me.' # Changed from: Flip them on for me.
+    -
+      - 'Kitchen lights status report.'
+      - "Turn them off if you don't mind." # Changed from: Turn them on if you don't mind.
+    -
+      - "What's the current state of the kitchen lights?"
+      - 'Switch them off quickly.' # Changed from: Switch them on quickly.
+    -
+      - 'Report kitchen lighting status.'
+      - 'Deactivate them for me please.' # Changed from: Activate them for me please.
+    -
+      - 'Kitchen lights - current status?'
+      - 'Power them off now.' # Changed from: Power them on now.
+    -
+      - 'Status check on kitchen lights.'
+      - 'Disable them if possible.' # Changed from: Enable them if possible.
+-
+  name: kitchen_lights_set_brightness
+  setup:
+    -
+      entity_id: light.kitchen_ceiling
+      brightness: 74
+    -
+      entity_id: light.kitchen_island
+      brightness: 74
+    -
+      entity_id: light.kitchen_under_cabinet
+      brightness: 74
+  conditions:
+    -
+      entity_id: light.kitchen_ceiling
+      brightness: 44
+    -
+      entity_id: light.kitchen_island
+      brightness: 44
+    -
+      entity_id: light.kitchen_under_cabinet
+      brightness: 44
+  sentences:
+    -
+      - 'What is the brightness of the kitchen lights?'
+      - 'Set it to 44.'
+    -
+      - "Please tell me the kitchen light brightness if you don't mind."
+      - 'Flick it to 44.'
+    -
+      - 'Can you check how bright the kitchen lights are?'
+      - 'Flip it to 44 please.'
+    -
+      - "What's the current brightness level in the kitchen?"
+      - 'Turn it up to 44.'
+    -
+      - 'Tell me the kitchen brightness reading.'
+      - 'Make it 44.'
+    -
+      - 'How bright are the kitchen lights right now?'
+      - 'Adjust it to 44.'
+    -
+      - 'Check the kitchen light brightness for me.'
+      - 'Set it at 44.'

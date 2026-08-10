@@ -1,0 +1,63 @@
+-
+  name: light_master_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.master_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Master Bedroom Ceiling'
+    - 'Flick on master_bedroom ceiling light'
+    - 'Please flip on the master bedroom ceiling for me'
+    - "If you don't mind, turn on the Master Bedroom Ceiling light"
+    - 'Activate master_bedroom ceiling'
+    - 'Switch on the master bedroom ceiling light please'
+    - 'Can you turn on master_bedroom ceiling light'
+    - 'Quickly turn on the Master Bedroom Ceiling'
+-
+  name: light_master_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.master_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the master bedroom ceiling light'
+    - 'Please turn off the master bedroom ceiling light for me'
+    - "If you don't mind, could you flick off the master bedroom ceiling light"
+    - 'Flip off the master bedroom ceiling light'
+    - 'Quickly turn off the master bedroom ceiling light'
+    - 'Switch off the master bedroom ceiling light'
+    - 'Turn off the ceiling light in the master bedroom'
+-
+  name: light_master_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.master_ceiling
+      attributes:
+        brightness: 70
+  sentences:
+    - 'Set the master bedroom ceiling light to 70%'
+    - "Please dim the Master Bedroom Ceiling to 70 if you don't mind"
+    - 'Flick the master_bedroom ceiling light to 70%'
+    - 'Turn master bedroom ceiling brightness to 70'
+    - 'Could you adjust the Master Bedroom Ceiling to 70 for me'
+    - 'Change master_bedroom ceiling light to 70 percent'
+    - 'Flip the master bedroom ceiling to 70'
+-
+  name: light_master_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.master_ceiling
+      attributes:
+        color: black
+  sentences:
+    - 'Change the master bedroom ceiling light to black'
+    - 'Set master_bedroom master ceiling to black'
+    - 'Please turn the Master Bedroom Ceiling light black for me'
+    - "If you don't mind, flick the master_bedroom ceiling light to black"
+    - 'Flip the master ceiling light in master_bedroom to black'
+    - 'Quickly set master_bedroom master ceiling color to black'
+    - 'Make the Master Bedroom Ceiling black please'

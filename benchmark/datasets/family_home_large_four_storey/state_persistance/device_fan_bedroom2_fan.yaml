@@ -1,0 +1,102 @@
+-
+  name: fan_bedroom2_fan_turn_on
+  setup:
+    -
+      entity_id: fan.bedroom2_fan
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: fan.bedroom2_fan
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the Bedroom 2 Fan?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the Bedroom 2 Fan?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Tell me the state of the fan in bedroom_2.'
+      - 'Flip it on, thanks.'
+    -
+      - 'Is the Bedroom 2 Fan running?'
+      - 'Go ahead and turn it on.'
+    -
+      - 'Status check on the fan in bedroom_2.'
+      - 'Switch it on for me, please.'
+    -
+      - "How's the Bedroom 2 Fan doing?"
+      - "Turn it on, if you don't mind."
+    -
+      - 'Check the fan in bedroom_2.'
+      - 'Flip it on.'
+    -
+      - "What's up with the Bedroom 2 Fan?"
+      - 'Please flick it on.'
+-
+  name: fan_bedroom2_fan_turn_off
+  setup:
+    -
+      entity_id: fan.bedroom2_fan
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: fan.bedroom2_fan
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the fan in bedroom 2?"
+      - 'Turn it off.'
+    -
+      - 'Can you check the bedroom_2 fan please?'
+      - 'Please switch it off for me.'
+    -
+      - 'Tell me if the bedroom 2 fan is on.'
+      - "Flip it off if you don't mind."
+    -
+      - 'Is the fan in bedroom_2 running?'
+      - 'Flick it off.'
+    -
+      - 'Check the status of the bedroom 2 fan.'
+      - 'Shut it off.'
+    -
+      - "What's up with the fan in bedroom_2?"
+      - 'Turn it off please.'
+    -
+      - 'Report the bedroom 2 fan state.'
+      - 'Switch it off for me.'
+-
+  name: fan_bedroom2_fan_persistance_percentage
+  setup:
+    -
+      entity_id: fan.bedroom2_fan
+      percentage: 38
+  conditions:
+    -
+      entity_id: fan.bedroom2_fan
+      attributes:
+        percentage: 31
+  sentences:
+    -
+      - 'What is the percentage of the Bedroom 2 Fan?'
+      - 'Set it to 31.'
+    -
+      - 'Please tell me the current speed of the fan in bedroom_2.'
+      - "Change it to 31 if you don't mind."
+    -
+      - 'Can you check the fan percentage in Bedroom 2?'
+      - 'Adjust to 31 please.'
+    -
+      - "What's the fan speed percentage in bedroom_2 right now?"
+      - 'Make it 31 for me.'
+    -
+      - 'Report the percentage for the Bedroom 2 Fan.'
+      - 'Turn it to 31.'
+    -
+      - 'How fast is the fan running in bedroom_2 as a percentage?'
+      - 'Set the level to 31.'
+    -
+      - 'Give me the fan percentage in Bedroom 2.'
+      - 'Change it to 31 please.'

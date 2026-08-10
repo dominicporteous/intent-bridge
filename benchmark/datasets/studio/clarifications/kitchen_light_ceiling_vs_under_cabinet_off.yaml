@@ -1,0 +1,17 @@
+name: kitchen_light_ceiling_vs_under_cabinet_off
+conditions:
+- type: action
+  entity_id: light.kitchen_ceiling_lights
+  state: 'off'
+- type: action
+  entity_id: light.kitchen_under_cabinet_lights
+  state: 'on'
+sentences:
+- - turn off the kitchen light
+  - the ceiling one
+- - switch off the kitchen lights
+  - ceiling
+- - kitchen light off
+  - just the ceiling
+- - please turn off the kitchen light
+  - ceiling lights

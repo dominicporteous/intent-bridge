@@ -1,0 +1,64 @@
+-
+  name: bathroom_and_living_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'on'
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom and living room fans'
+    - 'Flick on the fans in the bathroom and living room'
+    - 'Please flip on the fans for me in the bathroom and living room'
+    - "If you don't mind, could you turn on the fans in the bathroom and living room"
+    - 'Activate the fans in the bathroom and living room'
+    - 'Switch on the bathroom and living room fans'
+    - 'Can you please turn on the fans in the bathroom and living room for me'
+-
+  name: bathroom_and_living_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: fan
+      state: 'off'
+    -
+      type: action
+      area: living
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the fans in the bathroom and living room'
+    - 'Please switch off the bathroom and living room fans for me'
+    - "Flick off the fans in the bathroom and living room if you don't mind"
+    - 'Deactivate the bathroom and living room fans'
+    - 'Could you flip off the fans in the bathroom and living room please'
+    - 'Shut down the fans in the bathroom and living room'
+    - 'Turn the bathroom and living room fans off'
+-
+  name: bathroom_and_living_fans_set_fan_speed
+  conditions:
+    -
+      area: bathroom
+      domain: fan
+      attributes:
+        percentage: 18
+    -
+      area: living
+      domain: fan
+      attributes:
+        percentage: 18
+  sentences:
+    - 'Set the bathroom and living room fans to 18'
+    - 'Please set the fans in the bathroom and living room to speed 18 for me'
+    - 'Flick the bathroom and living room fans to 18'
+    - "If you don't mind, set the fans in the bathroom and living room to 18"
+    - 'Turn the bathroom and living room fans up to 18'
+    - 'Could you set the bathroom and living room fans to speed 18 please'
+    - 'Flip the bathroom and living room fans to 18'
+    - "Set the fans in the bathroom and living room to 18 if you don't mind"

@@ -1,0 +1,76 @@
+-
+  name: bathroom_and_living_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and living room?"
+    - 'Get bathroom and living room light states'
+    - 'Please check the lights in the bathroom and living room for me'
+    - "If you don't mind, could you tell me if the bathroom and living room lights are on?"
+    - 'Bathroom living lights status'
+    - 'Are the lights on in the bathroom and living room right now?'
+    - 'Quick check: bathroom and living room lights'
+    - 'Tell me the current state of bathroom and living room lights'
+-
+  name: bathroom_and_living_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and living room?"
+    - 'Lights bathroom living room state'
+    - 'Please check the lights in the bathroom and living room for me'
+    - "If you don't mind, could you tell me if the lights are on in the bathroom and living?"
+    - 'Bathroom and living room lights status please'
+    - 'Get me the current light states for bathroom and living'
+    - 'Are the lights on in the bathroom and living room?'
+-
+  name: bathroom_and_living_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and living room?"
+    - 'Could you please check the lights in the bathroom and living room for me?'
+    - "If you don't mind, tell me if the bathroom and living room lights are on"
+    - 'Are the lights on in the bathroom and living room?'
+    - 'Quick check bathroom and living lights'
+    - 'Please get me the current state of lights in bathroom and living'
+-
+  name: bathroom_and_living_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+    -
+      type: query
+      area: living
+      domain: light
+  sentences:
+    - "What's the status of the lights in the bathroom and living room?"
+    - 'Lights bathroom living state'
+    - "Please check the lights for me in the bathroom and living room if you don't mind"
+    - 'Get current light status bathroom living'
+    - 'Could you tell me if the lights are on in the bathroom and living room?'
+    - 'Bathroom living lights state please'
+    - 'Report light status for bathroom and living areas'

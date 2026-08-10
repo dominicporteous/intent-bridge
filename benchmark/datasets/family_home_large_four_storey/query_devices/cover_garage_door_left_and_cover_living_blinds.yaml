@@ -1,0 +1,18 @@
+-
+  name: cover_garage_door_left_and_cover_living_blinds_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_left
+    -
+      type: query
+      entity_id: cover.living_blinds
+  sentences:
+    - "What's the status of the left garage door?"
+    - 'Tell me if the living room blinds are open or closed'
+    - 'Please check the garage door left for me'
+    - "If you don't mind, what's the current state of the living blinds?"
+    - 'Left garage door status'
+    - 'Living room blinds position please'
+    - 'Can you tell me if the garage door left is open?'
+    - "What's going on with the living blinds right now?"

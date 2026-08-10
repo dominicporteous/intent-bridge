@@ -1,0 +1,14 @@
+-
+  name: binary_sensor_front_door_motion_get_status
+  conditions:
+    -
+      type: query
+      entity_id: binary_sensor.front_door_motion
+  sentences:
+    - "What's the status of the Entryway Motion Sensor?"
+    - 'Is the front door motion sensor triggered?'
+    - 'Check the entryway motion sensor please'
+    - "Could you tell me if there's motion at the front door?"
+    - 'Entryway motion sensor state'
+    - 'Please check the front door motion for me'
+    - "What's going on with the entryway motion sensor?"

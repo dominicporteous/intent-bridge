@@ -1,0 +1,72 @@
+-
+  name: lock_garage_entry_lock
+  setup:
+    -
+      entity_id: lock.garage_entry
+      state: unlocked
+  conditions:
+    -
+      type: action
+      entity_id: lock.garage_entry
+      state: locked
+  sentences:
+    -
+      - "What's the status of the garage entry door?"
+      - 'Please lock it for me.'
+    -
+      - 'Is the garage entry door locked?'
+      - 'Go ahead and lock it.'
+    -
+      - 'Can you check the garage entry door status?'
+      - "If you don't mind, lock it for me."
+    -
+      - 'Garage entry door state?'
+      - 'Flick the lock on.'
+    -
+      - 'Tell me if the garage entry door is locked.'
+      - 'Lock it now.'
+    -
+      - "What's up with the garage entry door?"
+      - 'Please secure it.'
+    -
+      - 'Garage entry door locked or unlocked?'
+      - 'Flip the lock on.'
+    -
+      - 'Check the garage entry door please.'
+      - "Lock it if you don't mind."
+-
+  name: lock_garage_entry_unlock
+  setup:
+    -
+      entity_id: lock.garage_entry
+      state: locked
+  conditions:
+    -
+      type: action
+      entity_id: lock.garage_entry
+      state: unlocked
+  sentences:
+    -
+      - "What's the status of the garage entry door?"
+      - 'Unlock it.'
+    -
+      - 'Can you tell me if the garage entry door is locked?'
+      - 'Please unlock it for me.'
+    -
+      - 'Garage entry door state?'
+      - 'Flick it open.'
+    -
+      - 'Is the garage entry door locked right now?'
+      - "If you don't mind, unlock it."
+    -
+      - 'Check the garage entry door lock status.'
+      - 'Flip it unlocked.'
+    -
+      - "What's the lock state of the garage entry door?"
+      - 'Go ahead and unlock it.'
+    -
+      - 'Garage entry door locked or unlocked?'
+      - 'Unlock please.'
+    -
+      - 'Tell me the status of the garage entry door.'
+      - 'Open it up.'

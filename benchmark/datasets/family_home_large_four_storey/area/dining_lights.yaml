@@ -1,0 +1,65 @@
+-
+  name: dining_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: dining
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the dining room lights'
+    - 'Flick on the dining lights'
+    - 'Please turn on the lights in the dining room for me'
+    - "If you don't mind, could you flip on the dining room lights"
+    - 'Activate dining lights'
+    - 'Hey, switch on the dining room lights'
+    - 'Flip on the lights in the dining area'
+    - 'Turn the dining lights on'
+-
+  name: dining_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: dining
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the dining room lights'
+    - 'Please switch off the dining lights for me'
+    - "Flick off the lights in the dining area if you don't mind"
+    - 'Flip the dining lights off'
+    - 'Could you turn off the lights in the dining room'
+    - 'Shut off the dining room lights please'
+    - 'Kill the lights in the dining area'
+-
+  name: dining_lights_change_brightness
+  conditions:
+    -
+      area: dining
+      domain: light
+      attributes:
+        brightness: 66
+  sentences:
+    - 'Set dining room lights to 66%'
+    - 'Please dim the dining lights to sixty six percent for me'
+    - "Flick dining lights brightness to 66 if you don't mind"
+    - 'Adjust dining area illumination to 66%'
+    - 'Could you please set the dining lights to sixty six percent'
+    - 'Turn dining lights brightness down to 66'
+    - 'Make dining room lights 66 percent please'
+-
+  name: dining_lights_change_color
+  conditions:
+    -
+      area: dining
+      domain: light
+      attributes:
+        color: green
+  sentences:
+    - 'Turn the dining room lights green'
+    - 'Flick the dining lights to green'
+    - 'Please set the dining room lights to green for me'
+    - "If you don't mind, flip the dining lights on green"
+    - 'Quickly make the dining room lights green'
+    - 'Change dining lights color to green'
+    - 'Set dining room lights to green please'

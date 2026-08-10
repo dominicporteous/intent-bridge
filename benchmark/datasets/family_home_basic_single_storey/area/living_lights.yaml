@@ -1,0 +1,64 @@
+-
+  name: living_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the living room lights'
+    - 'Please flick on the living room lights for me'
+    - "If you don't mind, flip on the living room lights"
+    - 'Activate living room lighting'
+    - 'Could you switch on the living room lights please'
+    - 'Turn the living room lights on'
+    - 'Quickly turn on living room lights'
+-
+  name: living_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the living room lights'
+    - 'Please switch off the lights in the living room for me'
+    - "Flick off the living room lights if you don't mind"
+    - 'Could you flip off the living room lights'
+    - 'Deactivate the living room lights please'
+    - 'Kill the living room lights'
+    - 'Turn the living room lights off for me if possible'
+-
+  name: living_lights_change_brightness
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 72
+  sentences:
+    - 'Set the living room lights to 72%'
+    - 'Please adjust the living room brightness to 72 for me'
+    - "Flick the living room lights to 72 if you don't mind"
+    - 'Change living room lights brightness to 72%'
+    - 'Could you flip the living room lights to 72 please'
+    - 'Make the living room lights 72 brightness'
+    - 'Turn living room lights to 72 if possible'
+-
+  name: living_lights_change_color
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        color: black
+  sentences:
+    - 'Turn the living room lights black'
+    - 'Flick the lounge lights to black' # Changed from: Flick the lounge lights off
+    - 'Please set the living room lights to black for me'
+    - "If you don't mind, flip the living room lights to black"
+    - 'Make the living room lights black'
+    - 'Quickly turn the living room lights black' # Changed from: Quickly turn off the living room lights
+    - 'Set the lounge lights to black please'

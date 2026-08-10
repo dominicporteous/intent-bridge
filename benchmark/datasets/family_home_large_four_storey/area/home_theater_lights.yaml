@@ -1,0 +1,64 @@
+-
+  name: home_theater_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: home_theater
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the home theater lights'
+    - 'Flick on the theater lights'
+    - 'Please flip on the lights in the home theater for me'
+    - "If you don't mind, could you turn on the theater lights"
+    - 'Activate the home theater lighting'
+    - 'Hey, switch on the lights in the theater'
+    - 'Can you please illuminate the home theater'
+-
+  name: home_theater_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: home_theater
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the home theater lights'
+    - 'Please kill the lights in the theater for me'
+    - "If you don't mind, flick off the theater lights"
+    - 'Lights off in the home theater'
+    - 'Could you flip the theater lights off please'
+    - 'Shut down the home theater lighting'
+    - 'Turn the theater lights off if you would'
+-
+  name: home_theater_lights_change_brightness
+  conditions:
+    -
+      area: home_theater
+      domain: light
+      attributes:
+        brightness: 82
+  sentences:
+    - 'Set the home theater lights to 82 percent brightness'
+    - 'Dim the theater lights to eighty two'
+    - "Please adjust the home theater lights to 82 if you don't mind"
+    - 'Flick the theater lights down to 82 brightness'
+    - 'Could you set the home theater lights to 82 percent for me'
+    - 'Turn the home theater lights to 82'
+    - 'Make the theater lights 82 percent bright please'
+-
+  name: home_theater_lights_change_color
+  conditions:
+    -
+      area: home_theater
+      domain: light
+      attributes:
+        color: green
+  sentences:
+    - 'Change the home theater lights to green'
+    - 'Flick the theater lights on green'
+    - 'Please set the lights in the home theater to green for me'
+    - "If you don't mind, flip the theater lights to green"
+    - 'Turn the home theater lights green'
+    - 'Quickly make the theater lights green'
+    - 'Set the lights in the home theater to green please'

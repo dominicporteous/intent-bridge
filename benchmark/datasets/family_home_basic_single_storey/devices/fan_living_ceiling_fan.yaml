@@ -1,0 +1,46 @@
+-
+  name: fan_living_ceiling_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the ceiling fan'
+    - 'Please turn on the living room ceiling fan for me'
+    - 'Flip on the fan living ceiling fan'
+    - "If you don't mind, flick on the ceiling fan"
+    - 'Activate the living ceiling fan'
+    - 'Turn on the fan in the living room'
+    - 'Switch on the ceiling fan please'
+-
+  name: fan_living_ceiling_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      state: 'off'
+  sentences:
+    - 'turn off the ceiling fan'
+    - 'please turn off the living ceiling fan for me'
+    - 'flick off the fan living ceiling fan'
+    - "if you don't mind, flip off the ceiling fan in the living room"
+    - 'shut down the living ceiling fan'
+    - 'can you switch off the ceiling fan'
+    - 'power down the fan living ceiling fan please'
+-
+  name: fan_living_ceiling_fan_set_fan_speed
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_ceiling_fan
+      attributes:
+        percentage: 21
+  sentences:
+    - 'Set the living room ceiling fan to speed 21'
+    - "Please set fan living ceiling fan to 21 if you don't mind"
+    - 'Flick the ceiling fan in the living room up to 21'
+    - 'Turn the fan living ceiling fan speed to 21 for me'
+    - 'Adjust living ceiling fan to 21 please'
+    - 'Flip the living room ceiling fan speed to 21'
+    - 'Set fan living ceiling fan speed to 21'

@@ -1,0 +1,60 @@
+-
+  name: master_bath_lights_get_state
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the master bath lights?"
+    - 'Lights in master bath?'
+    - "Please tell me the current state of the master bathroom lights if you don't mind"
+    - 'Check master bath lighting'
+    - 'Could you check on the lights in the master bath for me?'
+    - 'Master bath lights status please'
+    - 'Are the master bathroom lights on or off?'
+-
+  name: master_bath_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the master bath lights?"
+    - 'Lights in master bath?'
+    - "Please tell me the current state of the lights in the master bathroom if you don't mind."
+    - 'Master bath lights state'
+    - 'Could you check the lights in the master bath for me?'
+    - 'Are the master bathroom lights on or off?'
+    - 'Get me the master bath lighting status please.'
+-
+  name: master_bath_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the master bath lights"
+    - 'Are the lights on in the master bathroom'
+    - 'Please check the master bath lights for me'
+    - 'Master bath lights status'
+    - "If you don't mind, tell me if the master bath lights are on"
+    - 'Current state of master bathroom lighting'
+    - 'Quick check on master bath lights'
+-
+  name: master_bath_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: master_bath
+      domain: light
+  sentences:
+    - "What's the status of the master bath lights?"
+    - 'Lights master bath state'
+    - "Please tell me the current state of the lights in the master bathroom if you don't mind"
+    - 'Master bath lights status please'
+    - 'Could you check the lights in the master bath for me?'
+    - 'Are the master bathroom lights on or off?'
+    - 'Get me the master bath lighting state'

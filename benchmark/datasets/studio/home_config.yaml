@@ -1,0 +1,181 @@
+name: Studio Apartment
+difficulty: easy
+floors:
+  - id: main_floor
+    name: Main Floor
+    level: 0
+areas:
+  - id: kitchen
+    name: Kitchen
+    floor: main_floor
+  - id: living
+    name: Living
+    floor: main_floor
+  - id: bathroom
+    name: Bathroom
+    floor: main_floor
+  - id: entryway
+    name: Entryway
+    floor: main_floor
+devices:
+  # Kitchen
+  - id: light.kitchen_ceiling_lights
+    area_id: kitchen
+    name: Ceiling Lights
+    state: "on"
+    attributes:
+      brightness: 80
+      color: white
+  - id: light.kitchen_under_cabinet_lights
+    area_id: kitchen
+    name: Under Cabinet Lights
+    state: "off"
+    attributes:
+      brightness: 100
+  - id: switch.coffee_maker
+    area_id: kitchen
+    name: Coffee Maker
+    state: "off"
+  - id: binary_sensor.refrigerator_door
+    area_id: kitchen
+    name: Refrigerator Door Sensor
+    state: "off"
+    attributes:
+      device_class: door
+
+  # Living Area (Studio Main Space)
+  - id: fan.living_room_ceiling_fan
+    area_id: living
+    name: Ceiling Fan
+    state: "off"
+    attributes:
+      speed: 40
+  - id: media_player.main_lg_tv
+    area_id: living
+    name: LG TV
+    state: "off"
+  - id: light.living_room_lamp
+    area_id: living
+    name: Floor Lamp
+    state: "on"
+    attributes:
+      brightness: 50
+      rgb_color: [255, 190, 100]
+  - id: climate.studio_thermostat
+    area_id: living
+    name: Thermostat
+    state: heat
+    attributes:
+      temperature: 21
+      current_temperature: 20
+      hvac_modes: ["heat", "cool", "off"]
+  - id: sensor.studio_temperature
+    area_id: living
+    name: Studio Temperature Sensor
+    state: 20.5
+    attributes:
+      unit_of_measurement: "°C"
+  - id: cover.living_room_blinds
+    area_id: living
+    name: Window Blinds
+    state: open
+    attributes:
+      current_position: 100
+
+  # Bathroom
+  - id: light.bathroom_mirror_light
+    area_id: bathroom
+    name: Mirror Light
+    state: "off"
+  - id: fan.bathroom_exhaust_fan
+    area_id: bathroom
+    name: Exhaust Fan
+    state: "off"
+  - id: sensor.bathroom_humidity
+    area_id: bathroom
+    name: Bathroom Humidity
+    state: 45
+    attributes:
+      unit_of_measurement: "%"
+
+  # Entryway
+  - id: lock.front_door
+    area_id: entryway
+    name: Front Door Lock
+    state: locked
+  - id: binary_sensor.front_door_motion
+    area_id: entryway
+    name: Entryway Motion Sensor
+    state: "off"
+    attributes:
+      device_class: motion
+scenes:
+  - id: movie_mode
+    name: Movie Mode
+    entities:
+      light.living_room_lamp:
+        state: "on"
+        brightness: 20
+      media_player.main_lg_tv:
+        state: "on"
+      cover.living_room_blinds:
+        state: closed
+
+  - id: good_morning
+    name: Good Morning
+    entities:
+      light.kitchen_ceiling_lights:
+        state: "on"
+        brightness: 100
+      switch.coffee_maker:
+        state: "on"
+      cover.living_room_blinds:
+        state: open
+
+scripts:
+  - id: lock_up
+    name: Lock Up
+    actions:
+      - action: lock.lock
+        target:
+          entity_id: lock.front_door
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_lights
+            - light.kitchen_under_cabinet_lights
+            - light.living_room_lamp
+
+  - id: goodnight
+    name: Goodnight
+    actions:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.kitchen_ceiling_lights
+            - light.kitchen_under_cabinet_lights
+            - light.living_room_lamp
+            - light.bathroom_mirror_light
+      - action: lock.lock
+        target:
+          entity_id: lock.front_door
+      - action: climate.set_temperature
+        target:
+          entity_id: climate.studio_thermostat
+        data:
+          temperature: 18
+
+persons:
+  - id: jason
+    name: Jason
+    state: home
+timers:
+  - id: oven
+    name: Oven Timer
+    state: idle
+  - id: laundry
+    name: Laundry Timer
+    state: idle
+lists:
+  - id: chores
+    name: Chores

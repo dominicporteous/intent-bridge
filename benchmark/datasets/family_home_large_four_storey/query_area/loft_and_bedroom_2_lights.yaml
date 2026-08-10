@@ -1,0 +1,76 @@
+-
+  name: loft_and_bedroom_2_lights_get_state
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in the loft and bedroom 2"
+    - 'lights loft bedroom 2'
+    - 'please check the lights in the loft and bedroom 2 for me'
+    - "if you don't mind, could you tell me the current state of the lights in the loft and bedroom 2"
+    - 'loft and bedroom 2 lights status'
+    - 'get me the light states for loft and bedroom 2'
+    - 'are the lights on in the loft and bedroom 2'
+-
+  name: loft_and_bedroom_2_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in the loft and bedroom 2?"
+    - 'Check lights loft bedroom 2'
+    - "Please tell me the current state of the lights in the loft and bedroom 2 if you don't mind"
+    - 'Lights loft bedroom 2 status'
+    - 'Could you check the lights in the loft and bedroom 2 for me please'
+    - 'Report light states loft and bedroom 2'
+    - 'Get me the light status for loft and bedroom 2'
+-
+  name: loft_and_bedroom_2_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in the loft and bedroom 2"
+    - 'lights loft bedroom 2 state'
+    - "please tell me the current state of the lights in the loft and bedroom 2 if you don't mind"
+    - 'check lights loft bedroom 2'
+    - 'could you get the light status for loft and bedroom 2 please'
+    - 'lights status loft bedroom 2 now'
+    - "what's the state of lights in loft and bedroom 2"
+-
+  name: loft_and_bedroom_2_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: loft
+      domain: light
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in the loft and bedroom 2"
+    - 'lights loft bedroom 2'
+    - 'please check the lights upstairs for me'
+    - "if you don't mind, could you tell me the current state of the lights in the loft and bedroom 2"
+    - 'loft and bedroom 2 lights status'
+    - 'get me the light states for loft and bedroom 2'
+    - 'are the lights on in the loft and bedroom 2'

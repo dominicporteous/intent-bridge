@@ -1,0 +1,18 @@
+-
+  name: light_bathroom_mirror_light_and_fan_bathroom_exhaust_fan_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.bathroom_mirror_light
+    -
+      type: query
+      entity_id: fan.bathroom_exhaust_fan
+  sentences:
+    - "What's the status of the mirror light and exhaust fan?"
+    - 'Mirror light and bathroom exhaust fan state please'
+    - "If you don't mind, could you check the mirror light and exhaust fan for me?"
+    - 'Current state of light bathroom mirror light and fan bathroom exhaust fan'
+    - 'Tell me if the mirror light and exhaust fan are on or off'
+    - 'Please check the status of the bathroom mirror light and exhaust fan'
+    - 'Mirror light status and exhaust fan status'
+    - 'Get me the current state of the mirror light and exhaust fan'

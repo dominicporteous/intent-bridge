@@ -1,0 +1,86 @@
+-
+  name: master_bedroom_and_backyard_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: backyard
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bedroom and backyard lights'
+    - 'Flick on the lights in the master bedroom and backyard'
+    - 'Please flip on the lights in the master bedroom and backyard for me'
+    - "If you don't mind, could you turn on the master bedroom and backyard lights"
+    - 'Activate the lights in the master bedroom and backyard'
+    - 'Switch on the master bedroom and backyard lights please'
+    - 'Can you turn on the lights in the master bedroom and backyard'
+-
+  name: master_bedroom_and_backyard_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: backyard
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the master bedroom and backyard'
+    - 'Please switch off the master bedroom and backyard lights for me'
+    - "If you don't mind, could you flick off the lights in the master bedroom and backyard"
+    - 'Deactivate master bedroom and backyard lighting'
+    - "Kill the lights in the master bedroom and backyard if you don't mind"
+    - 'Flip off the lights in the master bedroom and backyard please'
+    - 'Shut down the master bedroom and backyard lights'
+    - 'Turn off master bedroom and backyard illumination'
+-
+  name: master_bedroom_and_backyard_lights_change_brightness
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        brightness: 24
+    -
+      area: backyard
+      domain: light
+      attributes:
+        brightness: 24
+  sentences:
+    - 'Set the master bedroom and backyard lights to 24 percent brightness'
+    - "Please dim the lights in the master bedroom and backyard to 24 if you don't mind"
+    - 'Flick the master bedroom and backyard lights down to 24%'
+    - 'Could you adjust the brightness of the master bedroom and backyard lights to 24 for me'
+    - 'Turn the master bedroom and backyard lights to 24 brightness'
+    - 'Make the lights in the master bedroom and backyard 24 percent'
+    - 'If you could set the master bedroom and backyard lights to 24, that would be great'
+    - 'Adjust the master bedroom and backyard lights brightness to 24'
+-
+  name: master_bedroom_and_backyard_lights_change_color
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        color: orange
+    -
+      area: backyard
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Change the master bedroom and backyard lights to orange'
+    - 'Please set the lights in the master bedroom and backyard to orange for me'
+    - 'Flick the master bedroom and backyard lights to orange'
+    - "If you don't mind, flip on orange for the master bedroom and backyard lights"
+    - 'Quickly turn the master bedroom and backyard lights orange'
+    - 'Set the backyard and master bedroom lights to orange please'
+    - 'Make the master bedroom and backyard lights orange now'

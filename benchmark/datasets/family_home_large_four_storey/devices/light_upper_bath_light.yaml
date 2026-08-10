@@ -1,0 +1,62 @@
+-
+  name: light_upper_bath_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_bath_light
+      state: 'on'
+  sentences:
+    - 'Turn on the upper bath light'
+    - 'Flick on the light in the upper bath'
+    - 'Please flip on the upper_bath light for me'
+    - "If you don't mind, could you turn on the upper bath light"
+    - 'Activate the upper_bath light'
+    - 'Switch on the light in upper_bath'
+    - 'Hey, turn on the upper bath light'
+-
+  name: light_upper_bath_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_bath_light
+      state: 'off'
+  sentences:
+    - 'Turn off the Upper Bath Light'
+    - 'Please switch off the upper_bath light for me'
+    - "Flick off the light in the upper bath if you don't mind"
+    - 'Flip the upper_bath light off'
+    - 'Could you turn off the Upper Bath Light please'
+    - 'Deactivate the light in upper_bath'
+    - 'Shut off the upper bath light for me'
+-
+  name: light_upper_bath_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_bath_light
+      attributes:
+        brightness: 44
+  sentences:
+    - 'Set the upper bath light brightness to 44'
+    - 'Please dim the Upper Bath Light to 44 for me'
+    - 'Turn the upper_bath light down to 44 percent'
+    - "If you don't mind, flick the Upper Bath Light to 44"
+    - 'Change brightness of upper_bath to 44%'
+    - 'Quickly set Upper Bath Light brightness level to 44'
+    - 'Flip the upper bath light brightness to 44'
+-
+  name: light_upper_bath_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.upper_bath_light
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the upper bath light white'
+    - 'Set upper_bath light to white'
+    - 'Please change the Upper Bath Light to white for me'
+    - "If you don't mind, flick the upper_bath light to white"
+    - 'Quickly set upper bath light color to white'
+    - 'Flip the Upper Bath Light to white please'
+    - 'Make the upper_bath light white now'

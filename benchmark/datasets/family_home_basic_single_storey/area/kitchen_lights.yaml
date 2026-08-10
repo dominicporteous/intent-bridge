@@ -1,0 +1,66 @@
+-
+  name: kitchen_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen lights'
+    - 'Kitchen lights on'
+    - 'Please flick on the lights in the kitchen for me'
+    - "If you don't mind, could you flip on the kitchen lights"
+    - 'Activate the lights in the kitchen'
+    - 'Hey, switch on the kitchen lights'
+    - 'Can you turn the kitchen lights on please'
+-
+  name: kitchen_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen lights'
+    - 'Please switch off the lights in the kitchen for me'
+    - 'Flick off the kitchen lights'
+    - "If you don't mind, could you turn off the kitchen lights"
+    - 'Kill the lights in the kitchen'
+    - 'Flip off the kitchen lights please'
+    - "Shut off the lights in the kitchen if you don't mind"
+    - 'Deactivate the kitchen lights'
+-
+  name: kitchen_lights_change_brightness
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        brightness: 87
+  sentences:
+    - 'Set kitchen lights to 87 percent'
+    - 'Kitchen lights to 87'
+    - 'Please turn the kitchen lights to 87 for me'
+    - "If you don't mind, flick the kitchen lights to 87"
+    - 'Flip kitchen lights to 87 percent please'
+    - 'Kitchen lights brightness 87'
+    - 'Adjust kitchen lights to 87 if possible'
+    - 'Set kitchen lights brightness to 87'
+-
+  name: kitchen_lights_change_color
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change the kitchen lights to yellow'
+    - 'Please set the kitchen lights to yellow for me'
+    - 'Flick the kitchen lights to yellow'
+    - "If you don't mind, could you turn the kitchen lights yellow"
+    - 'Make the kitchen lights yellow please'
+    - 'Flip the kitchen lights to yellow'
+    - 'Set kitchen lights to yellow if possible'

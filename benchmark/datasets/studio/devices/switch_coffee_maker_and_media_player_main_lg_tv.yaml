@@ -1,0 +1,38 @@
+-
+  name: switch_coffee_maker_and_media_player_main_lg_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    - 'turn on the coffee maker and LG TV'
+    - 'flick on the coffee maker and flip on the main LG TV'
+    - 'please turn on the coffee maker and TV for me'
+    - "if you don't mind, switch on the coffee maker and media player"
+    - 'activate the coffee maker and main LG TV now'
+    - 'hey turn the coffee maker and LG TV on'
+    - 'power up the coffee maker and main LG TV please'
+-
+  name: switch_coffee_maker_and_media_player_main_lg_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'off'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the coffee maker and LG TV'
+    - 'Please switch off the coffee maker and main LG TV for me'
+    - 'Flick off the coffee maker and flip off the LG TV'
+    - "If you don't mind, power down the coffee maker and media player main LG TV"
+    - 'Shut down the coffee maker and LG TV please'
+    - 'Kill the coffee maker and turn off the main LG TV'
+    - 'Deactivate the coffee maker and LG TV if possible'

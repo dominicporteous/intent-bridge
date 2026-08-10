@@ -1,0 +1,62 @@
+-
+  name: light_entryway_chandelier_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_chandelier
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway chandelier'
+    - 'Flick on the Entry Chandelier'
+    - 'Please flip on the light entryway chandelier for me'
+    - "If you don't mind, turn on the Entry Chandelier"
+    - 'Activate the entryway chandelier now'
+    - 'Switch on the Entry Chandelier please'
+    - 'Can you turn on the light entryway chandelier'
+-
+  name: light_entryway_chandelier_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_chandelier
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway chandelier'
+    - 'Please switch off the Entry Chandelier for me'
+    - "If you don't mind, flick off the light entryway chandelier"
+    - 'Flip off the Entry Chandelier'
+    - 'Kill the entryway chandelier'
+    - 'Could you please turn off the Entry Chandelier'
+    - "Shut off the light entryway chandelier if you don't mind"
+-
+  name: light_entryway_chandelier_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_chandelier
+      attributes:
+        brightness: 77
+  sentences:
+    - 'Set the entryway chandelier to 77 percent brightness'
+    - 'Turn the Entry Chandelier down to 77'
+    - "Please dim the entryway light to 77% if you don't mind"
+    - 'Flick the Entry Chandelier brightness to 77'
+    - 'Could you adjust the entryway chandelier to 77 percent for me'
+    - 'Make the Entry Chandelier 77 brightness'
+    - 'If possible, set entryway light brightness level to 77'
+-
+  name: light_entryway_chandelier_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_chandelier
+      attributes:
+        color: orange
+  sentences:
+    - 'Turn the entryway chandelier orange'
+    - 'Flick the Entry Chandelier to orange'
+    - 'Please set the light entryway chandelier to orange for me'
+    - "If you don't mind, flip the entryway chandelier to orange"
+    - 'Change Entry Chandelier color to orange'
+    - 'Make the entryway chandelier orange please'
+    - 'Set the Entry Chandelier to orange in the entryway'

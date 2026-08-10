@@ -1,0 +1,38 @@
+-
+  name: light_living_room_lamp_and_fan_living_room_ceiling_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the floor lamp and ceiling fan'
+    - 'Please flick on the living room lamp and fan for me'
+    - "Flip on the living room ceiling fan and floor lamp if you don't mind"
+    - 'Activate the living room lamp and fan'
+    - 'Could you turn on the living room floor lamp and ceiling fan please'
+    - 'Switch on the living room lamp and fan'
+    - 'Turn on the living room ceiling fan and floor lamp now'
+-
+  name: light_living_room_lamp_and_fan_living_room_ceiling_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the floor lamp and ceiling fan'
+    - 'Please turn off the living room lamp and fan for me'
+    - "If you don't mind, flick off the living room ceiling fan and floor lamp"
+    - 'Flip off the living room lamp and ceiling fan please'
+    - 'Shut down the living room floor lamp and fan'
+    - 'Can you turn off the living room ceiling fan and floor lamp'
+    - "Deactivate the living room lamp and fan if you don't mind"

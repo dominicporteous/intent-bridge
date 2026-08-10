@@ -1,0 +1,15 @@
+-
+  name: binary_sensor_refrigerator_door_get_status
+  conditions:
+    -
+      type: query
+      entity_id: binary_sensor.refrigerator_door
+  sentences:
+    - "What's the status of the refrigerator door sensor"
+    - 'Is the fridge door open or closed'
+    - 'Check the refrigerator door in the kitchen'
+    - 'Please tell me if the fridge door is open'
+    - 'Can you check the kitchen refrigerator door for me'
+    - 'Refrigerator door sensor status'
+    - "If you don't mind, what's the fridge door state in the kitchen"
+    - 'Get the current state of the refrigerator door sensor'

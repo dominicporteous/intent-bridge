@@ -1,0 +1,15 @@
+-
+  name: master_bedroom_climates_get_temperature
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: climate
+  sentences:
+    - "What's the temperature in the master bedroom?"
+    - 'Check the climate status for the master bedroom'
+    - "Please tell me the current climate in the master bedroom if you don't mind"
+    - 'Master bedroom climate state'
+    - 'Could you get the temperature for the master bedroom for me'
+    - 'Show me the climate controls in the master bedroom'
+    - "What's the climate like in the master bedroom right now"

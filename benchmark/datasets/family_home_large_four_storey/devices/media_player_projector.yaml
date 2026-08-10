@@ -1,0 +1,128 @@
+-
+  name: media_player_projector_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: 'on'
+  sentences:
+    - 'Turn on the projector'
+    - 'Flick on the media player projector in the home_theater'
+    - 'Please flip on the projector for me'
+    - "If you don't mind, turn on the home_theater projector"
+    - 'Activate the projector'
+    - 'Switch on the media player projector in the home_theater'
+    - 'Quickly turn on the projector please'
+    - 'Power up the projector in the home_theater'
+-
+  name: media_player_projector_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: paused
+  sentences:
+    - 'Pause the projector'
+    - 'Pause the home_theater projector please'
+    - "If you don't mind, pause the projector for me"
+    - 'Stop the projector'
+    - 'Hold the home_theater projector'
+    - 'Pause projector in home_theater'
+    - 'Quick pause the projector'
+    - 'Flick pause on the projector'
+-
+  name: media_player_projector_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: playing
+  sentences:
+    - 'Unpause the projector'
+    - 'Resume the projector in the home_theater'
+    - 'Please continue the projector for me'
+    - "If you don't mind, flick the projector back on"
+    - 'Resume playback on the home_theater projector'
+    - 'Flip the projector back on'
+    - 'Hey, unpause the projector in the home_theater'
+    - 'Resume the projector please'
+-
+  name: media_player_projector_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the projector'
+    - 'Please mute the projector in the home_theater for me'
+    - "If you don't mind, silence the projector"
+    - 'Flick the projector to mute'
+    - 'Flip the projector to silent'
+    - 'Quickly mute the projector'
+    - 'Turn the projector volume off'
+    - 'Could you mute the projector in the home_theater'
+-
+  name: media_player_projector_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'Unmute the projector'
+    - 'Please unmute the projector for me'
+    - 'Flip the projector sound back on'
+    - "If you don't mind, unmute the media player projector in the home_theater"
+    - 'Turn the projector volume back on'
+    - 'Quickly unmute projector'
+    - 'Flick the projector audio on again'
+-
+  name: media_player_projector_set_volume
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      attributes:
+        volume_level: 60
+  sentences:
+    - 'Set the projector volume to 60 in the home theater'
+    - 'Please adjust the media player projector to 60 for me'
+    - "If you don't mind, turn the projector volume up to 60"
+    - 'Flick the projector volume to 60 in home_theater'
+    - 'Quickly set media player projector volume to 60'
+    - 'Flip the projector volume to 60 please'
+    - 'Change the home theater projector to volume 60'
+-
+  name: media_player_projector_increase_volume_by_10
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      attributes:
+        volume_level: 70
+  sentences:
+    - 'Increase the volume of the projector in the home_theater to 70'
+    - 'Set media player projector volume to 70'
+    - 'Please turn the projector volume up to 70 for me'
+    - "If you don't mind, could you adjust the projector to volume 70"
+    - 'Flick the projector volume up to 70 in the home_theater'
+    - 'Bump the media player projector volume to 70'
+    - 'Raise projector volume to 70 please'
+-
+  name: media_player_projector_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.projector
+      state: 'off'
+  sentences:
+    - 'Turn off the projector'
+    - 'Please turn off the projector for me'
+    - "If you don't mind, turn off the projector in the home_theater"
+    - 'Flick off the projector'
+    - 'Flip off the projector'
+    - 'Shut down the projector'
+    - 'Switch off the projector in the home_theater'

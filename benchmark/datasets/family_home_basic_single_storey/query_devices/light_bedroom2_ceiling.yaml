@@ -1,0 +1,28 @@
+-
+  name: light_bedroom2_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.bedroom2_ceiling
+  sentences:
+    - "What's the status of the Bedroom 2 Ceiling light?"
+    - 'bedroom2 ceiling state'
+    - "please tell me the current state of the light in bedroom_2 if you don't mind"
+    - 'is the Bedroom 2 Ceiling on or off right now'
+    - 'get bedroom_2 ceiling light status'
+    - 'can you check the Bedroom 2 Ceiling for me'
+    - 'bedroom2 ceiling'
+-
+  name: light_bedroom2_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.bedroom2_ceiling
+  sentences:
+    - "What's the brightness of the Bedroom 2 Ceiling light?"
+    - 'Get brightness for bedroom_2 ceiling'
+    - "Please tell me the current brightness of the Bedroom 2 Ceiling if you don't mind"
+    - 'bedroom2 ceiling brightness'
+    - 'Could you check how bright the Bedroom 2 Ceiling is right now?'
+    - 'brightness bedroom_2 ceiling'
+    - 'Report the brightness level of the Bedroom 2 Ceiling light please'

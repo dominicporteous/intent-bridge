@@ -1,0 +1,38 @@
+-
+  name: light_kitchen_ceiling_lights_and_fan_living_room_ceiling_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the ceiling lights and ceiling fan'
+    - 'Flick on the kitchen ceiling lights and living room fan'
+    - 'Please flip on the ceiling lights and fan for me'
+    - "If you don't mind, turn on the ceiling lights and ceiling fan"
+    - 'Activate the kitchen ceiling lights and living room ceiling fan'
+    - 'Switch on the ceiling lights and fan please'
+    - 'Can you turn on the ceiling lights and ceiling fan for me'
+-
+  name: light_kitchen_ceiling_lights_and_fan_living_room_ceiling_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the ceiling lights and ceiling fan'
+    - 'Please switch off the kitchen ceiling lights and living room ceiling fan for me'
+    - "Flick off the ceiling lights and fan if you don't mind"
+    - 'Flip off the kitchen lights and living room fan'
+    - 'Shut down the ceiling lights and ceiling fan please'
+    - 'Could you turn off the ceiling lights and fan for me'
+    - 'Kill the kitchen ceiling lights and living room ceiling fan'

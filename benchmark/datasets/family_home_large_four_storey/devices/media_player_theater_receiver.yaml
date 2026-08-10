@@ -1,0 +1,127 @@
+-
+  name: media_player_theater_receiver_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: 'on'
+  sentences:
+    - 'Turn on the AV receiver'
+    - 'Please turn on the media player theater receiver for me'
+    - 'Flick on the AV receiver in the home_theater'
+    - "If you don't mind, flip on the theater receiver"
+    - 'Activate the AV receiver'
+    - 'Hey, can you power on the media player theater receiver in the home_theater'
+    - 'Switch on the AV receiver please'
+-
+  name: media_player_theater_receiver_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: paused
+  sentences:
+    - 'Pause the media player in the home_theater'
+    - 'Please pause the AV receiver for me'
+    - "If you don't mind, pause the theater receiver"
+    - 'Flick pause on the media player home_theater'
+    - 'Quick pause the AV receiver'
+    - 'Pause the receiver in home_theater if possible'
+    - 'Flip the media player to pause in the home_theater'
+-
+  name: media_player_theater_receiver_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: playing
+  sentences:
+    - 'unpause the media player theater receiver'
+    - 'please unpause the home_theater AV receiver for me'
+    - "flick the theater receiver back on if you don't mind"
+    - 'resume playback on the media player in home_theater'
+    - 'flip the AV receiver back on'
+    - 'hey could you unpause the home theater receiver'
+    - 'restart the media player theater receiver please'
+    - 'turn the AV receiver back on in the home_theater'
+-
+  name: media_player_theater_receiver_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the AV receiver'
+    - 'Please mute the media player theater receiver for me'
+    - "If you don't mind, could you silence the home theater AV receiver"
+    - 'Flick the theater receiver to mute'
+    - 'Flip the media player theater receiver to silent mode'
+    - 'Quickly mute the home theater receiver'
+    - 'Turn the AV receiver volume off in the home theater'
+-
+  name: media_player_theater_receiver_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'unmute the AV receiver in the home_theater'
+    - 'turn the volume back on for the media player theater receiver'
+    - 'flick the sound on for the AV receiver please'
+    - "if you don't mind, flip the mute off on the home_theater receiver"
+    - 'quickly unmute the theater receiver'
+    - 'please turn the audio back on for the AV receiver'
+    - 'flip the mute switch off on the media player theater receiver'
+-
+  name: media_player_theater_receiver_set_volume
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      attributes:
+        volume_level: 45
+  sentences:
+    - 'Set the home theater receiver volume to 45'
+    - 'Please set the AV receiver volume to 45 for me'
+    - 'Turn the theater receiver volume up to 45'
+    - "If you don't mind, set the media player volume to 45"
+    - 'Flick the home theater volume to 45'
+    - 'Set volume of the AV receiver to 45 please'
+    - 'Adjust the theater receiver to volume 45'
+-
+  name: media_player_theater_receiver_increase_volume_by_10
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      attributes:
+        volume_level: 55
+  sentences:
+    - 'Turn up the volume on the home theater receiver to 55'
+    - 'Increase media player theater receiver volume to 55' # Changed from: Increase media player theater receiver volume by 10
+    - 'Please set the AV receiver volume to 55 for me'
+    - "If you don't mind, could you raise the home theater volume to 55"
+    - 'Flick the volume up on the theater receiver to 55'
+    - 'Bump the AV receiver volume by 10 to reach 55'
+    - 'Set the home theater receiver volume to 55 please'
+    - 'Quickly adjust the theater receiver volume up to 55'
+-
+  name: media_player_theater_receiver_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.theater_receiver
+      state: 'off'
+  sentences:
+    - 'Turn off the AV Receiver'
+    - 'Please turn off the media player theater receiver for me'
+    - 'Flick off the AV Receiver in the home_theater'
+    - "If you don't mind, flip off the media player theater receiver"
+    - 'Shut down the AV Receiver'
+    - 'Can you power off the media player theater receiver in the home_theater please'
+    - 'Turn the AV Receiver off'
+    - 'Deactivate the media player theater receiver if possible'

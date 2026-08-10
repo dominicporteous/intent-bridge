@@ -1,0 +1,32 @@
+-
+  name: master_bath_switchs_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: switch
+      state: 'on'
+  sentences:
+    - 'Turn on the master bath switches'
+    - 'Please flick on the master bathroom switches for me'
+    - "If you don't mind, flip on the master bath switches"
+    - 'Activate master bath switches'
+    - 'Could you switch on the master bathroom switches please'
+    - 'Turn the master bath switches on'
+    - 'Quickly enable the master bath switches'
+-
+  name: master_bath_switchs_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bath
+      domain: switch
+      state: 'off'
+  sentences:
+    - 'Turn off the master bath switches'
+    - 'Please switch off the master bathroom switches for me'
+    - "If you don't mind, flick off the switches in the master bath"
+    - 'Deactivate master bath switches'
+    - 'Could you flip off the master bathroom switches please'
+    - 'Shut down the switches in the master bath'
+    - "Turn off master bath switches if you don't mind"

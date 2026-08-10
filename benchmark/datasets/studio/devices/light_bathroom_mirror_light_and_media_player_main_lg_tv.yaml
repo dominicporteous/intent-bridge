@@ -1,0 +1,39 @@
+-
+  name: light_bathroom_mirror_light_and_media_player_main_lg_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'on'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the mirror light and LG TV'
+    - 'Flick on the bathroom mirror light and main LG TV'
+    - 'Please flip on the mirror light and TV for me'
+    - "If you don't mind, could you turn on the mirror light and LG TV"
+    - 'Activate the bathroom mirror light and main TV'
+    - 'Quickly switch on the mirror light and LG TV now'
+    - 'Turn on both the mirror light and the LG TV please'
+-
+  name: light_bathroom_mirror_light_and_media_player_main_lg_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'off'
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the mirror light and LG TV'
+    - 'Please switch off the bathroom mirror light and main LG TV for me'
+    - "If you don't mind, could you flick off the mirror light and LG TV"
+    - 'Deactivate the bathroom mirror light and main LG TV'
+    - 'Kill the mirror light and LG TV'
+    - 'Shut down the bathroom mirror light and main LG TV please'
+    - "Flip off the mirror light and LG TV if you don't mind"
+    - 'Power down the bathroom mirror light and main LG TV'

@@ -1,0 +1,102 @@
+-
+  name: light_kitchen_under_cabinet_lights_turn_on
+  setup:
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the kitchen light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the kitchen light on or off?'
+      - 'Flick it on.'
+    -
+      - 'Can you tell me the state of the kitchen light?'
+      - "If you don't mind, flip it on."
+    -
+      - 'Kitchen light status?'
+      - 'Switch it on.'
+    -
+      - "What's happening with the kitchen light?"
+      - 'Go ahead and turn it on.'
+    -
+      - 'Report on the kitchen light please.'
+      - 'Activate it.'
+    -
+      - "How's the kitchen light doing?"
+      - 'Please flick it on for me.'
+    -
+      - 'Kitchen light check.'
+      - "Flip it on if you don't mind."
+-
+  name: light_kitchen_under_cabinet_lights_turn_off
+  setup:
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the kitchen light?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the kitchen light on or off?'
+      - 'Flick it off.'
+    -
+      - 'Can you check the kitchen light?'
+      - "If you don't mind, flip it off."
+    -
+      - 'Tell me the kitchen light state.'
+      - 'Quickly turn it off.'
+    -
+      - 'Kitchen light status please?'
+      - 'Switch it off now.'
+    -
+      - "How's the kitchen light doing?"
+      - 'Shut it off.'
+    -
+      - 'Report on the kitchen light.'
+      - 'Turn it off for me please.'
+-
+  name: light_kitchen_under_cabinet_lights_persistance_brightness
+  setup:
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      brightness: 13
+  conditions:
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      attributes:
+        brightness: 25
+  sentences:
+    -
+      - 'What is the brightness of the Under Cabinet Lights?'
+      - 'Set it to 25.'
+    -
+      - "What's the current brightness level of the Under Cabinet Lights?"
+      - 'Please change it to 25 for me.'
+    -
+      - 'How bright are the Under Cabinet Lights right now?'
+      - "Adjust to 25 if you don't mind."
+    -
+      - 'Under Cabinet Lights brightness?'
+      - 'Make it 25.'
+    -
+      - 'Can you tell me the brightness of the Under Cabinet Lights in the kitchen?'
+      - 'Turn it to 25 please.'
+    -
+      - "What's the brightness setting on the Under Cabinet Lights?"
+      - 'Change to 25.'
+    -
+      - 'How bright is the Under Cabinet Lights in the kitchen?'
+      - 'Set brightness to 25 for me.'

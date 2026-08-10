@@ -1,0 +1,14 @@
+-
+  name: switch_gym_ventilation_get_status
+  conditions:
+    -
+      type: query
+      entity_id: switch.gym_ventilation
+  sentences:
+    - "What's the status of the gym ventilation?"
+    - 'Gym ventilation state'
+    - 'Please check the gym ventilation for me'
+    - "If you don't mind, could you tell me if the gym ventilation is on?"
+    - 'Is the gym ventilation running?'
+    - 'Check gym ventilation status'
+    - 'Gym ventilation on or off?'

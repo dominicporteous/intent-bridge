@@ -1,0 +1,85 @@
+-
+  name: master_bedroom_and_garage_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: garage
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bedroom and garage lights'
+    - 'Flick on the lights in the master bedroom and garage'
+    - 'Please flip on the master bedroom and garage lights for me'
+    - "If you don't mind, turn on the lights in the master bedroom and garage"
+    - 'Activate the master bedroom and garage lights'
+    - 'Could you please switch on the lights in the master bedroom and garage'
+    - 'Quickly turn on the master bedroom and garage lights'
+-
+  name: master_bedroom_and_garage_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: garage
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the master bedroom and garage'
+    - 'Please switch off the master bedroom and garage lights for me'
+    - "If you don't mind, flick off the lights in the master bedroom and garage"
+    - 'Deactivate the master bedroom and garage lighting'
+    - 'Could you turn off the lights in the master bedroom and garage please'
+    - "Flip off the lights in the master bedroom and garage if you don't mind"
+    - 'Shut down the lights in the master bedroom and garage'
+    - 'Kill the lights in the master bedroom and garage'
+-
+  name: master_bedroom_and_garage_lights_change_brightness
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        brightness: 76
+    -
+      area: garage
+      domain: light
+      attributes:
+        brightness: 76
+  sentences:
+    - 'Set the master bedroom and garage lights to 76 percent brightness'
+    - 'Please adjust the brightness in the master bedroom and garage to 76 for me'
+    - "Flick the master bedroom and garage lights to 76 if you don't mind"
+    - 'Turn the lights in the master bedroom and garage to 76 percent'
+    - 'Could you set the brightness of the master bedroom and garage lights to 76 please'
+    - 'Flip the master bedroom and garage lights to 76 brightness'
+    - "Make the master bedroom and garage lights 76 percent if you don't mind"
+-
+  name: master_bedroom_and_garage_lights_change_color
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        color: purple
+    -
+      area: garage
+      domain: light
+      attributes:
+        color: purple
+  sentences:
+    - 'Turn the master bedroom and garage lights purple'
+    - 'Please change the lights in the master bedroom and garage to purple for me'
+    - 'Flick on purple lights in the master bedroom and garage'
+    - "If you don't mind, flip the master bedroom and garage lights to purple"
+    - 'Set master bedroom and garage lights to purple'
+    - 'Quickly make the master bedroom and garage lights purple'
+    - 'Change the color of the lights in the master bedroom and garage to purple please'

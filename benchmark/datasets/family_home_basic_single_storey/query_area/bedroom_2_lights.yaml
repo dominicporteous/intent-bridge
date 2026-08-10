@@ -1,0 +1,61 @@
+-
+  name: bedroom_2_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 2"
+    - 'bedroom 2 lights state'
+    - "please tell me the current lights status in bedroom 2 if you don't mind"
+    - 'get bedroom 2 lights'
+    - 'could you check the lights state for bedroom 2 please'
+    - 'bedroom 2 lighting status report'
+    - 'lights bedroom 2 now'
+-
+  name: bedroom_2_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 2"
+    - 'bedroom 2 lights state'
+    - "please tell me the current state of bedroom 2 lights if you don't mind"
+    - 'are the lights on in bedroom 2'
+    - 'get bedroom 2 lighting status'
+    - 'could you check the lights in bedroom 2 for me'
+    - 'bedroom 2 lights report'
+-
+  name: bedroom_2_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 2"
+    - 'bedroom 2 lights state'
+    - "please tell me the current lights status in bedroom 2 if you don't mind"
+    - 'check bedroom 2 lighting'
+    - 'could you get the bedroom 2 lights state for me'
+    - 'bedroom 2 lights on or off'
+    - 'report bedroom 2 illumination status'
+    - "what's happening with lights in bedroom 2"
+-
+  name: bedroom_2_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bedroom_2
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 2?"
+    - 'bedroom 2 lights state'
+    - "please tell me the current state of the lights in bedroom 2 if you don't mind"
+    - 'are the lights on in bedroom 2'
+    - 'get bedroom 2 lights status'
+    - 'could you check the lights in bedroom 2 for me'
+    - 'bedroom 2 lighting state please'

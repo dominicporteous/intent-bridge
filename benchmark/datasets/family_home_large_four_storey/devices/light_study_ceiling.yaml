@@ -1,0 +1,63 @@
+-
+  name: light_study_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.study_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the study ceiling light'
+    - 'Flick on the study ceiling'
+    - 'Please flip on the ceiling light in the study for me'
+    - "If you don't mind, turn on the study ceiling light"
+    - 'Activate the study ceiling light'
+    - 'Switch on the ceiling light in the study'
+    - 'Could you please turn on the study ceiling for me'
+-
+  name: light_study_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.study_ceiling
+      state: 'off'
+  sentences:
+    - 'turn off the study ceiling'
+    - 'flick off study ceiling light'
+    - 'please switch off the study ceiling for me'
+    - "if you don't mind, flip off the study ceiling light"
+    - 'kill the study ceiling'
+    - 'shut down study ceiling light'
+    - 'study ceiling off'
+    - 'can you turn off the study ceiling please'
+-
+  name: light_study_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.study_ceiling
+      attributes:
+        brightness: 84
+  sentences:
+    - 'Set the Study Ceiling to 84 percent'
+    - 'Please dim the study ceiling light to 84 for me'
+    - "Flick the study ceiling brightness up to 84 if you don't mind"
+    - 'Turn the Study Ceiling to 84%'
+    - 'Could you adjust the study ceiling to 84 brightness please'
+    - 'Make the study ceiling light 84 percent'
+    - 'Flip the Study Ceiling brightness to 84'
+-
+  name: light_study_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.study_ceiling
+      attributes:
+        color: yellow
+  sentences:
+    - 'Change the study ceiling light to yellow'
+    - 'Flick on yellow for the study ceiling please'
+    - "If you don't mind, set the Study Ceiling to yellow for me"
+    - 'Quickly turn the study ceiling yellow'
+    - 'Flip the study ceiling light to yellow'
+    - 'Please make the Study Ceiling yellow'
+    - 'Set study ceiling color to yellow now'

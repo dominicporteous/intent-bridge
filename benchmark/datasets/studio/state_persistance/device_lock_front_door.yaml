@@ -1,0 +1,69 @@
+-
+  name: lock_front_door_lock
+  setup:
+    -
+      entity_id: lock.front_door
+      state: unlocked
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: locked
+  sentences:
+    -
+      - "What's the status of the entryway light?"
+      - 'Please lock it for me.'
+    -
+      - 'Can you check the entryway door?'
+      - "Lock it if you don't mind."
+    -
+      - 'Tell me if the entryway is secure.'
+      - 'Flick it locked now.'
+    -
+      - "How's the entryway device doing?"
+      - 'Flip it locked please.'
+    -
+      - 'Is everything okay with the entryway?'
+      - 'Lock it right away.'
+    -
+      - 'Check the entryway status please.'
+      - 'Go ahead and lock it.'
+    -
+      - "What's happening at the entryway?"
+      - "If you don't mind, lock it for me."
+    -
+      - 'Give me the entryway update.'
+      - 'Lock it now.'
+-
+  name: lock_front_door_unlock
+  setup:
+    -
+      entity_id: lock.front_door
+      state: locked
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: unlocked
+  sentences:
+    -
+      - "What's the status of the entryway light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the entryway light on or off?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Check the entryway light status.'
+      - 'Flip it on please.'
+    -
+      - "How's the entryway light doing?"
+      - "If you don't mind, turn it on."
+    -
+      - 'Entryway light status report.'
+      - 'Quick, flick it on.'
+    -
+      - 'Tell me about the entryway light.'
+      - 'Please flip it on for me.'
+    -
+      - "What's happening with the entryway light?"
+      - "Turn it on if you don't mind."

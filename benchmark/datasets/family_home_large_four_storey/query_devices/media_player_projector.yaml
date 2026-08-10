@@ -1,0 +1,14 @@
+-
+  name: media_player_projector_get_status
+  conditions:
+    -
+      type: query
+      entity_id: media_player.projector
+  sentences:
+    - "What's the status of the projector"
+    - 'projector state'
+    - 'please check the media player projector for me'
+    - "if you don't mind, what's the current state of the projector in the home_theater"
+    - 'tell me about the projector'
+    - "how's the projector doing"
+    - 'projector status please'

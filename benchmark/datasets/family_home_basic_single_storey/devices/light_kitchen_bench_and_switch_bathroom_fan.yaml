@@ -1,0 +1,39 @@
+-
+  name: light_kitchen_bench_and_switch_bathroom_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      state: 'on'
+    -
+      type: action
+      entity_id: switch.bathroom_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bench lights and bathroom fan'
+    - 'Please flick on the kitchen bench lights and bathroom fan for me'
+    - "If you don't mind, flip on the bathroom fan and kitchen bench lights"
+    - 'Activate kitchen bench lights and bathroom fan now'
+    - 'Quickly turn on the lights in the kitchen bench area and the bathroom fan'
+    - 'Switch on the bathroom fan and kitchen bench lights please'
+    - 'Turn the kitchen bench lights on and activate the bathroom fan'
+-
+  name: light_kitchen_bench_and_switch_bathroom_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_bench
+      state: 'off'
+    -
+      type: action
+      entity_id: switch.bathroom_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the bench lights'
+    - 'Switch off the bathroom fan'
+    - 'Please turn off the kitchen bench lights for me'
+    - "If you don't mind, could you flick off the bathroom fan"
+    - 'Flip off the bench lights in the kitchen'
+    - 'Deactivate the bathroom fan'
+    - "Turn off the kitchen bench lights if you don't mind"
+    - 'Please switch off the bathroom fan for me'

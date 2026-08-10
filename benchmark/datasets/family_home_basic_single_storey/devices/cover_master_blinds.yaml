@@ -1,0 +1,47 @@
+-
+  name: cover_master_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: open
+  sentences:
+    - 'Open the master bedroom blinds'
+    - 'Please open the master bedroom blinds for me'
+    - "If you don't mind, could you open the master bedroom blinds"
+    - 'Flick on the master bedroom blinds'
+    - 'Flip open the master bedroom blinds'
+    - 'Raise the master bedroom blinds'
+    - 'Pull up the master bedroom blinds'
+-
+  name: cover_master_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: closed
+  sentences:
+    - 'Close the master bedroom blinds'
+    - 'Shut the master_bedroom blinds please'
+    - "If you don't mind, close the blinds in the master bedroom for me"
+    - 'Flick the master bedroom blinds closed'
+    - 'Please lower the master_bedroom blinds'
+    - 'Roll down the blinds in master bedroom'
+    - 'Close master bedroom cover'
+    - 'Pull the master_bedroom blinds down'
+-
+  name: cover_master_blinds_change_position
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      attributes:
+        position: 41
+  sentences:
+    - 'Set the master bedroom blinds to 41 percent'
+    - "Please adjust master blinds to 41 if you don't mind"
+    - 'Flick master_bedroom cover to position 41'
+    - 'Could you move the Master Bedroom Blinds to 41 for me'
+    - 'Quickly set master blinds to 41%'
+    - 'Change master_bedroom blinds position to 41'
+    - 'If possible, set the blinds in master bedroom to 41'

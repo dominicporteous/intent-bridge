@@ -1,0 +1,63 @@
+-
+  name: light_basement_bath_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.basement_bath_light
+      state: 'on'
+  sentences:
+    - 'Turn on the basement bath light'
+    - 'Please flick on the light in the basement bathroom for me'
+    - "Flip on the basement_bathroom light if you don't mind"
+    - 'Activate the basement bath light'
+    - 'Could you turn on the light in the basement bathroom'
+    - 'Switch on the basement_bathroom light please'
+    - 'Quickly turn on basement bath light'
+    - "If you don't mind, flip on the light in the basement bathroom"
+-
+  name: light_basement_bath_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.basement_bath_light
+      state: 'off'
+  sentences:
+    - 'Turn off the Basement Bath Light'
+    - 'Please turn off the light in the basement bathroom for me'
+    - 'Flick off the basement_bathroom light'
+    - "If you don't mind, flip off the Basement Bath Light"
+    - 'Switch off the light in basement_bathroom'
+    - 'Kill the basement bath light'
+    - 'Shut off the Basement Bath Light please'
+-
+  name: light_basement_bath_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.basement_bath_light
+      attributes:
+        brightness: 43
+  sentences:
+    - 'Set the Basement Bath Light to 43 percent brightness'
+    - 'Please dim the basement_bathroom light to 43 for me'
+    - 'Flick the Basement Bath Light brightness down to 43'
+    - "If you don't mind, adjust light basement bath light to 43%"
+    - 'Turn the basement_bathroom light brightness to 43'
+    - 'Quickly set Basement Bath Light to 43 brightness'
+    - 'Flip the light basement bath light brightness to 43'
+-
+  name: light_basement_bath_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.basement_bath_light
+      attributes:
+        color: blue
+  sentences:
+    - 'Change the basement bath light to blue'
+    - 'Turn the basement_bathroom light blue'
+    - 'Please set the basement bath light to blue for me'
+    - 'Flick the basement_bathroom light to blue'
+    - "If you don't mind, make the basement bath light blue"
+    - 'Flip the basement_bathroom light to blue'
+    - 'Quickly change basement bath light color to blue'

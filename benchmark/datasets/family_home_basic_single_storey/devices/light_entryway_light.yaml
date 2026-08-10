@@ -1,0 +1,64 @@
+-
+  name: light_entryway_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'on'
+  sentences:
+    - 'Turn on the entryway light'
+    - 'Flick on the entryway light'
+    - 'Flip on the entryway light please'
+    - "If you don't mind, turn on the entryway light for me"
+    - 'Please turn on the light in the entryway'
+    - 'Activate the entryway light'
+    - 'Switch on the entryway light'
+    - 'Could you turn on the entryway light'
+-
+  name: light_entryway_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      state: 'off'
+  sentences:
+    - 'Turn off the entryway light'
+    - 'Please switch off the entryway light for me'
+    - "Flick off the light in the entryway if you don't mind"
+    - 'Flip the entryway light off'
+    - 'Could you shut off the entryway light please'
+    - 'Turn the entryway light off for me'
+    - 'Kill the entryway light'
+    - 'Deactivate the light in the entryway'
+-
+  name: light_entryway_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      attributes:
+        brightness: 52
+  sentences:
+    - 'Set the Entryway Light to 52 percent brightness'
+    - "Please adjust the entryway light to 52 if you don't mind"
+    - 'Flick the Entryway Light brightness to 52'
+    - 'Could you dim the entryway light to 52 for me'
+    - 'Make the Entryway Light 52 percent'
+    - 'Turn the entryway light brightness down to 52 please'
+    - 'Flip the Entryway Light to 52 brightness'
+-
+  name: light_entryway_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.entryway_light
+      attributes:
+        color: green
+  sentences:
+    - 'Turn the entryway light green'
+    - 'Flick on the entryway light to green'
+    - 'Please set the Entryway Light to green for me'
+    - "If you don't mind, flip the entryway light to green"
+    - 'Make the Entryway Light green'
+    - 'Change the entryway light to green please'
+    - 'Set the Entryway Light to green if you could'

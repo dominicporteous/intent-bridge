@@ -1,0 +1,72 @@
+-
+  name: switch_coffee_maker_turn_on
+  setup:
+    -
+      entity_id: switch.coffee_maker
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the coffee maker?" # Changed from: What's the status of the kitchen lights?
+      - 'Please turn them on for me.'
+    -
+      - 'How is the coffee maker doing?' # Changed from: How are the kitchen lights doing?
+      - 'Flick them on.'
+    -
+      - 'Can you check the coffee maker?' # Changed from: Can you check the kitchen lights?
+      - "If you don't mind, flip them on."
+    -
+      - 'Tell me about the coffee maker state.' # Changed from: Tell me about the kitchen lights state.
+      - 'Switch them on please.'
+    -
+      - 'Is the coffee maker working?' # Changed from: Are the kitchen lights working?
+      - 'Go ahead and turn them on.'
+    -
+      - 'Coffee maker status please?' # Changed from: Kitchen lights status please?
+      - 'Hit the switch for me.'
+    -
+      - 'Report on the coffee maker.' # Changed from: Report on the kitchen lights.
+      - 'Power them up if you would.'
+    -
+      - "What's happening with the coffee maker?" # Changed from: What's happening with the kitchen lights?
+      - 'Activate them now.'
+-
+  name: switch_coffee_maker_turn_off
+  setup:
+    -
+      entity_id: switch.coffee_maker
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the coffee maker?" # Changed from: What's the status of the kitchen light?
+      - 'Please turn it off for me.'
+    -
+      - 'Is the coffee maker on right now?' # Changed from: Is the kitchen light on right now?
+      - 'Flip it off.'
+    -
+      - 'Can you check the coffee maker status?' # Changed from: Can you check the kitchen light status?
+      - "If you don't mind, switch it off."
+    -
+      - 'Tell me if the coffee maker is on.' # Changed from: Tell me if the kitchen light is on.
+      - 'Flick it off please.'
+    -
+      - "How's the coffee maker doing?" # Changed from: How's the kitchen light doing?
+      - 'Turn it off.'
+    -
+      - 'Coffee maker status please.' # Changed from: Kitchen light status please.
+      - "Shut it off if you don't mind."
+    -
+      - 'Is the coffee maker currently active?' # Changed from: Is the kitchen light currently active?
+      - 'Quick, turn it off.'
+    -
+      - 'Check the coffee maker for me.' # Changed from: Check the kitchen light for me.
+      - 'Please flick it off.'

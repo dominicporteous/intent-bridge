@@ -1,0 +1,40 @@
+-
+  name: lock_front_door_and_lock_garage_entry_lock
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: locked
+    -
+      type: action
+      entity_id: lock.garage_entry
+      state: locked
+  sentences:
+    - 'Lock the front door'
+    - 'Please lock the garage entry door for me'
+    - "If you don't mind, secure the front door"
+    - 'Flick the lock on the garage entry'
+    - 'Lock the entryway door'
+    - 'Please secure the front door in the entryway'
+    - "Lock the garage entry door if you don't mind"
+    - 'Secure the front door for me'
+-
+  name: lock_front_door_and_lock_garage_entry_unlock
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: unlocked
+    -
+      type: action
+      entity_id: lock.garage_entry
+      state: unlocked
+  sentences:
+    - 'Unlock the front door' # Changed from: Lock the front door
+    - 'Unlock the garage entry door' # Changed from: Secure the garage entry door
+    - 'Please unlock the front door for me' # Changed from: Please lock the front door for me
+    - "If you don't mind, unlock the garage entry" # Changed from: If you don't mind, secure the garage entry
+    - 'Unlock the entryway door' # Changed from: Lock the entryway door
+    - 'Flick the front door lock to unlocked' # Changed from: Flick the lock on the front door
+    - 'Please unlock the garage entry door' # Changed from: Please secure the garage entry door
+    - 'Unlock both the front door and garage entry' # Changed from: Lock both the front door and garage entry

@@ -1,0 +1,28 @@
+-
+  name: light_loft_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.loft_ceiling
+  sentences:
+    - "What's the status of the Loft Ceiling?"
+    - 'Loft Ceiling state'
+    - 'Please check the loft ceiling light for me'
+    - "If you don't mind, what's the current state of the light in the loft?"
+    - 'Loft Ceiling'
+    - 'Can you tell me if the loft ceiling is on or off?'
+    - 'Get the state of loft ceiling light'
+-
+  name: light_loft_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.loft_ceiling
+  sentences:
+    - "What's the brightness of the Loft Ceiling?"
+    - 'How bright is the light loft ceiling right now?'
+    - "Please tell me the current brightness of the loft ceiling light if you don't mind."
+    - 'Loft ceiling brightness level?'
+    - 'Can you check how bright the Loft Ceiling is for me?'
+    - 'Get brightness for light.loft_ceiling'
+    - "What's the light level in the loft ceiling?"

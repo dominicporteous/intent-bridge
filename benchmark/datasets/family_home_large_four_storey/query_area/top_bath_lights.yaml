@@ -1,0 +1,61 @@
+-
+  name: top_bath_lights_get_state
+  conditions:
+    -
+      type: query
+      area: top_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the top bath?"
+    - 'Top bathroom lights state?'
+    - "Please tell me the current state of the lights in the upstairs bathroom if you don't mind"
+    - 'Are the top bath lights on or off right now?'
+    - 'Could you check the lights status in the top bathroom for me?'
+    - 'Top bath lights current state please'
+    - "What's going on with the lights upstairs in the bathroom?"
+-
+  name: top_bath_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: top_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the top bath?"
+    - 'Top bath lights state'
+    - 'Please tell me if the lights are on in the upstairs bathroom'
+    - 'Could you check the top bathroom lights for me?'
+    - 'Are the lights on in the top bath right now?'
+    - 'Top bath lights - current state please'
+    - "If you don't mind, what's the light status upstairs?"
+-
+  name: top_bath_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: top_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the top bath?"
+    - 'Top bath lights state please'
+    - "If you don't mind, could you tell me if the lights are on in the upstairs bathroom?"
+    - 'Lights top bath'
+    - 'Please check the top bathroom lights for me'
+    - 'Are the lights on upstairs bath?'
+    - 'Top bath lighting status'
+    - 'Quick check - top bathroom lights?'
+-
+  name: top_bath_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: top_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the top bath?"
+    - 'Top bath lights state please'
+    - "If you don't mind, could you check the lights upstairs for me?"
+    - 'Lights top bath'
+    - 'Please tell me if the top bathroom lights are on or off'
+    - 'Current state of top bath lights'
+    - 'Quick check on upstairs bathroom lighting'

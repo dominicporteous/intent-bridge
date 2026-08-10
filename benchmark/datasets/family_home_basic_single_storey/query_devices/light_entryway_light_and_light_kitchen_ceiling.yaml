@@ -1,0 +1,17 @@
+-
+  name: light_entryway_light_and_light_kitchen_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.entryway_light
+    -
+      type: query
+      entity_id: light.kitchen_ceiling
+  sentences:
+    - "What's the status of the entryway light?"
+    - 'Tell me if the kitchen ceiling light is on'
+    - 'Please check the entryway light for me'
+    - "If you don't mind, what's the state of the kitchen ceiling light?"
+    - 'Entryway light status'
+    - 'Kitchen ceiling light on or off?'
+    - 'Can you tell me about the lights in the entryway and kitchen?'

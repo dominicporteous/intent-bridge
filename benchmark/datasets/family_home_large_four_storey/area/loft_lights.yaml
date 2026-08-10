@@ -1,0 +1,66 @@
+-
+  name: loft_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: loft
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the loft lights'
+    - 'Flick on the lights in the loft'
+    - 'Please flip on the loft lights for me'
+    - "If you don't mind, could you turn on the loft lights"
+    - 'Activate the loft lighting'
+    - 'Switch on the lights upstairs'
+    - 'Hey, turn on the loft lights'
+    - 'Can you please turn on the lights in the loft'
+-
+  name: loft_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: loft
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the loft lights'
+    - 'Please switch off the lights in the loft for me'
+    - "Flick off the loft lights if you don't mind"
+    - 'Kill the lights upstairs'
+    - 'Could you flip off the loft lights please'
+    - 'Deactivate the loft lighting'
+    - 'Shut off those loft lights for me'
+-
+  name: loft_lights_change_brightness
+  conditions:
+    -
+      area: loft
+      domain: light
+      attributes:
+        brightness: 89
+  sentences:
+    - 'Set the loft lights to 89 percent brightness'
+    - 'Please adjust the loft illumination to 89 for me'
+    - "Flick the loft lights down to 89 if you don't mind"
+    - 'Turn the loft brightness to 89 percent'
+    - 'Could you set the loft lights at 89 brightness please'
+    - 'Make the loft lights 89 percent'
+    - 'Adjust loft illumination to 89 if possible'
+-
+  name: loft_lights_change_color
+  conditions:
+    -
+      area: loft
+      domain: light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change the loft lights to pink'
+    - 'Set loft lighting to pink please'
+    - "If you don't mind, could you flick the loft lights on pink for me?"
+    - 'Flip the loft lights to pink'
+    - 'Please turn the loft lights pink if possible'
+    - 'Make the loft lights pink now'
+    - 'Quickly set loft lights pink'
+    - 'Change loft lights color to pink'

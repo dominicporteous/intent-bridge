@@ -1,0 +1,15 @@
+-
+  name: lock_front_door_get_status
+  conditions:
+    -
+      type: query
+      entity_id: lock.front_door
+  sentences:
+    - "What's the status of the front door lock?"
+    - 'Is the front door locked?'
+    - 'Check front door lock state'
+    - 'Please tell me if the front door is locked'
+    - 'Could you check the front door lock for me?'
+    - 'Front door lock status please'
+    - "If you don't mind, what's the front door lock state?"
+    - 'Get the current state of the front door lock in the entryway'

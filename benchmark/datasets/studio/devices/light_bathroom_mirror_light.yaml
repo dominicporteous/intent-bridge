@@ -1,0 +1,65 @@
+-
+  name: light_bathroom_mirror_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom mirror light'
+    - 'Please flick on the mirror light for me'
+    - "If you don't mind, flip on the bathroom mirror light"
+    - 'Activate the light bathroom mirror light'
+    - 'Can you turn on the mirror light in the bathroom'
+    - 'Quickly switch on the bathroom mirror light'
+    - 'Turn the mirror light on please'
+    - 'Enable the light bathroom mirror light'
+-
+  name: light_bathroom_mirror_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom mirror light'
+    - 'Please switch off the mirror light in the bathroom for me'
+    - 'Flick off the bathroom mirror light'
+    - "If you don't mind, turn off the mirror light in the bathroom"
+    - 'Kill the bathroom mirror light'
+    - 'Deactivate the mirror light in the bathroom please'
+    - 'Shut off the bathroom mirror light'
+    - 'Flip off the mirror light in the bathroom'
+-
+  name: light_bathroom_mirror_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      attributes:
+        brightness: 66
+  sentences:
+    - 'Set the bathroom mirror light to 66%'
+    - 'Please dim the mirror light to 66 for me'
+    - 'Flick the bathroom mirror light brightness to 66%'
+    - "If you don't mind, adjust the mirror light to 66"
+    - 'Turn the bathroom mirror light brightness down to 66%'
+    - 'Quickly set mirror light to 66'
+    - 'Change the mirror light in the bathroom to 66 percent'
+    - 'Flip the bathroom mirror light brightness to 66'
+-
+  name: light_bathroom_mirror_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      attributes:
+        color: green
+  sentences:
+    - 'Turn the bathroom mirror light green'
+    - 'Flick on green for the mirror light'
+    - 'Please set the bathroom mirror light to green for me'
+    - "If you don't mind, change the mirror light to green"
+    - 'Make the bathroom mirror light green'
+    - 'Flip the mirror light to green please'
+    - 'Set the bathroom mirror light color to green'

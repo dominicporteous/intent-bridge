@@ -1,0 +1,65 @@
+-
+  name: study_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: study
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the study lights'
+    - 'Flick on the study lights'
+    - 'Please flip on the lights in the study for me'
+    - "If you don't mind, turn on the study lights"
+    - 'Activate the study lights'
+    - 'Could you switch on the study lights please'
+    - "Flip on the lights in the study if you don't mind"
+-
+  name: study_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: study
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the study lights'
+    - 'Please switch off the lights in the study for me'
+    - "If you don't mind, flick off the study lights"
+    - 'Kill the study lights'
+    - 'Could you flip off the lights in the study please'
+    - 'Study lights off'
+    - 'Deactivate the study lighting if you would'
+    - 'Shut down the lights in the study'
+-
+  name: study_lights_change_brightness
+  conditions:
+    -
+      area: study
+      domain: light
+      attributes:
+        brightness: 89
+  sentences:
+    - 'Set the study lights to 89 percent brightness'
+    - 'Please adjust the study lights to 89 for me'
+    - "If you don't mind, dim the study lights to 89 percent"
+    - 'Flick the study lights to 89 brightness'
+    - 'Could you turn the study lights to 89 please'
+    - 'Make the study lights 89 percent bright'
+    - 'Flip the study lights to 89 brightness'
+-
+  name: study_lights_change_color
+  conditions:
+    -
+      area: study
+      domain: light
+      attributes:
+        color: black
+  sentences:
+    - 'Change the study lights to black'
+    - 'Please set the study lights to black for me'
+    - "Flick the study lights to black if you don't mind"
+    - 'Flip the study lights to black'
+    - 'Turn the study lights black please'
+    - 'Make the study lights black'
+    - 'Could you set the study lights to black for me'

@@ -1,0 +1,35 @@
+-
+  name: living_covers_set_position
+  setup:
+    -
+      entity_id: cover.living_blinds
+      position: 45
+  conditions:
+    -
+      entity_id: cover.living_blinds
+      position: 100
+  sentences:
+    -
+      - "What's the position of the living room windows?"
+      - 'Set them to 100.'
+    -
+      - 'Can you tell me where the blinds are at in the living room?'
+      - 'Please adjust to 100 for me.'
+    -
+      - 'Living room curtains position?'
+      - "Flick them to 100 if you don't mind."
+    -
+      - 'Where are the living room blinds right now?'
+      - 'Flip to 100.'
+    -
+      - 'Tell me the current position of the living room curtains please.'
+      - 'Set to 100.'
+    -
+      - "What's the status of the living room windows?"
+      - 'Please move them to 100 for me.'
+    -
+      - 'Living room blinds position check.'
+      - "Adjust to 100 if you don't mind."
+    -
+      - 'Can you check the living room curtains for me?'
+      - 'Flick on 100.'

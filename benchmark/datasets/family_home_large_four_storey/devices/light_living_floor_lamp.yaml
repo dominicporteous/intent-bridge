@@ -1,0 +1,64 @@
+-
+  name: light_living_floor_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.living_floor_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the living room floor lamp'
+    - 'Please flick on the living room floor lamp for me'
+    - "If you don't mind, flip on the living floor lamp"
+    - 'Activate living room floor lamp'
+    - 'Could you switch on the living floor lamp please'
+    - 'Living room floor lamp on'
+    - 'Quickly turn on living floor lamp'
+    - 'Engage the living room floor lamp'
+-
+  name: light_living_floor_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_floor_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the living room floor lamp'
+    - 'Please switch off the living floor lamp for me'
+    - "Flick off the living room floor lamp if you don't mind"
+    - 'Flip off the living floor lamp'
+    - 'Could you turn off the living room floor lamp please'
+    - 'Deactivate the living floor lamp'
+    - 'Kill the living room floor lamp for me'
+-
+  name: light_living_floor_lamp_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.living_floor_lamp
+      attributes:
+        brightness: 77
+  sentences:
+    - 'Set the living room floor lamp to 77 percent brightness'
+    - "Please adjust the living room floor lamp to 77 if you don't mind"
+    - 'Flick the living floor lamp brightness up to 77'
+    - 'Hey could you change the living room floor lamp to 77 brightness for me'
+    - 'Turn the living floor lamp to 77 percent'
+    - 'Make the living room floor lamp 77 brightness please'
+    - 'Flip the living floor lamp brightness to 77'
+-
+  name: light_living_floor_lamp_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.living_floor_lamp
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the living room floor lamp white'
+    - 'Set living floor lamp to white'
+    - 'Please change the living room floor lamp to white for me'
+    - 'Flick the living floor lamp to white'
+    - "If you don't mind, make the living room floor lamp white"
+    - 'Flip living floor lamp to white'
+    - 'Could you set the living room floor lamp to white please'
+    - 'Change living floor lamp color to white'

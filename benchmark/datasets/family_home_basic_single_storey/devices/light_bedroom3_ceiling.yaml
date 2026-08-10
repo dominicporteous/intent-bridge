@@ -1,0 +1,62 @@
+-
+  name: light_bedroom3_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Bedroom 3 Ceiling light'
+    - 'Flick on bedroom_3 ceiling'
+    - 'Please flip on the ceiling light in bedroom 3 for me'
+    - "If you don't mind, turn on the Bedroom 3 Ceiling"
+    - 'Activate bedroom_3 ceiling light'
+    - 'Switch on the ceiling light in bedroom 3'
+    - 'Quickly turn on bedroom 3 ceiling'
+-
+  name: light_bedroom3_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off bedroom 3 ceiling light'
+    - 'Please switch off the bedroom_3 ceiling for me'
+    - "Flick off bedroom 3 ceiling light if you don't mind"
+    - 'Flip off the ceiling light in bedroom_3'
+    - 'Could you turn off bedroom 3 ceiling please'
+    - 'Deactivate bedroom_3 ceiling light'
+    - 'Kill the bedroom 3 ceiling light'
+-
+  name: light_bedroom3_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      attributes:
+        brightness: 68
+  sentences:
+    - 'Set the Bedroom 3 Ceiling light to 68 percent'
+    - 'Flick on bedroom3 ceiling to sixty-eight'
+    - 'Please dim the bedroom_3 light to 68 for me'
+    - "If you don't mind, turn the Bedroom 3 Ceiling to sixty-eight percent"
+    - 'Change brightness of bedroom3 ceiling to 68'
+    - 'Quickly set bedroom_3 ceiling light brightness to 68'
+    - 'Flip the Bedroom 3 Ceiling to sixty-eight percent'
+-
+  name: light_bedroom3_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.bedroom3_ceiling
+      attributes:
+        color: pink
+  sentences:
+    - 'change bedroom3 ceiling to pink'
+    - 'flick on pink for the ceiling light in bedroom 3'
+    - "please set bedroom_3 ceiling light to pink if you don't mind"
+    - 'turn bedroom 3 ceiling pink'
+    - 'flip the bedroom3 ceiling light to pink for me'
+    - 'make the ceiling in bedroom_3 pink'
+    - 'quickly change bedroom 3 ceiling to pink'

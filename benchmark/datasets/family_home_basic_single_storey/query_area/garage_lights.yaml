@@ -1,0 +1,61 @@
+-
+  name: garage_lights_get_state
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the garage lights?"
+    - 'Are the garage lights on or off?'
+    - 'Please check the garage lights for me'
+    - 'Garage lights state'
+    - "If you don't mind, could you tell me about the garage lights?"
+    - 'Current garage lighting status'
+    - 'Quick check on garage lights please'
+-
+  name: garage_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the garage lights?"
+    - 'Are the garage lights on or off?'
+    - 'Check garage lights please'
+    - "If you don't mind, tell me about the garage lights"
+    - 'Garage lights status'
+    - 'Could you check the garage lights for me?'
+    - 'Current state of garage lighting'
+-
+  name: garage_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the garage lights"
+    - 'Are the garage lights on or off'
+    - 'Please check the garage lights for me'
+    - "If you don't mind, tell me about the garage lights"
+    - 'Garage lights status'
+    - 'Current state of garage lights please'
+    - 'Quick check on garage lights'
+-
+  name: garage_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: light
+  sentences:
+    - "What's the status of the garage lights?"
+    - 'Are the garage lights on or off?'
+    - 'Please check the garage lights for me'
+    - "If you don't mind, tell me about the garage lights"
+    - 'Garage lights status'
+    - 'Can you tell me if the garage lights are on?'
+    - 'Quick check on garage lighting please'
+    - 'Report current state of garage lights'

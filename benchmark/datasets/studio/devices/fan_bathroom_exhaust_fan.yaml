@@ -1,0 +1,46 @@
+-
+  name: fan_bathroom_exhaust_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan'
+    - 'Flick on the exhaust fan in the bathroom'
+    - 'Please flip on the bathroom fan for me'
+    - "If you don't mind, turn on the exhaust fan"
+    - 'Activate the bathroom exhaust fan'
+    - 'Switch on the fan in the bathroom please'
+    - 'Can you turn on the exhaust fan for me'
+-
+  name: fan_bathroom_exhaust_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom exhaust fan'
+    - 'Please switch off the exhaust fan in the bathroom for me'
+    - 'Flick off the fan in the bathroom'
+    - "If you don't mind, turn off the bathroom exhaust fan"
+    - 'Flip off the exhaust fan in the bathroom please'
+    - 'Shut down the bathroom fan'
+    - 'Could you turn off the exhaust fan in the bathroom'
+-
+  name: fan_bathroom_exhaust_fan_set_fan_speed
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      attributes:
+        percentage: 39
+  sentences:
+    - 'Set the exhaust fan in the bathroom to 39'
+    - 'Please set the bathroom exhaust fan speed to 39 for me'
+    - "Flick the bathroom exhaust fan to 39 if you don't mind"
+    - 'Turn the exhaust fan speed to 39'
+    - 'Flip on the bathroom exhaust fan to 39'
+    - 'Set fan speed of the exhaust fan to 39 please'
+    - 'Change the bathroom exhaust fan to speed 39'

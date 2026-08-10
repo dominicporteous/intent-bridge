@@ -1,0 +1,64 @@
+-
+  name: gym_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: gym
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the gym lights'
+    - 'Flick on the lights in the gym'
+    - 'Please flip on the gym lights for me'
+    - "If you don't mind, could you turn on the gym lights"
+    - 'Activate the lights in the gym'
+    - 'Switch on the gym lights please'
+    - 'Hey, can you turn on the gym lights'
+-
+  name: gym_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: gym
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the gym lights'
+    - 'Please switch off the lights in the gym for me'
+    - "Flick off the gym lights if you don't mind"
+    - 'Flip the lights off in the gym'
+    - 'Could you please turn off the gym lights'
+    - 'Deactivate the gym lighting'
+    - 'Shut off the lights in the gym please'
+-
+  name: gym_lights_change_brightness
+  conditions:
+    -
+      area: gym
+      domain: light
+      attributes:
+        brightness: 24
+  sentences:
+    - 'Set the gym lights to 24 percent brightness'
+    - 'Please dim the gym lights to 24 for me'
+    - "If you don't mind, flick the gym lights down to 24"
+    - 'Turn the gym brightness to 24'
+    - 'Quickly adjust the gym lights to 24 percent'
+    - 'Flip the gym lights to 24 brightness'
+    - 'Could you set the gym lights to 24 please'
+-
+  name: gym_lights_change_color
+  conditions:
+    -
+      area: gym
+      domain: light
+      attributes:
+        color: black
+  sentences:
+    - 'Change the gym lights to black'
+    - 'Set the gym lights to black'
+    - 'Please turn the gym lights black for me'
+    - "If you don't mind, could you make the gym lights black"
+    - 'Flick the gym lights to black'
+    - 'Flip the gym lights to black'
+    - 'Quickly set the gym lights to black'

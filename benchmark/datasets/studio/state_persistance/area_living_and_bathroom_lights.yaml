@@ -1,0 +1,41 @@
+-
+  name: living_and_bathroom_lights_set_brightness
+  setup:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 50
+    -
+      entity_id: light.bathroom_mirror_light
+      brightness: 50
+  conditions:
+    -
+      entity_id: light.living_room_lamp
+      brightness: 31
+    -
+      entity_id: light.bathroom_mirror_light
+      brightness: 31
+  sentences:
+    -
+      - 'What is the brightness of the lights in the living room and bathroom?'
+      - 'Set it to 31.'
+    -
+      - "Please tell me the brightness level for the living and bathroom lights if you don't mind."
+      - 'Please set it to 31 for me.'
+    -
+      - 'Can you check the brightness in the living room and bathroom?'
+      - 'Flick it to 31.'
+    -
+      - "What's the current brightness of the living and bathroom lights?"
+      - 'Flip it to 31.'
+    -
+      - 'Tell me the brightness of the living room and bathroom lights.'
+      - 'Adjust it to 31.'
+    -
+      - 'Could you report the brightness levels in the living and bathroom areas?'
+      - 'Change it to 31.'
+    -
+      - 'I need to know the brightness of the lights in the living room and bathroom.'
+      - 'Make it 31.'
+    -
+      - 'Check the brightness for the living and bathroom lights.'
+      - 'Turn it to 31.'

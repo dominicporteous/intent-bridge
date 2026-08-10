@@ -1,0 +1,63 @@
+-
+  name: light_living_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the living room ceiling light'
+    - 'Flick on living ceiling'
+    - 'Please flip on the living room ceiling for me'
+    - "If you don't mind, turn on living ceiling light"
+    - 'Activate living room ceiling'
+    - 'Switch on the living ceiling light'
+    - 'Can you please turn on living ceiling for me'
+-
+  name: light_living_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the living room ceiling light'
+    - 'Please switch off the living ceiling for me'
+    - "If you don't mind, flip off the living room ceiling light"
+    - 'Deactivate living ceiling'
+    - 'Could you kill the living room ceiling light please'
+    - 'Shut down living ceiling light'
+    - 'Flick off the living ceiling if possible'
+-
+  name: light_living_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      attributes:
+        brightness: 11
+  sentences:
+    - 'Set the living room ceiling light to 11'
+    - 'Please dim the living room ceiling to 11 for me'
+    - 'Flick the living ceiling brightness to 11'
+    - "If you don't mind, turn the living room ceiling light down to 11"
+    - 'Make the living ceiling 11 percent'
+    - 'Quickly set living room ceiling brightness to 11'
+    - 'Flip the living ceiling light to 11'
+    - 'Adjust living room ceiling to brightness level 11'
+-
+  name: light_living_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      attributes:
+        color: blue
+  sentences:
+    - 'Turn living room ceiling light blue'
+    - 'Please set the living ceiling to blue for me'
+    - "If you don't mind, flick on blue for the living room ceiling light"
+    - 'Quickly change living ceiling color to blue'
+    - 'Flip the living room ceiling light to blue please'
+    - "Make living ceiling blue if you don't mind"
+    - 'Set living room ceiling to blue right now'

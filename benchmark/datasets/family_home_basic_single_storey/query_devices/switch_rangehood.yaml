@@ -1,0 +1,14 @@
+-
+  name: switch_rangehood_get_status
+  conditions:
+    -
+      type: query
+      entity_id: switch.rangehood
+  sentences:
+    - "What's the rangehood status?"
+    - 'Is the rangehood on?'
+    - 'Check the kitchen rangehood for me please'
+    - 'Rangehood state'
+    - "If you don't mind, what's the kitchen rangehood doing?"
+    - 'Tell me if the rangehood is running'
+    - 'Kitchen rangehood status please'

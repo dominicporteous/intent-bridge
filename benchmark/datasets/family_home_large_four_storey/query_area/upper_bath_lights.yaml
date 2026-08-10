@@ -1,0 +1,60 @@
+-
+  name: upper_bath_lights_get_state
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the upper bath?"
+    - 'Upper bath lights state'
+    - "Please tell me the current state of the upper bathroom lights if you don't mind"
+    - 'Are the lights on in the upstairs bathroom?'
+    - 'Could you check the upper bath lighting for me?'
+    - "Upper bathroom lights - what's their status?"
+    - 'Hey, can you tell me if the lights are on upstairs in the bath?'
+-
+  name: upper_bath_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the upper bath"
+    - 'Are the upper bathroom lights on'
+    - 'Please check the lights upstairs bathroom for me'
+    - 'Upper bath lights state'
+    - "If you don't mind, could you tell me if the lights are on in the upper bathroom"
+    - 'Lights upper bath'
+    - 'Tell me the current state of the upper bathroom lights please'
+-
+  name: upper_bath_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: light
+  sentences:
+    - "What's the status of the lights in the upper bath?"
+    - 'Upper bath lights state'
+    - 'Please tell me if the upper bathroom lights are on or off'
+    - 'Could you check the lights upstairs in the bath for me?'
+    - 'Are the upper bath lights currently on?'
+    - 'Quick check: upper bathroom lighting status'
+    - "If you don't mind, what's the current state of the lights in the upper bath?"
+-
+  name: upper_bath_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: upper_bath
+      domain: light
+  sentences:
+    - "What's the status of the upper bath lights?"
+    - 'Lights upper bath state'
+    - "Please tell me the current state of the lights in the upper bathroom if you don't mind"
+    - 'Upper bath lights status check'
+    - 'Could you check the lights in the upstairs bathroom for me?'
+    - 'Upper bathroom lighting state'
+    - 'Get me the light status for the upper bath please'

@@ -1,0 +1,66 @@
+-
+  name: bathroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom lights'
+    - 'Flick on the bathroom lights'
+    - 'Please flip on the lights in the bathroom for me'
+    - "If you don't mind, could you turn on the bathroom lights"
+    - 'Activate the bathroom lights'
+    - 'Switch on the lights in the bathroom please'
+    - 'Hey, can you turn on the bathroom lights'
+    - 'Flip the bathroom lights on'
+-
+  name: bathroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom lights'
+    - 'Please switch off the lights in the bathroom for me'
+    - "Flick off the bathroom lights if you don't mind"
+    - 'Flip the bathroom lights off'
+    - 'Could you turn off the lights in the bathroom please'
+    - 'Kill the bathroom lights'
+    - 'Shut off the bathroom lights for me'
+    - 'Deactivate the bathroom lights'
+-
+  name: bathroom_lights_change_brightness
+  conditions:
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        brightness: 64
+  sentences:
+    - 'Set bathroom lights to 64 percent brightness'
+    - 'Please dim the bathroom lights to 64 for me'
+    - "If you don't mind, flick the bathroom lights to 64"
+    - 'Turn bathroom lights brightness to 64'
+    - 'Quickly adjust bathroom lights to 64 percent'
+    - 'Flip bathroom lights brightness down to 64'
+    - 'Set the bathroom lights to 64 brightness please'
+-
+  name: bathroom_lights_change_color
+  conditions:
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change the bathroom lights to pink'
+    - 'Please set the bathroom lights to pink for me'
+    - 'Flick the bathroom lights to pink'
+    - "If you don't mind, could you flip the bathroom lights to pink"
+    - 'Turn the bathroom lights pink'
+    - 'Quickly set the bathroom lights to pink'
+    - 'Make the bathroom lights pink please'

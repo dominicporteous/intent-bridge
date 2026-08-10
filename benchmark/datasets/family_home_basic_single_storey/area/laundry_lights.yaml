@@ -1,0 +1,66 @@
+-
+  name: laundry_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: laundry
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the laundry lights'
+    - 'Flick on laundry room lights'
+    - 'Please flip on the lights in the laundry for me'
+    - "If you don't mind, turn on laundry lights"
+    - 'Activate the laundry room lighting'
+    - 'Hey, can you switch on the lights in the laundry'
+    - 'Flip on laundry lights please'
+-
+  name: laundry_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: laundry
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the laundry lights'
+    - 'Please switch off the lights in the laundry for me'
+    - 'Flick off the laundry room lights'
+    - "If you don't mind, flip off the lights in the laundry"
+    - 'Deactivate the laundry lights'
+    - 'Could you turn off the lights in the laundry room please'
+    - 'Shut off the laundry lights'
+    - 'Kill the lights in the laundry'
+-
+  name: laundry_lights_change_brightness
+  conditions:
+    -
+      area: laundry
+      domain: light
+      attributes:
+        brightness: 61
+  sentences:
+    - 'Set the laundry lights to 61 percent'
+    - 'Please dim the laundry room lights to sixty one for me'
+    - "Flick laundry brightness to 61 if you don't mind"
+    - 'Turn laundry lights down to 61%'
+    - 'Could you adjust the laundry illumination to sixty one please'
+    - 'Make laundry lights 61 brightness'
+    - 'Flip laundry room lights to 61 if possible'
+-
+  name: laundry_lights_change_color
+  conditions:
+    -
+      area: laundry
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Change the laundry lights to orange'
+    - 'Flick the laundry lights on orange'
+    - 'Please set the laundry lights to orange for me'
+    - "Flip the laundry lights to orange if you don't mind"
+    - 'Turn the laundry lights orange'
+    - 'Make the laundry lights orange please'
+    - 'Set laundry lights to orange'
+    - 'Could you change laundry lights to orange'

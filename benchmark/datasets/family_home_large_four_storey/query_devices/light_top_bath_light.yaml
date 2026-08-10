@@ -1,0 +1,28 @@
+-
+  name: light_top_bath_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.top_bath_light
+  sentences:
+    - "What's the status of the top bath light?"
+    - 'top bath light state'
+    - 'please tell me if the top bath light is on or off'
+    - "if you don't mind, what's the current state of the light in the top bath"
+    - 'top_bath light status please'
+    - 'can you check the top bath light for me'
+    - 'is the top bath light currently on'
+-
+  name: light_top_bath_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.top_bath_light
+  sentences:
+    - "What's the brightness of the Top Bath Light?"
+    - 'How bright is the top bath light right now?'
+    - "Please tell me the brightness level of the top bath light if you don't mind."
+    - 'Get current brightness for light top bath light.'
+    - 'Could you check the brightness of the Top Bath Light for me?'
+    - 'Top bath light brightness status.'
+    - "What's the current brightness setting on the top bath light?"

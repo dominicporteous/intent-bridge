@@ -1,0 +1,45 @@
+-
+  name: backyard_switchs_get_state
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: switch
+  sentences:
+    - "What's the status of the backyard switches"
+    - 'Tell me the state of the backyard switches'
+    - 'Please check the backyard switches for me'
+    - "If you don't mind, what's going on with the backyard switches"
+    - 'Backyard switches status'
+    - 'Can you tell me if the backyard switches are on or off'
+    - 'Quick check on backyard switches please'
+-
+  name: backyard_switchs_list_on_switchs
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: switch
+  sentences:
+    - "What's the status of the backyard switches"
+    - 'Check backyard switches'
+    - "Please tell me the state of the backyard switches if you don't mind"
+    - 'Backyard switches status'
+    - 'Could you check the backyard switches for me'
+    - 'Get current state of backyard switches'
+    - 'Are the backyard switches on or off'
+-
+  name: backyard_switchs_list_off_switchs
+  conditions:
+    -
+      type: query
+      area: backyard
+      domain: switch
+  sentences:
+    - "What's the status of the backyard switches"
+    - 'Are the backyard switches on or off'
+    - 'Please check the backyard switches for me'
+    - "If you don't mind, tell me about the backyard switches"
+    - 'Backyard switches status'
+    - 'Get me the current state of all backyard switches'
+    - 'Could you check if the backyard switches are on'

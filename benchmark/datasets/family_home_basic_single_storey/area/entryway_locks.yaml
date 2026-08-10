@@ -1,0 +1,33 @@
+-
+  name: entryway_locks_lock
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: lock
+      state: locked
+  sentences:
+    - 'Lock the entryway locks'
+    - 'Please lock the entryway locks for me'
+    - "If you don't mind, secure the entryway locks"
+    - 'Lock the front door locks'
+    - 'Engage the entryway locks'
+    - 'Could you please secure the entryway locks'
+    - 'Activate the entryway locks'
+    - 'Lock up the entryway'
+-
+  name: entryway_locks_unlock
+  conditions:
+    -
+      type: action
+      area: entryway
+      domain: lock
+      state: unlocked
+  sentences:
+    - 'unlock the entryway locks'
+    - 'please unlock the front door locks for me'
+    - "flick the entry locks open if you don't mind"
+    - 'disengage the entryway deadbolts'
+    - 'open up the entry locks'
+    - 'release the entryway locks please'
+    - 'flip the entry locks to unlocked'

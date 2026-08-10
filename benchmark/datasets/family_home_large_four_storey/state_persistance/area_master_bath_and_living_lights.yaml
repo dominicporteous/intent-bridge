@@ -1,0 +1,227 @@
+-
+  name: master_bath_and_living_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.master_bath_light
+        area_id: master_bath
+        name: 'Master Bath Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_ceiling
+        area_id: living
+        name: 'Living Room Ceiling'
+        state: 'on'
+        attributes:
+          brightness: 80
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_floor_lamp
+        area_id: living
+        name: 'Living Room Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 60
+          rgb_color:
+            - 255
+            - 200
+            - 120
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_bath_light
+        area_id: master_bath
+        name: 'Master Bath Light'
+        state: 'off'
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.living_ceiling
+        area_id: living
+        name: 'Living Room Ceiling'
+        state: 'on'
+        attributes:
+          brightness: 80
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.living_floor_lamp
+        area_id: living
+        name: 'Living Room Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 60
+          rgb_color:
+            - 255
+            - 200
+            - 120
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in the master bath and living room?'
+      - 'Please flick them on for me.'
+    -
+      - 'Can you tell me the current state of the lights in the master bath and living?'
+      - 'Go ahead and flip them on.'
+    -
+      - 'Status of lights in master bath and living room please?'
+      - "If you don't mind, turn them on for me."
+    -
+      - 'Are the lights on or off in the master bath and living?'
+      - 'Quickly switch them on.'
+    -
+      - 'Check the light status for master bath and living room.'
+      - 'Hit the switch for me.'
+    -
+      - 'Master bath and living room lights status?'
+      - 'Please power them up.'
+    -
+      - 'Tell me if the lights are on in the master bath and living.'
+      - 'Activate them now.'
+-
+  name: master_bath_and_living_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.master_bath_light
+        area_id: master_bath
+        name: 'Master Bath Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_ceiling
+        area_id: living
+        name: 'Living Room Ceiling'
+        state: 'on'
+        attributes:
+          brightness: 80
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_floor_lamp
+        area_id: living
+        name: 'Living Room Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 60
+          rgb_color:
+            - 255
+            - 200
+            - 120
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_bath_light
+        area_id: master_bath
+        name: 'Master Bath Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_ceiling
+        area_id: living
+        name: 'Living Room Ceiling'
+        state: 'on'
+        attributes:
+          brightness: 80
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.living_floor_lamp
+        area_id: living
+        name: 'Living Room Floor Lamp'
+        state: 'on'
+        attributes:
+          brightness: 60
+          rgb_color:
+            - 255
+            - 200
+            - 120
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the lights in the master bath and living?"
+      - 'Flick them off.' # Changed from: Flick them on.
+    -
+      - 'Can you tell me the current state of the master bath and living lights?'
+      - 'Please flip them off for me.' # Changed from: Please flip them on for me.
+    -
+      - 'Master bath and living lights status?'
+      - "Turn them off if you don't mind." # Changed from: Turn them on if you don't mind.
+    -
+      - 'Report the light status for master bath and living.'
+      - 'Switch them off.' # Changed from: Switch them on.
+    -
+      - "What's going on with the lights in the master bath and living?"
+      - 'Turn them off real quick.' # Changed from: Hit them on real quick.
+    -
+      - 'Check the status of the lights in master bath and living.'
+      - 'Power them down.' # Changed from: Power them up.
+    -
+      - 'Light status master bath and living?'
+      - 'Deactivate them please.' # Changed from: Activate them please.
+-
+  name: master_bath_and_living_lights_set_brightness
+  setup:
+    -
+      entity_id: light.master_bath_light
+      brightness: 13
+    -
+      entity_id: light.living_ceiling
+      brightness: 13
+    -
+      entity_id: light.living_floor_lamp
+      brightness: 13
+  conditions:
+    -
+      entity_id: light.master_bath_light
+      brightness: 68
+    -
+      entity_id: light.living_ceiling
+      brightness: 68
+    -
+      entity_id: light.living_floor_lamp
+      brightness: 68
+  sentences:
+    -
+      - 'What is the brightness of the lights in the master bath and living room?'
+      - 'Set it to sixty eight percent.'
+    -
+      - 'Can you tell me the current brightness for master bath and living?'
+      - "Please adjust to sixty eight if you don't mind."
+    -
+      - 'Check brightness levels in master bath and living please.'
+      - 'Flick it up to sixty eight.'
+    -
+      - "What's the brightness at in the master bath and living?"
+      - 'Flip it to sixty eight for me.'
+    -
+      - 'Tell me how bright the master bath and living lights are.'
+      - 'Quickly set sixty eight.'
+    -
+      - 'Master bath and living brightness status?'
+      - 'Make it sixty eight please.'
+    -
+      - 'How bright are master bath and living right now?'
+      - 'Turn it to sixty eight.'
+    -
+      - 'Brightness check for master bath and living.'
+      - 'Bump it to sixty eight.'

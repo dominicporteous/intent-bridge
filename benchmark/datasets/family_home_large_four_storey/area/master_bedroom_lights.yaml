@@ -1,0 +1,65 @@
+-
+  name: master_bedroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the master bedroom lights'
+    - 'Please turn on the lights in the master bedroom for me'
+    - "Flick on the master bedroom lights if you don't mind"
+    - 'Flip on the lights in the master bedroom'
+    - 'Could you please turn on the master bedroom lights'
+    - 'Activate the master bedroom lights'
+    - 'Turn the master bedroom lights on please'
+-
+  name: master_bedroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the master bedroom lights'
+    - 'Please switch off the lights in the master bedroom for me'
+    - 'Flick off the master bedroom lights'
+    - "If you don't mind, could you turn off the lights in the master bedroom"
+    - 'Flip off the master bedroom lights'
+    - 'Kill the lights in the master bedroom'
+    - 'Would you mind turning off the master bedroom lights please'
+-
+  name: master_bedroom_lights_change_brightness
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        brightness: 69
+  sentences:
+    - 'Set the master bedroom lights to 69 percent brightness'
+    - "Please dim the master bedroom lights to 69 if you don't mind"
+    - 'Flick the master bedroom lights down to 69%'
+    - 'Could you adjust the master bedroom lights to 69 brightness for me'
+    - 'Turn the master bedroom lights to 69 percent'
+    - 'Make the master bedroom lights 69 brightness please'
+    - 'Adjust master bedroom lights brightness to 69'
+-
+  name: master_bedroom_lights_change_color
+  conditions:
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Turn the master bedroom lights orange'
+    - 'Flick the master bedroom lights to orange'
+    - 'Please change the master bedroom lights to orange for me'
+    - "If you don't mind, flip the master bedroom lights to orange"
+    - 'Set the master bedroom lights to orange'
+    - 'Can you make the master bedroom lights orange'
+    - 'Quickly turn the master bedroom lights orange'
+    - 'Change the master bedroom lights to orange please'

@@ -1,0 +1,29 @@
+-
+  name: light_kitchen_bench_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_bench
+  sentences:
+    - 'Bench lights'
+    - 'What is the status of the kitchen bench lights'
+    - 'Please tell me if the bench lights are on or off'
+    - "If you don't mind, could you check the kitchen bench lights for me"
+    - 'Bench lights status'
+    - 'Are the bench lights on'
+    - 'Quick check on kitchen bench lights'
+    - 'Current state of the bench lights in the kitchen'
+-
+  name: light_kitchen_bench_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.kitchen_bench
+  sentences:
+    - "What's the brightness of the bench lights?"
+    - 'Bench lights brightness please'
+    - "If you don't mind, could you tell me the current brightness of the kitchen bench lights?"
+    - 'Get brightness for bench lights'
+    - 'Please check the brightness level of the bench lights for me'
+    - 'Kitchen bench lights brightness status'
+    - 'How bright are the bench lights right now?'

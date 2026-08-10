@@ -1,0 +1,32 @@
+-
+  name: bathroom_switchs_turn_on
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: switch
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom switches'
+    - 'Flick on the bathroom switches please'
+    - "If you don't mind, flip on the bathroom switches for me"
+    - 'Activate bathroom switches'
+    - 'Switch on the bathroom switches now'
+    - 'Please turn on the bathroom switches'
+    - 'Can you flip on the bathroom switches'
+-
+  name: bathroom_switchs_turn_off
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: switch
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom switches'
+    - 'Please switch off the bathroom switches for me'
+    - "If you don't mind, could you flick off the bathroom switches"
+    - 'Deactivate all bathroom switches'
+    - 'Flip off the bathroom switches if possible'
+    - 'Quickly turn off the bathroom switches'
+    - 'Shut down the bathroom switches please'

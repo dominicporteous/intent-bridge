@@ -1,0 +1,19 @@
+name: fan_on_when_thermostat_high
+sentences:
+- Create an automation to turn on the ceiling fan when the thermostat temperature
+  goes above 24 degrees
+- Set up a rule that switches on the living room ceiling fan whenever the temperature
+  rises above 24
+- Make an automation so the ceiling fan turns on automatically when it gets hotter
+  than 24 degrees
+- Automate the ceiling fan to switch on when the thermostat reads over 24 degrees
+- Can you set it up so the ceiling fan comes on any time the temperature exceeds 24
+  degrees
+expected:
+  trigger:
+    platform: numeric_state
+    entity_id: climate.studio_thermostat
+    above: 24
+  actions:
+  - action: fan.turn_on
+    entity_id: fan.living_room_ceiling_fan

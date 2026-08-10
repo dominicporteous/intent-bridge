@@ -1,0 +1,69 @@
+-
+  name: switch_gym_ventilation_turn_on
+  setup:
+    -
+      entity_id: switch.gym_ventilation
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: switch.gym_ventilation
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the gym ventilation?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the gym ventilation on or off?'
+      - "Flick it on if you don't mind."
+    -
+      - 'Can you check the gym ventilation status?'
+      - 'Flip it on please.'
+    -
+      - 'Tell me if the gym ventilation is running.'
+      - 'Switch it on for me.'
+    -
+      - "What's the gym ventilation doing right now?"
+      - 'Turn it on.'
+    -
+      - 'Check the status of the gym ventilation.'
+      - 'Activate it please.'
+    -
+      - 'Is the gym ventilation currently active?'
+      - "Power it on if you don't mind."
+    -
+      - "How's the gym ventilation looking?"
+      - 'Enable it for me.'
+-
+  name: switch_gym_ventilation_turn_off
+  setup:
+    -
+      entity_id: switch.gym_ventilation
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: switch.gym_ventilation
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the gym ventilation?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the gym ventilation on or off?'
+      - "Switch it off if you don't mind."
+    -
+      - 'Check the gym ventilation status.'
+      - 'Flip it off.'
+    -
+      - "How's the gym ventilation doing?"
+      - 'Flick it off please.'
+    -
+      - 'Tell me if the gym ventilation is running.'
+      - 'Turn it off.'
+    -
+      - 'Gym ventilation status please.'
+      - 'Shut it off for me.'
+    -
+      - 'Can you check the gym ventilation?'
+      - "Turn it off if you don't mind."

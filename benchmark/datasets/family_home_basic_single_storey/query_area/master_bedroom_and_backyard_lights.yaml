@@ -1,0 +1,79 @@
+-
+  name: master_bedroom_and_backyard_lights_get_state
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and backyard"
+    - 'lights master bedroom backyard'
+    - "please tell me the current state of the lights in the master bedroom and backyard if you don't mind"
+    - 'get light status master bedroom backyard'
+    - 'can you check the lights in the master bedroom and backyard for me'
+    - 'lights status master bedroom backyard now'
+    - 'if you could show me the light states for master bedroom and backyard please'
+    - 'current lights master bedroom backyard'
+-
+  name: master_bedroom_and_backyard_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and backyard"
+    - 'Lights master bedroom backyard'
+    - 'Please check the lights in the master bedroom and backyard for me'
+    - "If you don't mind, could you tell me the current state of the lights in the master bedroom and backyard"
+    - 'Lights status master bedroom backyard'
+    - 'Get me the light states for master bedroom and backyard'
+    - 'Can you show me the lights status in the master bedroom and backyard please'
+-
+  name: master_bedroom_and_backyard_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and backyard?"
+    - 'Lights master bedroom backyard status'
+    - "Please check the lights for me in the master bedroom and backyard if you don't mind"
+    - 'Get current light state master bedroom backyard'
+    - 'Could you tell me if the lights are on in the master bedroom and backyard?'
+    - 'Master bedroom backyard lights state please'
+    - 'Report light status master bedroom backyard'
+    - "If it's not too much trouble, what's the light situation in the master bedroom and backyard?"
+-
+  name: master_bedroom_and_backyard_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+    -
+      type: query
+      area: backyard
+      domain: light
+  sentences:
+    - "What's the status of the lights in the master bedroom and backyard?"
+    - 'Lights master bedroom backyard status'
+    - "Please check the lights for me in the master bedroom and backyard if you don't mind"
+    - 'Current light state master bedroom backyard'
+    - 'Could you tell me if the lights are on in the master bedroom and backyard?'
+    - 'Master bedroom backyard lights state'
+    - 'Get me the light status for master bedroom and backyard please'
+    - 'Are the lights on or off in the master bedroom and backyard?'

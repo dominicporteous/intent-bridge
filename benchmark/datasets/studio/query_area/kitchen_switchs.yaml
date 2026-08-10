@@ -1,0 +1,44 @@
+-
+  name: kitchen_switchs_get_state
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: switch
+  sentences:
+    - "What's the status of the kitchen switches?"
+    - 'Kitchen switches state please'
+    - "Could you check the kitchen switches for me if you don't mind"
+    - 'Report kitchen switch states'
+    - 'Hey can you tell me if kitchen switches are on or off'
+    - 'Kitchen switches current condition'
+    - 'Please show me kitchen switches status'
+-
+  name: kitchen_switchs_list_on_switchs
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: switch
+  sentences:
+    - 'What is the status of the kitchen switches'
+    - 'kitchen switches state'
+    - "please tell me the current state of the kitchen switches if you don't mind"
+    - 'get kitchen switch status'
+    - 'could you check the kitchen switches for me'
+    - 'show me the kitchen switches state please'
+-
+  name: kitchen_switchs_list_off_switchs
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: switch
+  sentences:
+    - "What's the status of the kitchen switches"
+    - 'Tell me the state of all kitchen switches'
+    - "Please check the kitchen switches for me if you don't mind"
+    - 'Kitchen switches status'
+    - 'Could you show me the current state of the switches in the kitchen'
+    - 'Get kitchen switch states'
+    - 'If possible, report the kitchen switches status please'

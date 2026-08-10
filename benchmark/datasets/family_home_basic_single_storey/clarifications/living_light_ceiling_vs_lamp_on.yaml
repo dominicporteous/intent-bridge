@@ -1,0 +1,19 @@
+name: living_light_ceiling_vs_lamp_on
+conditions:
+- type: action
+  entity_id: light.living_ceiling
+  state: 'on'
+- type: action
+  entity_id: light.living_lamp
+  state: 'off'
+sentences:
+- - turn on the living room light
+  - the ceiling
+- - switch on the living room lights
+  - ceiling one
+- - living room light on
+  - ceiling please
+- - flip the living room light on
+  - just the ceiling
+- - hey turn on the living room light
+  - ceiling light

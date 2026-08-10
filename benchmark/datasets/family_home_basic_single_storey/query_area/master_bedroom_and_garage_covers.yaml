@@ -1,0 +1,78 @@
+-
+  name: master_bedroom_and_garage_covers_get_state
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the windows in the master bedroom and garage"
+    - 'Check blinds master bedroom garage'
+    - "Please tell me the current state of the curtains in the master bedroom and garage if you don't mind"
+    - 'Master bedroom and garage windows status'
+    - 'Could you check the blinds for me in the master bedroom and garage'
+    - 'Windows blinds curtains master bedroom garage state'
+    - "If possible, what's the position of the curtains in the master bedroom and garage"
+    - 'Quick check: master bedroom garage window status'
+-
+  name: master_bedroom_and_garage_covers_list_open_covers
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the windows in the master bedroom and garage"
+    - 'Check blinds and curtains master bedroom garage'
+    - "Please tell me if the windows are open in the master bedroom and garage if you don't mind"
+    - 'Are the blinds closed in master bedroom and garage right now'
+    - 'Could you check the current state of all windows blinds curtains master bedroom garage for me'
+    - 'Master bedroom garage window blind curtain status'
+    - 'Quick check windows blinds curtains master bedroom garage'
+-
+  name: master_bedroom_and_garage_covers_list_closed_covers
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the windows in the master bedroom and garage?"
+    - 'Check the blinds in the master bedroom and garage please'
+    - "If you don't mind, could you tell me if the curtains are open in the master bedroom and garage?"
+    - 'Master bedroom and garage window status'
+    - 'Please check the blinds for me in the master bedroom and garage'
+    - 'Are the curtains open in the master bedroom and garage?'
+    - 'Quick check on windows and blinds master bedroom garage'
+    - 'Tell me the current state of the windows, blinds, and curtains in the master bedroom and garage'
+-
+  name: master_bedroom_and_garage_covers_get_position
+  conditions:
+    -
+      type: query
+      area: master_bedroom
+      domain: cover
+    -
+      type: query
+      area: garage
+      domain: cover
+  sentences:
+    - "What's the status of the windows in the master bedroom and garage?"
+    - 'Check blinds and curtains master bedroom garage'
+    - "Please tell me the current state of the windows, blinds, and curtains in the master bedroom and garage if you don't mind"
+    - 'Master bedroom and garage window status'
+    - 'Could you check the blinds and curtains for me in the master bedroom and garage?'
+    - 'Report window and blind states master bedroom garage'
+    - "If possible, what's the position of the curtains and blinds in the master bedroom and garage?"

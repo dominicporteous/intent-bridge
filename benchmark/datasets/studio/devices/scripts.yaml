@@ -1,0 +1,62 @@
+-
+  name: lock_up
+  conditions:
+    -
+      type: action
+      entity_id: lock.front_door
+      state: locked
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+  sentences:
+    - "If you don't mind, run the lock up script"
+    - 'Flick on the lock up script'
+    - 'Could you execute the lock up script'
+    - 'Flip on the lock up script'
+    - 'Activate lock up script'
+-
+  name: goodnight
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.kitchen_under_cabinet_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+    -
+      type: action
+      entity_id: light.bathroom_mirror_light
+      state: 'off'
+    -
+      type: action
+      entity_id: lock.front_door
+      state: locked
+    -
+      type: action
+      entity_id: climate.studio_thermostat
+      attributes:
+        temperature: 18
+  sentences:
+    - 'Run the Goodnight script'
+    - 'Please execute the goodnight script for me'
+    - "If you don't mind, flick on the Goodnight script"
+    - 'Flip on goodnight script if possible'
+    - 'Hey, can you trigger the Goodnight script in the ~area~'
+    - 'Quickly run the goodnight script now'
+    - 'Turn on the Goodnight script please'
+    - 'Activate the goodnight script for me'

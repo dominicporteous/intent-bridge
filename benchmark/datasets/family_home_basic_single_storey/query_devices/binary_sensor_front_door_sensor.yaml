@@ -1,0 +1,15 @@
+-
+  name: binary_sensor_front_door_sensor_get_status
+  conditions:
+    -
+      type: query
+      entity_id: binary_sensor.front_door_sensor
+  sentences:
+    - "What's the status of the front door sensor?"
+    - 'Is the front door sensor open or closed?' # Changed from: Is the front door open or closed?
+    - 'Check the front door sensor in the entryway'
+    - 'Please tell me if the front door sensor is open' # Changed from: Please tell me if the front door is open
+    - "Could you check the front door sensor for me if you don't mind"
+    - 'Front door sensor status'
+    - "What's going on with the entryway front door sensor" # Changed from: What's going on with the entryway front door
+    - 'Get me the current state of the front door sensor'

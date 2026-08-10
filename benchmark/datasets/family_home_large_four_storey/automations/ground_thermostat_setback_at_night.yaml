@@ -1,0 +1,16 @@
+name: ground_thermostat_setback_at_night
+sentences:
+- Create an automation to set the ground floor thermostat to 18 degrees at 11pm
+- Set up a nightly rule at eleven to lower the ground floor thermostat to 18
+- Make an automation that sets the ground thermostat to 18 degrees every night at
+  11
+- Automate the ground floor thermostat to drop to 18 at eleven pm each night
+- Can you create a rule to set the ground floor thermostat to 18 every night at 11pm
+expected:
+  trigger:
+    platform: time
+    at: '23:00:00'
+  actions:
+  - action: climate.set_temperature
+    entity_id: climate.ground_thermostat
+    temperature: 18

@@ -1,0 +1,18 @@
+name: tv_off_when_door_locked
+sentences:
+- Create an automation that turns off the TV whenever the front door is locked
+- Set up a rule so the LG TV switches off automatically when I lock the front door
+- Make an automation that turns the TV off whenever the front door gets locked
+- Automate the TV to turn off when the front door is locked
+- When I lock the front door I want the TV to automatically turn off, can you set
+  that up
+- Please create a rule that shuts off the living room TV every time the front door
+  is locked
+expected:
+  trigger:
+    platform: state
+    entity_id: lock.front_door
+    to: locked
+  actions:
+  - action: media_player.turn_off
+    entity_id: media_player.main_lg_tv

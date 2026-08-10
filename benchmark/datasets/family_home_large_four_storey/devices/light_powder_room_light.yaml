@@ -1,0 +1,65 @@
+-
+  name: light_powder_room_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.powder_room_light
+      state: 'on'
+  sentences:
+    - 'Turn on the powder room light'
+    - 'Flick on the powder room light'
+    - 'Flip on the light in the powder room'
+    - 'Please turn on the powder room light for me'
+    - "If you don't mind, turn on the powder room light"
+    - 'Activate the powder room light'
+    - 'Switch on the powder room light now'
+    - 'Can you turn on the powder room light please'
+-
+  name: light_powder_room_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.powder_room_light
+      state: 'off'
+  sentences:
+    - 'Turn off the powder room light'
+    - 'Please switch off the light in the powder_room for me'
+    - "If you don't mind, flick off the powder room light"
+    - 'Flip off the light in powder_room'
+    - 'Kill the powder room light'
+    - 'Can you turn off the light in the powder_room area'
+    - 'Shut off the powder room light please'
+    - 'Deactivate the light in powder_room'
+-
+  name: light_powder_room_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.powder_room_light
+      attributes:
+        brightness: 52
+  sentences:
+    - 'Set the powder room light to 52%'
+    - "Please turn the powder room light to 52 if you don't mind"
+    - 'Flick the powder_room light to 52%'
+    - 'Could you adjust the Powder Room Light brightness to 52 for me'
+    - 'Flip on the powder room light at 52 percent'
+    - 'Make the powder_room light 52%'
+    - 'Set brightness of powder room light to 52'
+-
+  name: light_powder_room_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.powder_room_light
+      attributes:
+        color: pink
+  sentences:
+    - 'Change the powder room light to pink'
+    - 'Set light powder room light to pink'
+    - 'Please turn the powder room light pink for me'
+    - "If you don't mind, flick the powder_room light to pink"
+    - 'Flip on pink for the powder room light'
+    - 'Make the powder room light pink please'
+    - 'Quickly set powder_room light color to pink'
+    - 'Change light powder room light color to pink now'

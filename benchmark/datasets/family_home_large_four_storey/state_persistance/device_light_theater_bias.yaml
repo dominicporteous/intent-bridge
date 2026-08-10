@@ -1,0 +1,105 @@
+-
+  name: light_theater_bias_turn_on
+  setup:
+    -
+      entity_id: light.theater_bias
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the bias lighting in the home theater?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the bias light in home_theater?'
+      - 'Flick it on.'
+    -
+      - "How's the theater bias light doing?"
+      - "If you don't mind, flip it on for me."
+    -
+      - 'Is the bias lighting in the home theater on or off?'
+      - 'Go ahead and turn it on.'
+    -
+      - 'Tell me the status of the home_theater bias light.'
+      - 'Switch it on, please.'
+    -
+      - "What's up with the bias lighting?"
+      - 'Quick, turn it on.'
+    -
+      - 'Check the status of the bias light in home_theater.'
+      - 'Flip it on for me.'
+-
+  name: light_theater_bias_turn_off
+  setup:
+    -
+      entity_id: light.theater_bias
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_bias
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the Bias Lighting?"
+      - 'Turn it off.'
+    -
+      - 'Can you tell me if the light theater bias is on?'
+      - 'Please switch it off for me.'
+    -
+      - 'Is the Bias Lighting currently active in the home_theater?'
+      - "Flick it off if you don't mind."
+    -
+      - 'Check the state of the light theater bias please.'
+      - 'Flip it off.'
+    -
+      - "How's the Bias Lighting doing right now?"
+      - 'Turn it off for me.'
+    -
+      - "What's the current status on the light theater bias in home_theater?"
+      - 'Please shut it off.'
+    -
+      - 'Is the Bias Lighting on or off?'
+      - 'Kill it.'
+    -
+      - 'Tell me the state of the light theater bias.'
+      - "Switch it off if you don't mind."
+-
+  name: light_theater_bias_persistance_brightness
+  setup:
+    -
+      entity_id: light.theater_bias
+      brightness: 49
+  conditions:
+    -
+      entity_id: light.theater_bias
+      attributes:
+        brightness: 98
+  sentences:
+    -
+      - "What's the brightness of the Bias Lighting in the home theater?"
+      - 'Set it to 98.'
+    -
+      - 'How bright is the Bias Lighting in the home theater right now?'
+      - 'Change it to 98 please.'
+    -
+      - 'Can you tell me the current brightness of the Bias Lighting in the home theater?'
+      - "Adjust it to 98 if you don't mind."
+    -
+      - 'Brightness level for the Bias Lighting in the home theater?'
+      - 'Make it 98.'
+    -
+      - "What's the brightness setting on the Bias Lighting in the home theater?"
+      - 'Turn it up to 98.'
+    -
+      - 'How bright is the Bias Lighting in the home theater?'
+      - 'Please set it to 98 for me.'
+    -
+      - 'Tell me the brightness of the Bias Lighting in the home theater.'
+      - 'Change it to 98 right away.'
+    -
+      - 'Current brightness of the Bias Lighting in the home theater?'
+      - 'Adjust it to 98 please.'

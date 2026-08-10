@@ -1,0 +1,64 @@
+-
+  name: light_study_desk_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.study_desk_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the desk lamp'
+    - 'Please flick on the study desk lamp for me'
+    - "If you don't mind, flip on the light in the study"
+    - 'Activate the study desk lamp'
+    - 'Could you turn on the desk lamp in the study area'
+    - 'Switch on the study desk lamp please'
+    - 'Quickly turn on the desk lamp'
+    - 'Ignite the study desk lamp'
+-
+  name: light_study_desk_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.study_desk_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the desk lamp'
+    - 'Please switch off the study desk lamp for me'
+    - 'Flick off the light in the study'
+    - "If you don't mind, flip off the desk lamp"
+    - 'Could you turn off the study desk lamp please'
+    - 'Deactivate the desk lamp in the study'
+    - 'Shut off the study desk lamp if you would'
+-
+  name: light_study_desk_lamp_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.study_desk_lamp
+      attributes:
+        brightness: 30
+  sentences:
+    - 'Set the study desk lamp to 30 percent'
+    - "Please dim the desk lamp to 30 if you don't mind"
+    - 'Flick the study desk lamp down to 30%'
+    - 'Turn the desk lamp brightness to 30'
+    - 'Could you lower the study desk lamp to 30 for me'
+    - 'Make the desk lamp 30 percent please'
+    - 'Adjust study desk lamp brightness to 30'
+-
+  name: light_study_desk_lamp_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.study_desk_lamp
+      attributes:
+        color: purple
+  sentences:
+    - 'Change the study desk lamp to purple'
+    - 'Please set the desk lamp in the study to purple for me'
+    - 'Flick the study desk lamp to purple'
+    - "If you don't mind, could you turn the desk lamp purple"
+    - 'Flip on purple for the study desk lamp'
+    - 'Make the study desk lamp purple please'
+    - 'Set the desk lamp color to purple in the study'
+    - 'Quickly change study desk lamp to purple'

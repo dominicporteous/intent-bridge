@@ -1,0 +1,72 @@
+-
+  name: switch_rangehood_turn_on
+  setup:
+    -
+      entity_id: switch.rangehood
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: switch.rangehood
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the rangehood?"
+      - 'Please flick it on for me.'
+    -
+      - 'Rangehood status in the kitchen?'
+      - "Flip it on if you don't mind."
+    -
+      - 'Is the rangehood on or off?'
+      - 'Turn it on please.'
+    -
+      - 'Kitchen rangehood state?'
+      - 'Can you switch it on for me?'
+    -
+      - 'Rangehood check please.'
+      - 'Flick it on.'
+    -
+      - "What's happening with the rangehood?"
+      - "If you don't mind, turn it on."
+    -
+      - 'Rangehood status?'
+      - 'Flip it on for me please.'
+    -
+      - 'Kitchen rangehood status report.'
+      - 'Switch it on.'
+-
+  name: switch_rangehood_turn_off
+  setup:
+    -
+      entity_id: switch.rangehood
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: switch.rangehood
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the rangehood?"
+      - 'Turn it off please.'
+    -
+      - 'Is the rangehood on right now?'
+      - "Switch it off if you don't mind."
+    -
+      - 'Can you check the kitchen rangehood status?'
+      - 'Flip it off for me.'
+    -
+      - 'Rangehood state in the kitchen?'
+      - 'Flick it off.'
+    -
+      - 'Tell me if the rangehood is running.'
+      - 'Please turn it off.'
+    -
+      - 'Kitchen rangehood status check.'
+      - 'Shut it off.'
+    -
+      - "What's happening with the rangehood?"
+      - "If you don't mind, turn it off for me."
+    -
+      - 'Is the kitchen rangehood currently active?'
+      - 'Quick, switch it off.'

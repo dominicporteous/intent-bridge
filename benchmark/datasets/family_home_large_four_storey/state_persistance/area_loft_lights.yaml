@@ -1,0 +1,32 @@
+-
+  name: loft_lights_set_brightness
+  setup:
+    -
+      entity_id: light.loft_ceiling
+      brightness: 52
+  conditions:
+    -
+      entity_id: light.loft_ceiling
+      brightness: 54
+  sentences:
+    -
+      - 'What is the brightness of the lights in the loft?'
+      - 'Set it to fifty four percent.'
+    -
+      - "Please tell me the brightness level in the loft if you don't mind."
+      - 'Flick it up to fifty four.'
+    -
+      - 'Can you check the loft light brightness for me?'
+      - 'Flip it to fifty four percent please.'
+    -
+      - "What's the current brightness setting in the loft?"
+      - 'Make it fifty four.'
+    -
+      - 'Tell me how bright the loft lights are right now.'
+      - 'Adjust to fifty four percent.'
+    -
+      - 'Loft lights brightness status?'
+      - 'Crank it to fifty four.'
+    -
+      - 'Could you report the loft brightness level please?'
+      - 'Set brightness to fifty four percent.'

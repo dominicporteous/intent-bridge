@@ -1,0 +1,66 @@
+-
+  name: light_kitchen_island_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_island
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen island'
+    - 'Please turn on the kitchen island light for me'
+    - 'Flick on kitchen island'
+    - "If you don't mind, flip on the kitchen island light"
+    - 'Activate the kitchen island'
+    - 'Could you turn on the kitchen island for me please'
+    - 'Switch on kitchen island light'
+    - 'Turn on the light in the kitchen area'
+-
+  name: light_kitchen_island_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_island
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen island'
+    - 'Please turn off the kitchen island light for me'
+    - "If you don't mind, could you flick off the kitchen island"
+    - 'Flip off the kitchen island light'
+    - 'Quickly turn off the kitchen island'
+    - 'Switch off the kitchen island light please'
+    - 'Shut off the kitchen island'
+    - 'Kill the kitchen island light'
+-
+  name: light_kitchen_island_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_island
+      attributes:
+        brightness: 95
+  sentences:
+    - 'Set the Kitchen Island to 95%'
+    - 'Kitchen Island brightness 95'
+    - 'Please turn the kitchen island light up to 95 for me'
+    - "If you don't mind, flick the Kitchen Island to 95%"
+    - 'Bump kitchen island brightness to 95'
+    - 'Kitchen Island at 95 please'
+    - 'Flip the kitchen island light to 95%'
+    - 'Make the Kitchen Island 95'
+-
+  name: light_kitchen_island_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_island
+      attributes:
+        color: purple
+  sentences:
+    - 'Change the kitchen island light to purple'
+    - 'Flick the kitchen island to purple'
+    - 'Please set the kitchen island light to purple for me'
+    - "If you don't mind, flip on purple for the kitchen island"
+    - 'Turn the kitchen island light purple'
+    - 'Make the kitchen island purple'
+    - 'Quickly set kitchen island to purple'
+    - 'Change kitchen island color to purple'

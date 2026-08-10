@@ -1,0 +1,38 @@
+-
+  name: fan_bathroom_exhaust_fan_and_light_living_room_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan and living room lamp'
+    - 'Please flick on the exhaust fan in the bathroom and the floor lamp in the living room for me'
+    - "Flip on the bathroom fan and living room light if you don't mind"
+    - 'Activate exhaust fan bathroom and living room lamp now'
+    - 'Could you turn on the bathroom exhaust fan and living room floor lamp please'
+    - 'Switch on the fan in the bathroom and the lamp in the living room'
+    - 'Turn the bathroom exhaust fan on and living room lamp on'
+-
+  name: fan_bathroom_exhaust_fan_and_light_living_room_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: light.living_room_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the exhaust fan and floor lamp'
+    - 'Please turn off the bathroom exhaust fan and living room lamp for me'
+    - "Flick off the exhaust fan and living room lamp if you don't mind"
+    - 'Flip off the bathroom exhaust fan and floor lamp'
+    - 'Could you turn off the exhaust fan and living room lamp please'
+    - 'Switch off the bathroom exhaust fan and floor lamp'
+    - 'Turn off the exhaust fan in the bathroom and the lamp in the living room'

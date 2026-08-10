@@ -1,0 +1,16 @@
+-
+  name: climate_studio_thermostat_set_temperature
+  conditions:
+    -
+      type: action
+      entity_id: climate.studio_thermostat
+      attributes:
+        temperature: 16
+  sentences:
+    - 'Set the studio thermostat to 16 degrees'
+    - 'Turn the climate studio thermostat down to 16'
+    - 'Please set the studio thermostat to 16 for me'
+    - "If you don't mind, change the climate studio thermostat to 16"
+    - 'Flick the studio thermostat down to 16'
+    - 'Flip the climate studio thermostat to 16 degrees'
+    - 'Set the living room studio thermostat to 16'

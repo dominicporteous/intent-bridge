@@ -1,0 +1,105 @@
+-
+  name: light_living_ceiling_turn_on
+  setup:
+    -
+      entity_id: light.living_ceiling
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the living room ceiling light?"
+      - 'Turn it on please.'
+    -
+      - 'Can you check the living room ceiling?'
+      - 'Flick it on for me.'
+    -
+      - 'Living room ceiling light status?'
+      - "Flip it on if you don't mind."
+    -
+      - 'Is the living room ceiling on or off?'
+      - 'Please turn it on.'
+    -
+      - 'Tell me about the living room ceiling light.'
+      - 'Switch it on.'
+    -
+      - 'Living room ceiling status check.'
+      - 'Turn it on for me please.'
+    -
+      - "What's happening with the living room ceiling?"
+      - "Flip it on if you don't mind."
+    -
+      - 'Living room ceiling light - current state?'
+      - 'Flick it on.'
+-
+  name: light_living_ceiling_turn_off
+  setup:
+    -
+      entity_id: light.living_ceiling
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.living_ceiling
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the living room ceiling light?"
+      - 'Turn it off.'
+    -
+      - 'Can you check the living room ceiling light please?'
+      - 'Please turn it off for me.'
+    -
+      - 'Living room ceiling light status?'
+      - 'Flick it off.'
+    -
+      - "If you don't mind, what's the living room ceiling light doing?"
+      - "Flip it off if you don't mind."
+    -
+      - 'Tell me about the living room ceiling light.'
+      - 'Switch it off.'
+    -
+      - 'Quick check on living room ceiling light status.'
+      - 'Kill it.'
+    -
+      - 'Living room ceiling light - status report?'
+      - 'Shut it off.'
+    -
+      - "What's happening with the living room ceiling light?"
+      - 'Turn it off please.'
+-
+  name: light_living_ceiling_persistance_brightness
+  setup:
+    -
+      entity_id: light.living_ceiling
+      brightness: 13
+  conditions:
+    -
+      entity_id: light.living_ceiling
+      attributes:
+        brightness: 17
+  sentences:
+    -
+      - 'What is the brightness of the Living Room Ceiling?'
+      - 'Set it to 17.'
+    -
+      - "What's the current brightness level in the living room ceiling light?"
+      - 'Change it to 17 please.'
+    -
+      - 'Can you tell me how bright the living room ceiling is right now?'
+      - "Adjust to 17 if you don't mind."
+    -
+      - 'Living room ceiling brightness status?'
+      - 'Make it 17.'
+    -
+      - 'How bright is the living ceiling light?'
+      - 'Turn it to 17 for me.'
+    -
+      - "What's the brightness setting for the living room ceiling?"
+      - 'Please change to 17.'
+    -
+      - 'Tell me the living room ceiling light brightness.'
+      - 'Set brightness to 17.'

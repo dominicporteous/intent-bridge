@@ -1,0 +1,61 @@
+-
+  name: entryway_lights_get_state
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+  sentences:
+    - "What's the status of the entryway lights?"
+    - 'Entryway lights state please.'
+    - "If you don't mind, could you check the lights in the entryway for me?"
+    - 'Lights entryway.'
+    - 'Tell me if the entryway lights are on or off.'
+    - 'Please give me the current state of the entryway lights.'
+    - "Entryway lights - what's their status?"
+-
+  name: entryway_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+  sentences:
+    - "What's the status of the entryway lights?"
+    - 'Lights in entryway please'
+    - "If you don't mind, could you check the entryway lights for me?"
+    - 'Entryway lights state'
+    - 'Please tell me if the entryway lights are on or off'
+    - 'Get entryway lighting status'
+    - 'Are the entryway lights on right now?'
+-
+  name: entryway_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+  sentences:
+    - "What's the status of the entryway lights?"
+    - 'Lights in the entryway?'
+    - "Please tell me the current state of the entryway lights if you don't mind."
+    - 'Entryway lights status.'
+    - 'Could you check the entryway lights for me?'
+    - 'Are the entryway lights on or off?'
+    - 'Get me the entryway light state please.'
+-
+  name: entryway_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+  sentences:
+    - "What's the status of the entryway lights?"
+    - 'Entryway lights state please'
+    - "Could you check the lights in the entryway for me if you don't mind?"
+    - 'Lights entryway'
+    - 'Tell me about the entryway lighting situation'
+    - 'Are the entryway lights on or off right now?'
+    - 'Please give me the current state of the entryway lights'
+    - 'Entryway lights check'

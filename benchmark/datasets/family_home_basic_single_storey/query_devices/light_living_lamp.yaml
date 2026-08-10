@@ -1,0 +1,28 @@
+-
+  name: light_living_lamp_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.living_lamp
+  sentences:
+    - "What's the status of the living room lamp?"
+    - 'Living room lamp state'
+    - 'Please check the living lamp for me'
+    - "If you don't mind, could you tell me if the living room lamp is on or off?" # Changed from: If you don't mind, could you tell me if the living room light is on or off?
+    - 'Living lamp current state please'
+    - 'Is the living room lamp on right now?'
+    - 'Get me the living lamp status'
+-
+  name: light_living_lamp_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.living_lamp
+  sentences:
+    - "What's the brightness of the living room lamp?"
+    - 'Living room lamp brightness'
+    - "Please tell me the current brightness of the living room lamp if you don't mind"
+    - 'How bright is the living lamp right now?'
+    - "Can you check the living room lamp's brightness for me?"
+    - 'Living lamp light level please'
+    - "What's the living room lamp set to brightness-wise?"

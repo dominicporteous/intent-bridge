@@ -1,0 +1,62 @@
+-
+  name: gym_lights_get_state
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: light
+  sentences:
+    - "What's the status of the gym lights?"
+    - 'Are the lights on in the gym?'
+    - 'Please check the gym lighting for me'
+    - "If you don't mind, could you tell me if the gym lights are on?"
+    - 'Gym lights state'
+    - 'Tell me about the lights in the gym'
+    - 'Current gym lighting status please'
+-
+  name: gym_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: light
+  sentences:
+    - "What's the status of the gym lights?"
+    - 'Are the gym lights on or off?'
+    - 'Please check the gym lights for me'
+    - "If you don't mind, tell me about the gym lights"
+    - 'Gym lights status'
+    - 'Could you let me know if the gym lights are on?'
+    - 'Quick check on gym lighting please'
+    - 'Report current gym light state'
+-
+  name: gym_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: light
+  sentences:
+    - "What's the status of the gym lights?"
+    - 'Are the gym lights on or off?'
+    - 'Please check the lights in the gym for me.'
+    - 'Gym lights state?'
+    - "If you don't mind, could you tell me if the gym lights are on?"
+    - 'Current gym lighting status please.'
+    - 'Lights gym?'
+-
+  name: gym_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: light
+  sentences:
+    - "What's the status of the gym lights?"
+    - 'Lights gym status'
+    - 'Could you please tell me if the gym lights are on or off?'
+    - "If you don't mind, check the current state of the lights in the gym for me"
+    - 'Gym lights state'
+    - 'Are the lights in the gym on right now?'
+    - 'Please check gym lighting status'
+    - 'Tell me the gym lights condition'

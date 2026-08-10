@@ -1,0 +1,39 @@
+-
+  name: fan_bathroom_exhaust_fan_and_fan_living_room_ceiling_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom exhaust fan and living room ceiling fan'
+    - 'Flick on the exhaust fan and ceiling fan please'
+    - "Flip on the bathroom exhaust fan and living room ceiling fan if you don't mind"
+    - 'Activate the exhaust fan and ceiling fan for me'
+    - 'Please turn on the bathroom exhaust fan and living room ceiling fan'
+    - 'Switch on the exhaust fan and ceiling fan'
+    - 'Could you turn on the bathroom exhaust fan and living room ceiling fan'
+    - 'Power on the exhaust fan and ceiling fan'
+-
+  name: fan_bathroom_exhaust_fan_and_fan_living_room_ceiling_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom exhaust fan and living room ceiling fan'
+    - 'Please switch off the exhaust fan and ceiling fan for me'
+    - "Flick off the bathroom fan and living room fan if you don't mind"
+    - 'Flip the exhaust fan and ceiling fan to off'
+    - 'Shut down the bathroom exhaust fan and living room ceiling fan please'
+    - 'Can you turn off the exhaust fan in the bathroom and the ceiling fan in the living room'
+    - 'Power down the bathroom fan and living room fan for me'

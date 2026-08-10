@@ -1,0 +1,65 @@
+-
+  name: dining_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: dining
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the dining room lights'
+    - 'Flick on the dining lights'
+    - 'Please turn on the lights in the dining room for me'
+    - "If you don't mind, could you flip on the dining lights"
+    - 'Activate the dining room lights'
+    - 'Switch on the lights in the dining area'
+    - 'Hey, turn the dining lights on'
+    - 'Light up the dining room'
+-
+  name: dining_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: dining
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the dining room lights'
+    - 'Please switch off the dining lights for me'
+    - "If you don't mind, flick off the lights in the dining room"
+    - 'Kill the dining lights'
+    - 'Could you flip off the dining room lights please'
+    - 'Shut down the lights in the dining area'
+    - 'Dining lights off'
+-
+  name: dining_lights_change_brightness
+  conditions:
+    -
+      area: dining
+      domain: light
+      attributes:
+        brightness: 22
+  sentences:
+    - 'Set dining room lights to 22%'
+    - 'Please dim the dining lights to 22 for me'
+    - "Flick dining lights brightness down to 22 if you don't mind"
+    - 'Turn dining area lights to 22 percent'
+    - 'Could you adjust the dining lights brightness to 22 please'
+    - 'Make dining lights 22%'
+    - 'Flip dining room brightness to 22'
+-
+  name: dining_lights_change_color
+  conditions:
+    -
+      area: dining
+      domain: light
+      attributes:
+        color: purple
+  sentences:
+    - 'Turn the dining room lights purple'
+    - 'Flick on purple for the dining lights'
+    - 'Please set the dining lights to purple for me'
+    - "If you don't mind, flip the dining lights to purple"
+    - 'Make the dining room lights purple now'
+    - 'Change dining lights color to purple please'
+    - 'Set dining lights purple'

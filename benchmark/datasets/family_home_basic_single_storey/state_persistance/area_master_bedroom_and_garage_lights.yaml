@@ -1,0 +1,211 @@
+-
+  name: master_bedroom_and_garage_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.garage_light
+        area_id: garage
+        name: 'Garage Light'
+        state: 'off'
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.garage_light
+        area_id: garage
+        name: 'Garage Light'
+        state: 'off'
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in the master bedroom and garage?'
+      - 'Please turn them on for me.'
+    -
+      - 'Are the lights on in the master bedroom and garage?'
+      - 'Flick them on.' # Changed from: Flick them off.
+    -
+      - 'Can you tell me if the lights are on in the master bedroom and garage?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Status of master bedroom and garage lights?'
+      - 'Turn them on.'
+    -
+      - 'Master bedroom and garage lights status please?'
+      - 'Switch them on for me.'
+    -
+      - 'Are the lights in the master bedroom and garage on right now?'
+      - 'Activate them.'
+    -
+      - 'Tell me the light status for master bedroom and garage.'
+      - 'Power them on please.'
+    -
+      - 'Lights status master bedroom garage?'
+      - 'Enable them.'
+-
+  name: master_bedroom_and_garage_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.garage_light
+        area_id: garage
+        name: 'Garage Light'
+        state: 'off'
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.master_ceiling
+        area_id: master_bedroom
+        name: 'Master Bedroom Ceiling'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.master_lamp
+        area_id: master_bedroom
+        name: 'Master Bedside Lamp'
+        state: 'off'
+        attributes:
+          brightness: 30
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.garage_light
+        area_id: garage
+        name: 'Garage Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the lights in the master bedroom and garage?"
+      - 'Flick them off.' # Changed from: Flick them on.
+    -
+      - 'Can you tell me the current state of the lights in the master bedroom and garage?'
+      - 'Please turn them off for me.' # Changed from: Please turn them on for me.
+    -
+      - 'Report the light status for master bedroom and garage.'
+      - "Flip them off if you don't mind." # Changed from: Flip them on if you don't mind.
+    -
+      - 'Lights status in master bedroom and garage?'
+      - 'Switch them off.' # Changed from: Switch them on.
+    -
+      - 'Give me the light status for the master bedroom and garage please.'
+      - 'Turn them off for me.' # Changed from: Turn them on for me.
+    -
+      - "What's happening with the lights in the master bedroom and garage?"
+      - 'Deactivate them.' # Changed from: Activate them.
+    -
+      - 'Status check on master bedroom and garage lights.'
+      - 'Power them off please.' # Changed from: Power them on please.
+-
+  name: master_bedroom_and_garage_lights_set_brightness
+  setup:
+    -
+      entity_id: light.master_ceiling
+      brightness: 90
+    -
+      entity_id: light.master_lamp
+      brightness: 90
+    -
+      entity_id: light.garage_light
+      brightness: 90
+  conditions:
+    -
+      entity_id: light.master_ceiling
+      brightness: 53
+    -
+      entity_id: light.master_lamp
+      brightness: 53
+    -
+      entity_id: light.garage_light
+      brightness: 53
+  sentences:
+    -
+      - 'What is the brightness of the lights in the master bedroom and garage?'
+      - 'Set it to 53.'
+    -
+      - "Please tell me the brightness level for the master bedroom and garage lights if you don't mind."
+      - 'Make it 53 please.'
+    -
+      - 'Can you check the brightness in the master bedroom and garage?'
+      - 'Flick it up to 53.'
+    -
+      - "I'd like to know the current brightness of the master bedroom and garage lights."
+      - 'Flip it to 53.'
+    -
+      - 'What brightness are the lights at in the master bedroom and garage right now?'
+      - 'Adjust to 53.'
+    -
+      - 'Tell me the brightness for the master bedroom and garage please.'
+      - 'Set brightness to 53.'
+    -
+      - 'Check the brightness levels in the master bedroom and garage for me.'
+      - 'Change it to 53.'

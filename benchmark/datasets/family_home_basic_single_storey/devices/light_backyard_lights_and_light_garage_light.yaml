@@ -1,0 +1,40 @@
+-
+  name: light_backyard_lights_and_light_garage_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      state: 'on'
+    -
+      type: action
+      entity_id: light.garage_light
+      state: 'on'
+  sentences:
+    - 'Turn on the backyard lights'
+    - 'Flick on the garage light'
+    - 'Please flip on the backyard lights for me'
+    - "If you don't mind, turn on the garage light"
+    - 'Activate the backyard lights'
+    - 'Switch on the garage light please'
+    - 'Can you turn on the backyard lights'
+    - "Flip on the garage light if you don't mind"
+-
+  name: light_backyard_lights_and_light_garage_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.backyard_lights
+      state: 'off'
+    -
+      type: action
+      entity_id: light.garage_light
+      state: 'off'
+  sentences:
+    - 'Turn off the backyard lights'
+    - 'Please flick off the garage light for me'
+    - "If you don't mind, flip off the backyard lights"
+    - 'Deactivate the garage light'
+    - 'Shut off the backyard lights now'
+    - 'Can you turn off the garage light please'
+    - 'Kill the backyard lights'
+    - 'Switch off the garage light'

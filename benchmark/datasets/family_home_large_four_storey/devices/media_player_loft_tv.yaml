@@ -1,0 +1,129 @@
+-
+  name: media_player_loft_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the loft TV'
+    - 'Flick on the loft TV'
+    - 'Flip on the loft TV'
+    - 'Please turn on the loft TV for me'
+    - "If you don't mind, could you turn on the loft TV"
+    - 'Activate the loft TV'
+    - 'Power on the loft TV'
+    - 'Switch on the loft TV'
+-
+  name: media_player_loft_tv_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      state: paused
+  sentences:
+    - 'Pause the Loft TV'
+    - 'Pause loft tv'
+    - 'Please pause the loft tv for me'
+    - "If you don't mind, pause the media player in the loft"
+    - 'Stop playback on Loft TV'
+    - 'Hold the Loft TV'
+    - 'Pause the TV in the loft area'
+    - 'Could you pause loft tv please'
+-
+  name: media_player_loft_tv_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      state: playing
+  sentences:
+    - 'unpause the loft tv'
+    - 'please resume loft tv for me'
+    - "flick the loft tv back on if you don't mind"
+    - 'hey resume playback on the loft tv'
+    - 'flip the loft tv back on'
+    - 'could you start the loft tv again'
+    - 'unpause loft tv please'
+-
+  name: media_player_loft_tv_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the loft TV'
+    - 'Please mute the loft TV for me'
+    - 'Turn off the sound on the loft TV'
+    - "If you don't mind, mute the loft TV"
+    - 'Flick the loft TV to mute'
+    - 'Quiet the loft TV please'
+    - 'Mute the media player loft tv'
+    - 'Silence the loft TV if possible'
+-
+  name: media_player_loft_tv_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'Unmute the Loft TV'
+    - 'Turn the sound back on for the loft TV please'
+    - "If you don't mind, unmute the media player loft tv"
+    - 'Flip the audio on for the Loft TV'
+    - 'Please unmute loft tv for me'
+    - 'Activate sound on the loft TV if possible'
+    - 'Could you unmute the media player in the loft'
+    - 'Restore audio to the Loft TV'
+-
+  name: media_player_loft_tv_set_volume
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      attributes:
+        volume_level: 46
+  sentences:
+    - 'Set the Loft TV volume to 46'
+    - 'Please set the volume on the loft TV to 46 for me'
+    - 'Turn the loft TV volume up to 46'
+    - 'Adjust the Loft TV to volume level 46'
+    - "If you don't mind, set the volume on the loft TV to 46"
+    - 'Make the Loft TV volume 46'
+    - 'Crank the loft TV volume to 46'
+-
+  name: media_player_loft_tv_increase_volume_by_10
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      attributes:
+        volume_level: 56
+  sentences:
+    - 'Turn up the Loft TV volume to 56'
+    - 'Please increase the volume on the loft TV to 56 for me'
+    - "Set loft TV volume to 56 if you don't mind"
+    - 'Bump the Loft TV up to volume 56'
+    - 'Make the loft TV volume 56 please'
+    - 'Crank the Loft TV to 56'
+    - 'Raise volume on loft TV to 56'
+-
+  name: media_player_loft_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.loft_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the loft TV'
+    - 'Please switch off the loft TV for me'
+    - "Flick off the loft TV if you don't mind"
+    - 'Deactivate media player loft tv'
+    - 'Flip off the loft TV'
+    - 'Shut down the loft TV please'
+    - 'Power off media player loft tv'
+    - 'Could you turn off the loft TV for me'

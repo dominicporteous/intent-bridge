@@ -1,0 +1,62 @@
+-
+  name: light_master_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.master_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the Master Bedside Lamp'
+    - 'Please flick on the master_bedroom bedside lamp for me' # Changed from: Please flick on the master_bedroom light for me
+    - "Flip on the Master Bedside Lamp if you don't mind"
+    - 'Activate the master_bedroom bedside lamp'
+    - 'Could you turn on the Master Bedside Lamp please'
+    - 'Switch on the master_bedroom bedside lamp' # Changed from: Switch on the master_bedroom light
+    - 'Quickly enable the Master Bedside Lamp'
+-
+  name: light_master_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.master_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the Master Bedside Lamp'
+    - 'Please turn off the light master lamp for me'
+    - "If you don't mind, flick off the master_bedroom Master Bedside Lamp"
+    - 'Flip off the light master lamp in master_bedroom'
+    - 'Quickly switch off the Master Bedside Lamp'
+    - 'Can you turn off the master_bedroom light master lamp please'
+    - 'Shut off the Master Bedside Lamp now'
+-
+  name: light_master_lamp_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.master_lamp
+      attributes:
+        brightness: 62
+  sentences:
+    - 'Set the Master Bedside Lamp to 62 percent'
+    - "Please turn the master_bedroom light master lamp up to 62 if you don't mind"
+    - 'Flick the Master Bedside Lamp brightness to 62'
+    - 'Could you adjust the master_bedroom light master lamp to 62 for me'
+    - 'Flip on the Master Bedside Lamp at 62 percent'
+    - 'Make the master_bedroom light master lamp 62 brightness please'
+    - 'Change the Master Bedside Lamp to sixty-two percent'
+-
+  name: light_master_lamp_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.master_lamp
+      attributes:
+        color: orange
+  sentences:
+    - 'Turn the master bedroom Master Bedside Lamp to orange'
+    - 'Flick on orange for the Master Bedside Lamp in master_bedroom'
+    - "Please set light master lamp to orange if you don't mind"
+    - 'Change the Master Bedside Lamp color to orange in the master_bedroom'
+    - 'Quickly make the light master lamp orange'
+    - 'Flip the master_bedroom Master Bedside Lamp to orange for me'
+    - 'Set light master lamp orange in master_bedroom'

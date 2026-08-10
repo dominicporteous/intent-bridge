@@ -1,0 +1,62 @@
+-
+  name: light_dining_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_light
+      state: 'on'
+  sentences:
+    - 'Turn on the dining room light'
+    - 'Please flick on the dining light for me'
+    - "If you don't mind, flip on the dining room light"
+    - 'Activate dining light'
+    - 'Could you switch on the dining room light please'
+    - 'Dining room light on'
+    - 'Turn the dining light on now'
+-
+  name: light_dining_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_light
+      state: 'off'
+  sentences:
+    - 'Turn off the dining room light'
+    - 'Please switch off the dining light for me'
+    - "Flick off the dining room light if you don't mind"
+    - 'Flip the dining light off'
+    - 'Could you turn off the dining room light please'
+    - 'Deactivate the dining light'
+    - 'Kill the dining room light for me'
+-
+  name: light_dining_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_light
+      attributes:
+        brightness: 93
+  sentences:
+    - 'Set the dining room light to 93%'
+    - 'Please adjust the dining light brightness to 93 for me'
+    - 'Turn the dining room light up to 93%'
+    - "If you don't mind, set light.dining_light to 93"
+    - 'Flick the dining room light brightness to 93'
+    - 'Change dining light to 93 percent'
+    - 'Make the dining room light 93% bright'
+-
+  name: light_dining_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.dining_light
+      attributes:
+        color: blue
+  sentences:
+    - 'Turn the dining room light blue'
+    - 'Flick on blue for the dining light'
+    - 'Please change the dining room light to blue for me'
+    - "If you don't mind, set the dining light to blue"
+    - 'Make the dining room light blue'
+    - 'Flip the dining light to blue please'
+    - 'Set dining room light color to blue'

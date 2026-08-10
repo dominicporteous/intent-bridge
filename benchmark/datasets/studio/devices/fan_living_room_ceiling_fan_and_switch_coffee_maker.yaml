@@ -1,0 +1,40 @@
+-
+  name: fan_living_room_ceiling_fan_and_switch_coffee_maker_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'on'
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'on'
+  sentences:
+    - 'Turn on the ceiling fan and coffee maker'
+    - 'Please turn on the living room ceiling fan and coffee maker for me'
+    - 'Flick on the ceiling fan and flip on the coffee maker'
+    - "If you don't mind, could you start the fan and coffee maker"
+    - 'Activate the ceiling fan and coffee maker please'
+    - 'Turn on the fan in the living room and the coffee maker'
+    - 'Start the ceiling fan and coffee maker if possible'
+    - 'Please activate the living room fan and coffee maker for me'
+-
+  name: fan_living_room_ceiling_fan_and_switch_coffee_maker_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.living_room_ceiling_fan
+      state: 'off'
+    -
+      type: action
+      entity_id: switch.coffee_maker
+      state: 'off'
+  sentences:
+    - 'Turn off the ceiling fan and coffee maker'
+    - 'Please shut down the living room ceiling fan and coffee maker for me'
+    - "Flick off the fan and switch off the coffee maker if you don't mind"
+    - 'Deactivate ceiling fan and coffee maker now'
+    - 'Could you flip off the living room fan and turn off the coffee maker please'
+    - 'Stop the ceiling fan and power down the coffee maker'
+    - 'Kill the ceiling fan and coffee maker'
+    - 'Please disable living room ceiling fan and coffee maker for me'

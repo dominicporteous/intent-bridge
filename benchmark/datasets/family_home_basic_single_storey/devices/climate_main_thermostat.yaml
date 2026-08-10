@@ -1,0 +1,17 @@
+-
+  name: climate_main_thermostat_set_temperature
+  conditions:
+    -
+      type: action
+      entity_id: climate.main_thermostat
+      attributes:
+        temperature: 21
+  sentences:
+    - 'Set the main thermostat to 21 degrees'
+    - 'Please set the living room thermostat to 21 for me'
+    - "If you don't mind, adjust the climate main thermostat to 21"
+    - 'Flick the living thermostat up to 21'
+    - 'Turn the main thermostat to 21 degrees'
+    - 'Flip the living room climate control to 21'
+    - 'Quickly set the thermostat to 21'
+    - 'Change the main thermostat temperature to 21'

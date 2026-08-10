@@ -1,0 +1,29 @@
+-
+  name: light_master_lamp_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.master_lamp
+  sentences:
+    - "What's the status of the Master Bedside Lamp?"
+    - 'light master lamp state'
+    - "Please tell me the current state of the light in the master_bedroom if you don't mind"
+    - 'Get the state of master lamp'
+    - 'Could you check if the Master Bedside Lamp is on or off for me?'
+    - 'master_bedroom light master lamp status'
+    - "What's the Master Bedside Lamp doing right now?"
+-
+  name: light_master_lamp_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.master_lamp
+  sentences:
+    - "What's the brightness of the Master Bedside Lamp?"
+    - 'Get brightness for light.master_lamp'
+    - "Please tell me the current brightness of the master bedroom lamp if you don't mind"
+    - 'How bright is the Master Bedside Lamp right now?'
+    - 'Check brightness level of light.master_lamp in master_bedroom'
+    - 'Could you tell me how bright the master bedroom bedside lamp is?'
+    - 'Master Bedside Lamp brightness status'
+    - "What's the light level on the Master Bedside Lamp?"

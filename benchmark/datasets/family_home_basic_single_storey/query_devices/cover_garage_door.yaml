@@ -1,0 +1,28 @@
+-
+  name: cover_garage_door_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door
+  sentences:
+    - "What's the status of the garage door?"
+    - 'Garage door state please'
+    - "If you don't mind, could you check the garage door for me?"
+    - 'Tell me if the garage door is open or closed'
+    - 'Please check the garage door status'
+    - 'Garage door position?'
+    - 'Can you tell me the current state of the garage door?'
+-
+  name: cover_garage_door_get_position
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door
+  sentences:
+    - "What's the position of the garage door?"
+    - 'Garage door status please'
+    - "If you don't mind, could you tell me where the garage door is at right now?"
+    - 'Please check the garage door position for me'
+    - 'Garage door location'
+    - 'Can you tell me if the garage door is open or closed?'
+    - "What's the current state of the garage door cover?"

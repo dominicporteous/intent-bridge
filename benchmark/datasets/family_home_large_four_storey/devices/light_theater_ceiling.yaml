@@ -1,0 +1,64 @@
+-
+  name: light_theater_ceiling_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      state: 'on'
+  sentences:
+    - 'Turn on the Theater Ceiling'
+    - 'Flick on the light theater ceiling in the home_theater'
+    - 'Please flip on the Theater Ceiling for me'
+    - "If you don't mind, turn on the light theater ceiling in the home_theater"
+    - 'Activate the Theater Ceiling'
+    - 'Quickly switch on the light theater ceiling'
+    - 'Can you please turn on the Theater Ceiling in the home_theater'
+-
+  name: light_theater_ceiling_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      state: 'off'
+  sentences:
+    - 'Turn off the Theater Ceiling'
+    - 'Please turn off the light theater ceiling for me'
+    - 'Flick off the Theater Ceiling light in the home_theater'
+    - "If you don't mind, flip off the light theater ceiling"
+    - 'Deactivate the Theater Ceiling'
+    - 'Could you please switch off the Theater Ceiling in home_theater'
+    - 'Kill the light theater ceiling'
+    - 'Shut off the Theater Ceiling light'
+-
+  name: light_theater_ceiling_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      attributes:
+        brightness: 69
+  sentences:
+    - 'Set Theater Ceiling brightness to 69'
+    - 'Turn Theater Ceiling to 69 percent'
+    - 'Please dim the Theater Ceiling to 69 for me'
+    - "If you don't mind, flick the Theater Ceiling light to 69 in the home_theater"
+    - 'Quickly set Theater Ceiling to 69'
+    - 'Flip Theater Ceiling brightness to 69 percent'
+    - 'Could you adjust the Theater Ceiling to 69 please'
+    - 'Make the Theater Ceiling 69 in home_theater'
+-
+  name: light_theater_ceiling_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.theater_ceiling
+      attributes:
+        color: yellow
+  sentences:
+    - 'change the Theater Ceiling to yellow'
+    - 'flick on yellow for the light theater ceiling'
+    - 'please set the home_theater Theater Ceiling to yellow for me'
+    - "flip the Theater Ceiling light to yellow if you don't mind"
+    - 'make the Theater Ceiling yellow'
+    - 'turn the light theater ceiling yellow in home_theater'
+    - 'could you change Theater Ceiling to yellow please'

@@ -1,0 +1,86 @@
+-
+  name: bedroom_5_and_home_theater_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_5
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: home_theater
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 5 and the home theater'
+    - 'Flick on bedroom 5 lights and home theater please'
+    - "If you don't mind, flip on the lights for bedroom 5 and home theater for me"
+    - 'Activate bedroom 5 and home theater lighting now'
+    - 'Switch on bedroom five lights and the theater'
+    - "Please turn on the lights in bedroom 5 and home theater if you don't mind"
+    - 'Quickly enable bedroom 5 and home theater lights'
+    - 'Flip on the lights for bedroom 5 and the home theater'
+-
+  name: bedroom_5_and_home_theater_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_5
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: home_theater
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 5 and the home theater'
+    - 'Please switch off bedroom 5 and home theater lights for me'
+    - "Flick off the lights in bedroom five and the theater if you don't mind"
+    - 'Kill the lights in bedroom 5 and home theater'
+    - 'Could you shut off bedroom five and the home theater lights please'
+    - 'Flip the bedroom 5 and theater lights off'
+    - 'Deactivate lights in bedroom 5 and home theater'
+    - 'Turn bedroom 5 and home theater lights off for me'
+-
+  name: bedroom_5_and_home_theater_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_5
+      domain: light
+      attributes:
+        brightness: 31
+    -
+      area: home_theater
+      domain: light
+      attributes:
+        brightness: 31
+  sentences:
+    - 'Set bedroom 5 and home theater lights to 31 percent'
+    - 'Please dim the bedroom 5 and home theater lights to 31 for me'
+    - "Flick bedroom 5 and home theater brightness to 31 if you don't mind"
+    - 'Turn bedroom 5 and home theater lights down to 31'
+    - 'Quickly adjust bedroom 5 and home theater to 31 brightness'
+    - 'Could you set the bedroom 5 and home theater lights to 31 please'
+    - 'Flip bedroom 5 and home theater brightness to 31'
+-
+  name: bedroom_5_and_home_theater_lights_change_color
+  conditions:
+    -
+      area: bedroom_5
+      domain: light
+      attributes:
+        color: purple
+    -
+      area: home_theater
+      domain: light
+      attributes:
+        color: purple
+  sentences:
+    - 'Change bedroom 5 and home theater lights to purple'
+    - 'Flick on purple for bedroom 5 and the theater'
+    - 'Please set bedroom five and home theater lights to purple for me'
+    - "If you don't mind, flip the bedroom 5 and theater lights to purple"
+    - 'Quickly make bedroom 5 and home theater purple'
+    - 'Turn bedroom five and theater lights purple now'
+    - 'Set bedroom 5 and home theater to purple please'

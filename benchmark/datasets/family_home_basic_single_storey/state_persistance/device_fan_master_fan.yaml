@@ -1,0 +1,108 @@
+-
+  name: fan_master_fan_turn_on
+  setup:
+    -
+      entity_id: fan.master_fan
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the Master Bedroom Fan?"
+      - 'Please turn it on for me.'
+    -
+      - 'Can you check the fan in the master_bedroom?'
+      - 'Flick it on.'
+    -
+      - 'Tell me if the Master Bedroom Fan is on or off.'
+      - "If you don't mind, flip it on."
+    -
+      - 'Status of the fan master fan?'
+      - 'Quick, turn it on.'
+    -
+      - 'Is the Master Bedroom Fan running?'
+      - 'Switch it on please.'
+    -
+      - 'Check the master_bedroom fan status.'
+      - 'Go ahead and turn it on for me.'
+    -
+      - "What's up with the Master Bedroom Fan?"
+      - 'Flip it on if you can.'
+    -
+      - 'Master Bedroom Fan state?'
+      - 'Turn it on.'
+-
+  name: fan_master_fan_turn_off
+  setup:
+    -
+      entity_id: fan.master_fan
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the Master Bedroom Fan?"
+      - 'Turn it off.'
+    -
+      - 'Can you tell me the state of the fan in the master bedroom?'
+      - 'Please switch it off for me.'
+    -
+      - 'Master bedroom fan status?'
+      - "Flip it off if you don't mind."
+    -
+      - 'Is the Master Bedroom Fan running?'
+      - 'Flick it off.'
+    -
+      - 'Check the fan status in master_bedroom.'
+      - 'Turn it off please.'
+    -
+      - "What's going on with the Master Bedroom Fan?"
+      - 'Shut it off for me.'
+    -
+      - 'Master bedroom fan state check.'
+      - 'Kill it.'
+    -
+      - "How's the fan doing in the master bedroom?"
+      - 'Switch it off.'
+-
+  name: fan_master_fan_persistance_percentage
+  setup:
+    -
+      entity_id: fan.master_fan
+      percentage: 51
+  conditions:
+    -
+      entity_id: fan.master_fan
+      attributes:
+        percentage: 12
+  sentences:
+    -
+      - "What's the percentage of the Master Bedroom Fan?"
+      - 'Set it to 12.'
+    -
+      - 'Can you tell me the current level of the fan in master_bedroom?'
+      - 'Please change it to 12 for me.'
+    -
+      - 'Master Bedroom Fan percentage?'
+      - "Adjust to 12 if you don't mind."
+    -
+      - 'How high is the fan percentage in the master_bedroom right now?'
+      - 'Make it 12.'
+    -
+      - "What's the Master Bedroom Fan at?"
+      - 'Turn it to 12 please.'
+    -
+      - 'Tell me the percentage for the fan in master_bedroom.'
+      - 'Change it to 12 for me.'
+    -
+      - 'Fan percentage in the master_bedroom?'
+      - 'Set to 12.'
+    -
+      - "What's the current percentage on the Master Bedroom Fan?"
+      - "Adjust it to 12 if you don't mind."

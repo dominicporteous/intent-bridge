@@ -1,0 +1,64 @@
+-
+  name: light_garage_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.garage_light
+      state: 'on'
+  sentences:
+    - 'Turn on the garage light'
+    - 'Please flick on the garage light for me'
+    - "If you don't mind, flip on the garage light"
+    - 'Garage light on'
+    - 'Activate the light in the garage'
+    - 'Could you switch on the garage light please'
+    - 'Turn the garage light on'
+    - 'Quickly enable the garage light'
+-
+  name: light_garage_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.garage_light
+      state: 'off'
+  sentences:
+    - 'Turn off the garage light'
+    - 'Please turn off the garage light for me'
+    - "If you don't mind, could you flick off the garage light"
+    - 'Deactivate garage light'
+    - 'Flip off the light in the garage'
+    - 'Garage light off'
+    - 'Would you mind switching off the garage light please'
+    - 'Kill the garage light'
+-
+  name: light_garage_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.garage_light
+      attributes:
+        brightness: 20
+  sentences:
+    - 'Set the garage light to 20 percent'
+    - 'Please dim the garage light to 20 for me'
+    - 'Flick the garage light down to 20%'
+    - "If you don't mind, adjust the garage light brightness to 20"
+    - 'Turn the garage light to 20 percent brightness'
+    - 'Quickly set garage light to 20'
+    - 'Lower the garage light to 20 if possible'
+-
+  name: light_garage_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.garage_light
+      attributes:
+        color: white
+  sentences:
+    - 'Change the garage light to white'
+    - 'Please set the garage light to white for me'
+    - "Flick the garage light to white if you don't mind"
+    - 'Turn the garage light white'
+    - 'Flip on white for the garage light'
+    - 'Make the garage light white please'
+    - 'Set garage light color to white'

@@ -1,0 +1,109 @@
+from pathlib import Path
+
+import pytest
+from dotenv import dotenv_values
+
+from intent_bridge.config import ConfigurationError, load_settings
+
+
+def test_canonical_environment_maps_to_typed_domains():
+    settings = load_settings(
+        {
+            "INTENT_BRIDGE_API_MODEL_NAME": "voice-actions",
+            "INTENT_BRIDGE_TIMEZONE": "UTC",
+            "INTENT_BRIDGE_DETERMINISTIC_LANGUAGE": "en-GB",
+            "INTENT_BRIDGE_DETERMINISTIC_CUSTOM_SENTENCES_PATH": "config/sentences/en",
+            "INTENT_BRIDGE_DETERMINISTIC_ERROR_PHRASES": "not found; Try Again ",
+            "INTENT_BRIDGE_LLM_ENABLED": "off",
+            "INTENT_BRIDGE_LLM_API_KEY": "secret",
+            "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "4",
+            "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "9",
+            "INTENT_BRIDGE_HA_ADVANCED_ARGS": "-m tool --flag 'two words'",
+            "INTENT_BRIDGE_HA_ADVANCED_PINNED_TOOLS": "one,two",
+            "INTENT_BRIDGE_HA_STATE_CHANGING_SERVICES": "turn_on,custom_action",
+            "INTENT_BRIDGE_MA_RADIO_SEED_STRATEGY": "FIRST",
+            "INTENT_BRIDGE_INDICATOR_DOMAINS": "Light, SWITCH",
+            "INTENT_BRIDGE_CONVERSATION_TTL_SECONDS": "45",
+        }
+    )
+
+    assert settings.api.model_name == "voice-actions"
+    assert settings.api.timezone == "UTC"
+    assert settings.deterministic.language == "en-GB"
+    assert settings.deterministic.custom_sentences_path == Path("config/sentences/en")
+    assert settings.deterministic.error_phrases == ("not found", "try again")
+    assert settings.llm.enabled is False
+    assert settings.llm.api_key == "secret"
+    assert settings.home_assistant.search_default_limit == 4
+    assert settings.home_assistant.search_max_limit == 9
+    assert settings.home_assistant.advanced.args[-1] == "two words"
+    assert settings.home_assistant.advanced.pinned_tools == ("one", "two")
+    assert settings.home_assistant.ignored_entity_domains == ("update",)
+    assert settings.home_assistant.state_changing_services == frozenset(
+        {"turn_on", "custom_action"}
+    )
+
+
+def test_home_assistant_ignored_entity_domains_can_be_configured_by_env():
+    settings = load_settings(
+        {"INTENT_BRIDGE_HA_IGNORED_ENTITY_DOMAINS": "update,select"}
+    )
+
+    assert settings.home_assistant.ignored_entity_domains == ("update", "select")
+
+
+def test_deterministic_sentence_settings_have_safe_defaults():
+    settings = load_settings({})
+    blank_path_settings = load_settings(
+        {"INTENT_BRIDGE_DETERMINISTIC_CUSTOM_SENTENCES_PATH": "   "}
+    )
+
+    assert settings.deterministic.language == "en"
+    assert settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
+    assert blank_path_settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
+
+def test_env_example_contains_only_canonical_valid_configuration():
+    environment = {
+        key: value or "" for key, value in dotenv_values(".env.example").items() if key is not None
+    }
+    assert environment
+    assert all(name.startswith("INTENT_BRIDGE_") for name in environment)
+    load_settings(environment)
+
+
+@pytest.mark.parametrize(
+    ("environment", "message"),
+    [
+        ({"INTENT_BRIDGE_LLM_ENABLED": "perhaps"}, "must be a boolean"),
+        ({"INTENT_BRIDGE_LLM_TIMEOUT_SECONDS": "nope"}, "must be a number"),
+        ({"INTENT_BRIDGE_LLM_TIMEOUT_SECONDS": "0"}, "must be at least"),
+        (
+            {
+                "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "10",
+                "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "5",
+            },
+            "HA_SEARCH_MAX_LIMIT",
+        ),
+        (
+            {
+                "INTENT_BRIDGE_MA_PLAY_ACK_TIMEOUT_SECONDS": "10",
+                "INTENT_BRIDGE_MA_PLAY_COMPLETION_TIMEOUT_SECONDS": "5",
+            },
+            "MA_PLAY_COMPLETION_TIMEOUT_SECONDS",
+        ),
+        (
+            {
+                "INTENT_BRIDGE_MA_FIRST_AUDIO_TIMEOUT_SECONDS": "10",
+                "INTENT_BRIDGE_MA_BACKGROUND_TIMEOUT_SECONDS": "5",
+            },
+            "MA_BACKGROUND_TIMEOUT_SECONDS",
+        ),
+        (
+            {"INTENT_BRIDGE_MA_RADIO_SEED_STRATEGY": "unknown"},
+            "MA_RADIO_SEED_STRATEGY",
+        ),
+    ],
+)
+def test_invalid_canonical_configuration_fails_fast(environment, message):
+    with pytest.raises(ConfigurationError, match=message):
+        load_settings(environment)

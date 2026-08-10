@@ -1,0 +1,218 @@
+-
+  name: bathroom_and_kitchen_lights_turn_on
+  setup:
+    -
+      entity_id:
+        id: light.bathroom_mirror_light
+        area_id: bathroom
+        name: 'Mirror Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bathroom_mirror_light
+        area_id: bathroom
+        name: 'Mirror Light'
+        state: 'off'
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'on'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  sentences:
+    -
+      - 'What is the status of the lights in the bathroom and kitchen?'
+      - 'Please flick them off for me.' # Changed from: Please flick them on for me.
+    -
+      - 'Can you tell me the state of the bathroom and kitchen lights?'
+      - "Flip them off if you don't mind." # Changed from: Flip them on if you don't mind.
+    -
+      - 'Show me the current status for the lights in the bathroom and kitchen.'
+      - 'Go ahead and turn them on.'
+    -
+      - 'Are the bathroom and kitchen lights on or off right now?'
+      - 'Yeah, switch them on.'
+    -
+      - "What's the light status in the bathroom and kitchen?"
+      - 'Hit them on please.'
+    -
+      - 'Report the status of the lights in the bathroom and kitchen.'
+      - 'Activate them for me.'
+    -
+      - 'Tell me if the bathroom and kitchen lights are on.'
+      - 'Turn them on now.'
+-
+  name: bathroom_and_kitchen_lights_turn_off
+  setup:
+    -
+      entity_id:
+        id: light.bathroom_mirror_light
+        area_id: bathroom
+        name: 'Mirror Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'on'
+  conditions:
+    -
+      entity_id:
+        id: light.bathroom_mirror_light
+        area_id: bathroom
+        name: 'Mirror Light'
+        state: 'off'
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_ceiling_lights
+        area_id: kitchen
+        name: 'Ceiling Lights'
+        state: 'on'
+        attributes:
+          brightness: 80
+          color: white
+        domain: light
+      state: 'off'
+    -
+      entity_id:
+        id: light.kitchen_under_cabinet_lights
+        area_id: kitchen
+        name: 'Under Cabinet Lights'
+        state: 'off'
+        attributes:
+          brightness: 100
+        domain: light
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the lights in the bathroom and kitchen?"
+      - 'Please flick them on for me.'
+    -
+      - 'Can you tell me if the bathroom and kitchen lights are on?'
+      - "Flip them on if you don't mind."
+    -
+      - 'Are the lights on in the bathroom and kitchen?'
+      - 'Turn them off please.' # Changed from: Turn them on please.
+    -
+      - 'Check the status of the bathroom and kitchen lights.'
+      - 'Switch them off for me.' # Changed from: Switch them on for me.
+    -
+      - 'Report the state of the lights in the bathroom and kitchen.'
+      - "Deactivate them if you don't mind." # Changed from: Activate them if you don't mind.
+    -
+      - "What's the current state of the bathroom and kitchen lights?"
+      - 'Please power them off for me.' # Changed from: Please power them on for me.
+    -
+      - 'Tell me if the lights are on in the bathroom and kitchen.'
+      - "Flick them off if you don't mind." # Changed from: Flick them on if you don't mind.
+    -
+      - 'Status of bathroom and kitchen lights?'
+      - 'Turn them off please.' # Changed from: Turn them on please.
+-
+  name: bathroom_and_kitchen_lights_set_brightness
+  setup:
+    -
+      entity_id: light.bathroom_mirror_light
+      brightness: 16
+    -
+      entity_id: light.kitchen_ceiling_lights
+      brightness: 16
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      brightness: 16
+  conditions:
+    -
+      entity_id: light.bathroom_mirror_light
+      brightness: 86
+    -
+      entity_id: light.kitchen_ceiling_lights
+      brightness: 86
+    -
+      entity_id: light.kitchen_under_cabinet_lights
+      brightness: 86
+  sentences:
+    -
+      - 'What is the brightness of the lights in the bathroom and kitchen?'
+      - 'Set it to 86.'
+    -
+      - "Please tell me the brightness levels for the bathroom and kitchen lights if you don't mind."
+      - 'Flick them up to 86.'
+    -
+      - 'Can you check how bright the bathroom and kitchen lights are right now?'
+      - 'Flip them to 86 please.'
+    -
+      - "What's the current brightness in the bathroom and kitchen?"
+      - 'Turn them up to 86.'
+    -
+      - 'Tell me the brightness of the lights in the bathroom and kitchen.'
+      - 'Adjust to 86.'
+    -
+      - 'Could you report the brightness settings for bathroom and kitchen lights?'
+      - 'Set brightness to 86 for me.'
+    -
+      - 'Check the brightness levels in the bathroom and kitchen please.'
+      - 'Make it 86.'
+    -
+      - "What's the brightness at in the bathroom and kitchen lights?"
+      - 'Crank them to 86.'

@@ -1,0 +1,45 @@
+-
+  name: garage_locks_get_state
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: lock
+  sentences:
+    - "What's the status of the garage locks?"
+    - 'Are the garage locks locked?'
+    - 'Check garage door locks'
+    - 'Please tell me if the garage is locked'
+    - "If you don't mind, what's the lock status in the garage?"
+    - 'Garage locks state'
+    - 'Could you check the garage locks for me?'
+-
+  name: garage_locks_list_locked_locks
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: lock
+  sentences:
+    - "What's the status of the garage locks?"
+    - 'Are the garage locks locked?'
+    - 'Check garage door locks'
+    - 'Please tell me if the garage is locked'
+    - "Could you check the locks in the garage for me if you don't mind"
+    - 'Garage locks state'
+    - 'Show me the current lock status for the garage'
+-
+  name: garage_locks_list_unlocked_locks
+  conditions:
+    -
+      type: query
+      area: garage
+      domain: lock
+  sentences:
+    - "What's the status of the garage locks?"
+    - 'Are the garage locks locked?'
+    - 'Check garage door locks'
+    - 'Please tell me if the garage is locked'
+    - "If you don't mind, what's the lock status in the garage?"
+    - 'Garage locks state'
+    - 'Could you check the garage locks for me?'

@@ -1,0 +1,62 @@
+-
+  name: kitchen_lights_get_state
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the kitchen lights?"
+    - 'Kitchen lights state please.'
+    - "If you don't mind, could you tell me if the kitchen lights are on or off?"
+    - 'Lights kitchen?'
+    - 'Please check the kitchen lighting for me.'
+    - 'Are the kitchen lights currently on?'
+    - 'Kitchen lights status report.'
+    - 'Quick check on kitchen lights.'
+-
+  name: kitchen_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the kitchen lights?"
+    - 'Kitchen lights state please.'
+    - "If you don't mind, could you check the kitchen lights for me?"
+    - 'Lights kitchen.'
+    - 'Tell me if the kitchen lights are on or off.'
+    - 'Please give me the current kitchen lighting status.'
+    - 'Kitchen lights check.'
+-
+  name: kitchen_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the kitchen lights?"
+    - 'Kitchen lights state please.'
+    - "Could you tell me if the kitchen lights are on or off, if you don't mind?"
+    - 'Lights kitchen.'
+    - 'Hey, can you check the kitchen lights for me?'
+    - 'Kitchen lighting status.'
+    - 'Please report kitchen lights state.'
+    - 'Quick check on kitchen lights?'
+-
+  name: kitchen_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the kitchen lights"
+    - 'kitchen lights state'
+    - 'please tell me if the kitchen lights are on or off'
+    - "if you don't mind, could you check the kitchen lights for me"
+    - 'kitchen lights'
+    - 'are the kitchen lights currently on'
+    - 'quick check kitchen lights status please'

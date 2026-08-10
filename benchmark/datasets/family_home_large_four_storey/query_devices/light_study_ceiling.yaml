@@ -1,0 +1,29 @@
+-
+  name: light_study_ceiling_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.study_ceiling
+  sentences:
+    - "What's the status of the study ceiling light?"
+    - 'Is the study ceiling light on or off?'
+    - 'Please check the study ceiling light for me'
+    - "If you don't mind, what's the current state of the study ceiling?"
+    - 'Study ceiling light status'
+    - 'Could you tell me if the study ceiling light is on?'
+    - 'Get state of study ceiling light'
+    - "What's happening with the study ceiling light right now?"
+-
+  name: light_study_ceiling_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.study_ceiling
+  sentences:
+    - "What's the brightness of the Study Ceiling?"
+    - 'Get brightness for light study ceiling'
+    - "Please tell me the current brightness of the study ceiling light if you don't mind"
+    - 'Study ceiling brightness level'
+    - 'Could you check how bright the Study Ceiling is right now'
+    - 'Brightness of study ceiling'
+    - "What's the study ceiling light brightness at"

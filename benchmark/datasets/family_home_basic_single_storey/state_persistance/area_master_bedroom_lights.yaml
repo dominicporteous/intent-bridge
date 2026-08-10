@@ -1,0 +1,41 @@
+-
+  name: master_bedroom_lights_set_brightness
+  setup:
+    -
+      entity_id: light.master_ceiling
+      brightness: 33
+    -
+      entity_id: light.master_lamp
+      brightness: 33
+  conditions:
+    -
+      entity_id: light.master_ceiling
+      brightness: 37
+    -
+      entity_id: light.master_lamp
+      brightness: 37
+  sentences:
+    -
+      - "What's the brightness in the master bedroom?"
+      - 'Set it to 37.'
+    -
+      - 'How bright are the lights in the master bedroom right now?'
+      - 'Please make it 37 for me.'
+    -
+      - 'Can you tell me the current brightness level of the master bedroom lights?'
+      - "If you don't mind, set it to 37."
+    -
+      - 'Master bedroom lights brightness status?'
+      - 'Flick it to 37.'
+    -
+      - "What's the master bedroom light brightness at?"
+      - 'Flip it to 37 please.'
+    -
+      - 'Tell me how bright the master bedroom is.'
+      - 'Quick, set it to 37.'
+    -
+      - 'Brightness check for master bedroom lights?'
+      - "Adjust it to 37 if you don't mind."
+    -
+      - 'How bright is the master bedroom right now?'
+      - 'Make it 37.'

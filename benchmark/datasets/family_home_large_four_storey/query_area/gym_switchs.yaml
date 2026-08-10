@@ -1,0 +1,46 @@
+-
+  name: gym_switchs_get_state
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: switch
+  sentences:
+    - "What's the status of the gym switches"
+    - 'Tell me if the gym switches are on or off'
+    - 'Please check the gym switches for me'
+    - 'Gym switches status'
+    - "Could you tell me the current state of the switches in the gym if you don't mind"
+    - 'Are the gym switches turned on'
+    - 'Show me the gym switch states'
+    - 'Get the current status of all switches in the gym'
+-
+  name: gym_switchs_list_on_switchs
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: switch
+  sentences:
+    - "What's the status of the gym switches?"
+    - 'Are the gym switches on or off?'
+    - 'Please check the gym switches for me'
+    - "If you don't mind, tell me about the gym switches"
+    - 'Gym switches state'
+    - 'Could you show me the current gym switch states please'
+    - 'Report gym switch status'
+-
+  name: gym_switchs_list_off_switchs
+  conditions:
+    -
+      type: query
+      area: gym
+      domain: switch
+  sentences:
+    - "What's the status of the gym switches?"
+    - 'Tell me the current state of the gym switches'
+    - 'Please check the gym switches for me'
+    - "If you don't mind, what's the state of the gym switches?"
+    - 'Gym switches status'
+    - 'Could you tell me if the gym switches are on or off?'
+    - 'Report the current state of the gym switches please'

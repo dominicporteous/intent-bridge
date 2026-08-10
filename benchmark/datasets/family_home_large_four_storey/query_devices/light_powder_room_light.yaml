@@ -1,0 +1,29 @@
+-
+  name: light_powder_room_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.powder_room_light
+  sentences:
+    - "What's the status of the powder room light?"
+    - 'Is the powder room light on?'
+    - 'Check the light in the powder room'
+    - 'Please tell me if the powder room light is on'
+    - "If you don't mind, what's the state of the powder room light?"
+    - 'Light powder room light status'
+    - 'Can you check the powder room light for me?'
+-
+  name: light_powder_room_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.powder_room_light
+  sentences:
+    - "What's the brightness of the powder room light?"
+    - 'Get current brightness for light powder room light'
+    - "Please tell me the brightness level of the powder room light if you don't mind"
+    - 'Check powder_room light brightness'
+    - 'How bright is the powder room light right now?'
+    - 'Could you get the brightness of the light in the powder room for me?'
+    - 'Powder room light brightness status'
+    - "What's the current brightness setting on the powder room light?"

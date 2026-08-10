@@ -1,0 +1,78 @@
+-
+  name: entryway_and_upper_hallway_lights_get_state
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the lights in the entryway and upper hallway?"
+    - 'Lights entryway upper hallway state'
+    - "Please check the lights for me in the entryway and upper hallway if you don't mind"
+    - 'Entryway and upper hallway lights status'
+    - 'Could you tell me if the lights are on in the entryway and upper hallway?'
+    - 'Get light states entryway hallway'
+    - "If it's not too much trouble, what's the light situation in the entryway and upper hallway?"
+-
+  name: entryway_and_upper_hallway_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the lights in the entryway and upper hallway?"
+    - 'Lights entryway upper hallway state'
+    - "Could you please check the lights for me in the entryway and upper hallway if you don't mind?"
+    - 'Entryway and upper hallway lights current state'
+    - 'Tell me if the lights are on in the entryway and upper hallway'
+    - 'Please get the light status for the entryway and upper hallway'
+    - 'Are the entryway and upper hallway lights on or off right now?'
+-
+  name: entryway_and_upper_hallway_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the lights in the entryway and upper hallway"
+    - 'Lights entryway upper hallway state'
+    - "Please check the lights for me in the entryway and upper hallway if you don't mind"
+    - 'Get current state of entryway and upper hallway lights'
+    - 'Could you tell me if the lights are on in the entryway and upper hallway'
+    - 'Entryway upper hallway lights status please'
+    - 'Are the lights on or off in the entryway and upper hallway'
+    - 'Show me the light states for entryway and upper hallway'
+-
+  name: entryway_and_upper_hallway_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: entryway
+      domain: light
+    -
+      type: query
+      area: upper_hallway
+      domain: light
+  sentences:
+    - "What's the status of the lights in the entryway and upper hallway?"
+    - 'Lights entryway upper hallway state'
+    - 'Could you please check the lights in the entryway and upper hallway for me?'
+    - "If you don't mind, what's the current state of the lights in the entryway and upper hallway?"
+    - 'Entryway and upper hallway lights status'
+    - 'Tell me the light status for entryway and upper hallway'
+    - 'Please check the lights in the entryway and upper hallway'
+    - 'Are the lights on in the entryway and upper hallway?'

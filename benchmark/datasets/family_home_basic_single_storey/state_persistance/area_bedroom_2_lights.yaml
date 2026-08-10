@@ -1,0 +1,35 @@
+-
+  name: bedroom_2_lights_set_brightness
+  setup:
+    -
+      entity_id: light.bedroom2_ceiling
+      brightness: 44
+  conditions:
+    -
+      entity_id: light.bedroom2_ceiling
+      brightness: 62
+  sentences:
+    -
+      - 'What is the brightness of the lights in bedroom 2?'
+      - 'Set it to 62.'
+    -
+      - "What's the brightness level in bedroom 2 please?"
+      - "Make it 62 if you don't mind."
+    -
+      - 'Can you tell me how bright bedroom 2 is?'
+      - 'Flick it up to 62.'
+    -
+      - 'Tell me the brightness in bedroom 2.'
+      - 'Flip it to 62 for me.'
+    -
+      - 'How bright are the lights in bedroom 2 right now?'
+      - 'Turn it to 62.'
+    -
+      - "What's the current brightness setting for bedroom 2?"
+      - 'Adjust it to 62 please.'
+    -
+      - 'Could you check the brightness in bedroom 2?'
+      - 'Set it around 62.'
+    -
+      - 'Report the brightness of bedroom 2 lights.'
+      - 'Change it to 62.'

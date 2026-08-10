@@ -1,0 +1,40 @@
+-
+  name: cover_master_blinds_and_cover_living_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: open
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: open
+  sentences:
+    - 'Open the master bedroom blinds'
+    - 'Please open the living room blinds for me'
+    - "If you don't mind, flick on the master blinds"
+    - 'Flip on the living blinds'
+    - 'Quickly open the master_bedroom cover'
+    - 'Turn on the living blinds if you could'
+    - 'Open the living_room cover'
+    - 'Raise the master bedroom blinds'
+-
+  name: cover_master_blinds_and_cover_living_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: closed
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: closed
+  sentences:
+    - 'Close the master bedroom blinds'
+    - 'Please close the living room blinds for me'
+    - 'Shut the master bedroom blinds'
+    - "If you don't mind, close the living room blinds"
+    - 'Close master_bedroom cover'
+    - 'Flick the living blinds closed'
+    - 'Close the blinds in the master bedroom'
+    - 'Shut living_room blinds'

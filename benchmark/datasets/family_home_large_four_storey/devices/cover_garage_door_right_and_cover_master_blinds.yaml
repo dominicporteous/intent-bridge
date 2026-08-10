@@ -1,0 +1,40 @@
+-
+  name: cover_garage_door_right_and_cover_master_blinds_open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: open
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: open
+  sentences:
+    - 'Open the right garage door'
+    - 'Please open the garage door right for me'
+    - "If you don't mind, could you open the right garage door in the garage"
+    - 'Flick on the master blinds'
+    - 'Flip on the master blinds in the master bedroom'
+    - 'Quickly open the right garage door'
+    - 'Open the master blinds please'
+    - 'Raise the master blinds in master bedroom'
+-
+  name: cover_garage_door_right_and_cover_master_blinds_close
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_right
+      state: closed
+    -
+      type: action
+      entity_id: cover.master_blinds
+      state: closed
+  sentences:
+    - 'Close the right garage door'
+    - 'Shut the master blinds'
+    - 'Please close the garage door right for me'
+    - "If you don't mind, close the master bedroom blinds"
+    - 'Flick the right garage door closed'
+    - 'Flip the master blinds shut'
+    - 'Close the garage door right in the garage'
+    - 'Shut the master bedroom blinds please'

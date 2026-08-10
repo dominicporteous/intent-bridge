@@ -1,0 +1,59 @@
+-
+  name: home_theater_mode
+  conditions:
+    -
+      type: action
+      entity_id: scene.home_theater_mode
+  sentences:
+    - 'Turn on the Home Theater Mode scene'
+    - 'Flick on scene.home_theater_mode'
+    - 'Please flip on the Home Theater Mode scene for me'
+    - "If you don't mind, activate Home Theater Mode"
+    - 'Turn on Home Theater Mode in the ~area~'
+    - 'Quickly enable scene.home_theater_mode'
+    - 'Set Home Theater Mode scene on'
+    - 'Activate the Home Theater Mode scene please'
+-
+  name: dinner_party
+  conditions:
+    -
+      type: action
+      entity_id: scene.dinner_party
+  sentences:
+    - 'Turn on the Dinner Party scene'
+    - 'Activate scene.dinner_party'
+    - 'Please flick on the dinner party scene for me'
+    - "If you don't mind, flip on the Dinner Party scene in ~area~"
+    - 'Quickly enable dinner party scene'
+    - 'Start the dinner party scene now'
+    - 'Could you turn on scene.dinner_party please'
+    - 'Set the Dinner Party scene in ~area~'
+-
+  name: kids_bedtime
+  conditions:
+    -
+      type: action
+      entity_id: scene.kids_bedtime
+  sentences:
+    - 'Turn on the Kids Bedtime scene'
+    - 'Flick on scene.kids_bedtime'
+    - 'Please flip on the Kids Bedtime scene for me'
+    - "If you don't mind, activate scene.kids_bedtime"
+    - 'Quick, turn on Kids Bedtime'
+    - 'Can you start the Kids Bedtime scene please'
+    - 'Flip on the Kids Bedtime scene in the ~area~'
+-
+  name: good_morning
+  conditions:
+    -
+      type: action
+      entity_id: scene.good_morning
+  sentences:
+    - 'Turn on the Good Morning scene'
+    - 'Flip on scene.good_morning'
+    - 'Please activate the Good Morning scene for me'
+    - "If you don't mind, flick on the Good Morning scene"
+    - 'Activate scene.good_morning'
+    - 'Could you turn on the Good Morning scene please'
+    - 'Start the Good Morning scene'
+    - 'Engage scene.good_morning now'

@@ -1,0 +1,128 @@
+-
+  name: media_player_living_tv_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'on'
+  sentences:
+    - 'Turn on the living room TV'
+    - 'Flick on the living TV'
+    - 'Please turn on the living room TV for me'
+    - 'Flip on the living room television'
+    - "If you don't mind, turn on the living TV"
+    - 'Activate the living room TV'
+    - 'Switch on the living room TV please'
+-
+  name: media_player_living_tv_pause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: paused
+  sentences:
+    - 'Pause the living room TV'
+    - 'Pause living tv'
+    - 'Please pause the living room TV for me'
+    - "If you don't mind, pause the living room TV"
+    - 'Stop the living room TV'
+    - 'Halt the living room TV'
+    - 'Freeze the living room TV'
+    - 'Pause the living TV'
+-
+  name: media_player_living_tv_unpause
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: playing
+  sentences:
+    - 'unpause living tv'
+    - 'resume the living room tv'
+    - 'please unpause the living room television for me'
+    - 'flick the living room tv back on'
+    - "if you don't mind, resume the living tv"
+    - 'flip the living room tv back on'
+    - 'start the living room tv again'
+-
+  name: media_player_living_tv_mute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        is_volume_muted: 'true'
+  sentences:
+    - 'Mute the living room TV'
+    - 'Please mute living TV for me'
+    - "Turn off the sound on the living room TV if you don't mind"
+    - 'Flick the living TV to mute'
+    - 'Could you silence the living room TV'
+    - 'Flip the living TV mute on'
+    - 'Mute living room TV please'
+    - 'Set living TV volume to zero'
+-
+  name: media_player_living_tv_unmute
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        is_volume_muted: 'false'
+  sentences:
+    - 'Unmute the living room TV'
+    - 'Please unmute living TV for me'
+    - "If you don't mind, turn the sound back on for the living room TV"
+    - 'Flick the living TV audio back on'
+    - 'Flip the mute off on living room TV'
+    - 'Hey, unmute living TV'
+    - 'Can you unmute the living room TV please'
+-
+  name: media_player_living_tv_set_volume
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        volume_level: 27
+  sentences:
+    - 'Set the living room TV volume to 27'
+    - 'Please set living tv volume to 27 for me'
+    - 'Turn living room TV volume down to 27'
+    - "If you don't mind, adjust the living TV volume to 27"
+    - 'Flick living room TV volume to 27'
+    - 'Set volume on living tv to 27 please'
+    - 'Change the living room TV to volume 27'
+    - 'Adjust living TV volume to 27 if possible'
+-
+  name: media_player_living_tv_increase_volume_by_10
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      attributes:
+        volume_level: 37
+  sentences:
+    - 'Turn up the living room TV to 37'
+    - "Please increase the volume on the living tv to 37 if you don't mind"
+    - 'Flick the living room TV volume up to 37' # Changed from: Flick the living room TV volume up by 10
+    - 'Set living tv volume to 37'
+    - 'Could you bump up the living room TV volume to 37 for me'
+    - 'Raise the living tv to 37 please'
+    - 'Make the living room TV volume 37'
+-
+  name: media_player_living_tv_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: media_player.living_tv
+      state: 'off'
+  sentences:
+    - 'Turn off the living room TV'
+    - 'Please switch off the living TV for me'
+    - 'Flick off the living room media player'
+    - "If you don't mind, power down the living TV"
+    - 'Shut off the living room TV please'
+    - 'Flip the living TV off'
+    - 'Deactivate the living room television'
+    - 'Kill the living TV power'

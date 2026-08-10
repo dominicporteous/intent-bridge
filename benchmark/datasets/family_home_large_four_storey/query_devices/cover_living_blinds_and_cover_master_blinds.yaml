@@ -1,0 +1,18 @@
+-
+  name: cover_living_blinds_and_cover_master_blinds_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.living_blinds
+    -
+      type: query
+      entity_id: cover.master_blinds
+  sentences:
+    - "What's the status of the living room blinds"
+    - 'Tell me the state of the master blinds'
+    - 'Please check the living blinds for me'
+    - "If you don't mind, what's the current position of the master bedroom blinds"
+    - 'Living blinds status'
+    - 'Are the master blinds open or closed'
+    - 'Quick check on living room blinds please'
+    - 'Current state of master blinds'

@@ -1,0 +1,64 @@
+-
+  name: light_laundry_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.laundry_light
+      state: 'on'
+  sentences:
+    - 'Turn on the laundry light'
+    - 'Flick on the laundry light'
+    - 'Please flip on the laundry light for me'
+    - "If you don't mind, turn on the laundry light"
+    - 'Activate the laundry light'
+    - 'Switch on the laundry light in the laundry area'
+    - 'Can you please turn on the laundry light'
+    - 'Flip on the laundry light for me'
+-
+  name: light_laundry_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.laundry_light
+      state: 'off'
+  sentences:
+    - 'Turn off the laundry light'
+    - 'Please switch off the laundry light for me'
+    - "Flick off the laundry light if you don't mind"
+    - 'Flip off the laundry light in the laundry area'
+    - 'Can you turn off the laundry light please'
+    - 'Deactivate the laundry light'
+    - 'Kill the laundry light for me'
+    - 'Shut off the laundry light in laundry'
+-
+  name: light_laundry_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.laundry_light
+      attributes:
+        brightness: 80
+  sentences:
+    - 'Set the laundry light to 80%'
+    - 'Please dim the laundry light to 80 for me'
+    - 'Flick the laundry light brightness to 80%'
+    - "If you don't mind, set laundry light to 80"
+    - 'Turn laundry light brightness up to 80%'
+    - 'Adjust the laundry area light to 80 percent'
+    - 'Make the laundry light 80 brightness please'
+-
+  name: light_laundry_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.laundry_light
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the laundry light white'
+    - 'Set laundry light to white please'
+    - "If you don't mind, change the Laundry Light to white for me"
+    - 'Flick the laundry area light to white'
+    - 'Flip on white for the laundry light'
+    - 'Please make the Laundry Light white'
+    - 'Change laundry light color to white now'

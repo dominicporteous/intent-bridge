@@ -1,0 +1,148 @@
+"""Adapt Home Assistant's live caches to the intent engine catalog model."""
+
+from __future__ import annotations
+
+from typing import Any, Protocol
+
+from intent_bridge.core.text import normalize_search_text
+from intent_bridge.home_assistant.catalog import entity_context
+from intent_bridge.intent_engine.models import (
+    CatalogArea,
+    CatalogEntity,
+    CatalogFloor,
+    CatalogSnapshot,
+)
+
+
+class CachedHomeAssistant(Protocol):
+    states: dict[str, dict[str, Any]]
+    entity_registry: dict[str, dict[str, Any]]
+    devices: dict[str, dict[str, Any]]
+    areas: dict[str, dict[str, Any]]
+
+
+def _clean_aliases(values: list[object], canonical: str) -> tuple[str, ...]:
+    canonical_normal = normalize_search_text(canonical)
+    aliases: dict[str, str] = {}
+    for value in values:
+        if not isinstance(value, str) or not value.strip():
+            continue
+        cleaned = value.strip()
+        normal = normalize_search_text(cleaned)
+        if not normal or normal == canonical_normal:
+            continue
+        aliases.setdefault(normal, cleaned)
+    return tuple(aliases[key] for key in sorted(aliases))
+
+
+def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
+    areas: list[CatalogArea] = []
+    for area_id, raw_area in sorted(client.areas.items()):
+        if not isinstance(raw_area, dict):
+            continue
+        name = raw_area.get("name")
+        if not isinstance(name, str) or not name.strip():
+            name = area_id.replace("_", " ").title()
+        aliases = raw_area.get("aliases") or raw_area.get("alias") or []
+        if not isinstance(aliases, list):
+            aliases = []
+        areas.append(
+            CatalogArea(
+                area_id=area_id,
+                name=name.strip(),
+                aliases=_clean_aliases([*aliases, area_id.replace("_", " ")], name),
+                floor_id=(
+                    str(raw_area["floor_id"])
+                    if raw_area.get("floor_id") not in (None, "")
+                    else None
+                ),
+            )
+        )
+
+    raw_floors = getattr(client, "floors", {})
+    floors: list[CatalogFloor] = []
+    if isinstance(raw_floors, dict):
+        for floor_id, raw_floor in sorted(raw_floors.items()):
+            if not isinstance(raw_floor, dict):
+                continue
+            name = raw_floor.get("name")
+            if not isinstance(name, str) or not name.strip():
+                name = floor_id.replace("_", " ").title()
+            aliases = raw_floor.get("aliases") or []
+            if not isinstance(aliases, list):
+                aliases = []
+            floors.append(
+                CatalogFloor(
+                    floor_id=floor_id,
+                    name=name.strip(),
+                    aliases=_clean_aliases([*aliases, floor_id.replace("_", " ")], name),
+                )
+            )
+
+    entities: list[CatalogEntity] = []
+    for entity_id, state in sorted(client.states.items()):
+        if not isinstance(state, dict) or "." not in entity_id:
+            continue
+        attributes = state.get("attributes")
+        if not isinstance(attributes, dict):
+            attributes = {}
+        context = entity_context(client, entity_id, state)
+        friendly_name = context.get("friendly_name")
+        registry_name = context.get("registry_name")
+        local_name = entity_id.split(".", 1)[1].replace("_", " ")
+        canonical_name = next(
+            (
+                value.strip()
+                for value in (friendly_name, registry_name, local_name)
+                if isinstance(value, str) and value.strip()
+            ),
+            entity_id,
+        )
+        registry = client.entity_registry.get(entity_id, {})
+        registry_aliases = registry.get("aliases") or registry.get("al") or []
+        if not isinstance(registry_aliases, list):
+            registry_aliases = []
+        attribute_aliases = attributes.get("aliases") or []
+        if not isinstance(attribute_aliases, list):
+            attribute_aliases = []
+
+        entities.append(
+            CatalogEntity(
+                entity_id=entity_id,
+                name=canonical_name,
+                aliases=_clean_aliases(
+                    [registry_name, local_name, *registry_aliases, *attribute_aliases],
+                    canonical_name,
+                ),
+                domain=entity_id.split(".", 1)[0],
+                area_id=(str(context["area_id"]) if context.get("area_id") else None),
+                device_class=(
+                    str(attributes["device_class"])
+                    if attributes.get("device_class") not in (None, "")
+                    else None
+                ),
+                state=(str(state["state"]) if state.get("state") is not None else None),
+            )
+        )
+
+    return CatalogSnapshot(
+        entities=tuple(entities),
+        areas=tuple(areas),
+        floors=tuple(floors),
+    )
+
+
+class HomeAssistantCatalogProvider:
+    """Take a fresh immutable snapshot from a reconnecting cache on each request."""
+
+    def __init__(self, client_provider) -> None:
+        self._client_provider = client_provider
+
+    def snapshot(self) -> CatalogSnapshot:
+        client = self._client_provider()
+        if client is None:
+            return CatalogSnapshot()
+        return snapshot_from_client(client)
+
+
+__all__ = ["CachedHomeAssistant", "HomeAssistantCatalogProvider", "snapshot_from_client"]

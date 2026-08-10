@@ -1,0 +1,17 @@
+-
+  name: light_bathroom_mirror_light_and_media_player_main_lg_tv_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.bathroom_mirror_light
+    -
+      type: query
+      entity_id: media_player.main_lg_tv
+  sentences:
+    - "What's the status of the mirror light and LG TV?"
+    - 'Tell me if the bathroom mirror light and main LG TV are on or off'
+    - 'Please check the state of the mirror light and LG TV for me'
+    - 'Mirror light and TV status'
+    - "Could you tell me the current state of the bathroom mirror light and main LG TV if you don't mind"
+    - 'Get status of light bathroom mirror light and media player main lg tv'
+    - 'Are the mirror light and LG TV currently on?'

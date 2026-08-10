@@ -1,0 +1,105 @@
+-
+  name: media_player_main_lg_tv_turn_on
+  setup:
+    -
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the main LG TV?" # Changed from: What's the status of the living room light?
+      - 'Please turn it on for me.'
+    -
+      - 'Is the main LG TV on or off?' # Changed from: Is the living room light on or off?
+      - 'Flick it on.'
+    -
+      - 'Can you tell me the state of the main LG TV?' # Changed from: Can you tell me the state of the living room light?
+      - "Flip it on if you don't mind."
+    -
+      - 'How is the main LG TV doing?' # Changed from: How is the living room light doing?
+      - 'Turn it on please.'
+    -
+      - "What's happening with the main LG TV?" # Changed from: What's happening with the living room light?
+      - 'Switch it on for me.'
+    -
+      - 'Tell me about the main LG TV status.' # Changed from: Tell me about the living room light status.
+      - 'Could you flick it on?'
+    -
+      - 'Main LG TV state check.' # Changed from: Living room light state check.
+      - 'Flip it on please.'
+    -
+      - 'Report the main LG TV condition.' # Changed from: Report the living room light condition.
+      - "Turn it on if you don't mind."
+-
+  name: media_player_main_lg_tv_turn_off
+  setup:
+    -
+      entity_id: media_player.main_lg_tv
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: media_player.main_lg_tv
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the main LG TV?" # Changed from: What's the status of the living room light?
+      - 'Turn it off please.'
+    -
+      - "How's the main LG TV doing?" # Changed from: How's the living room light doing?
+      - "Flip it off if you don't mind."
+    -
+      - 'Can you check the main LG TV for me?' # Changed from: Can you check the living room light for me?
+      - 'Flick it off.'
+    -
+      - 'Tell me about the main LG TV status.' # Changed from: Tell me about the living room light status.
+      - 'Switch it off please.'
+    -
+      - 'Is the main LG TV on or off?' # Changed from: Is the living room light on or off?
+      - 'Shut it off for me.'
+    -
+      - "What's happening with the main LG TV?" # Changed from: What's happening with the living room light?
+      - 'Turn it off.'
+    -
+      - 'Check the main LG TV status please.' # Changed from: Check the living room light status please.
+      - "Kill it off if you don't mind."
+    -
+      - 'How is the main LG TV right now?' # Changed from: How is the living room light right now?
+      - 'Power it off.'
+-
+  name: media_player_main_lg_tv_persistance_volume_level
+  setup:
+    -
+      entity_id: media_player.main_lg_tv
+      volume_level: 63
+  conditions:
+    -
+      entity_id: media_player.main_lg_tv
+      attributes:
+        volume_level: 20
+  sentences:
+    -
+      - "What's the volume_level on the LG TV?"
+      - 'Set it to 20.'
+    -
+      - 'Can you tell me the volume_level of the media player main lg tv?'
+      - 'Please change it to 20 for me.'
+    -
+      - "What's the volume_level in the living room?"
+      - "Adjust it to 20 if you don't mind."
+    -
+      - 'Tell me the volume_level of the LG TV.'
+      - 'Make it 20.'
+    -
+      - 'Volume_level on the media player main lg tv?'
+      - 'Turn it to 20 please.'
+    -
+      - "What's the volume_level in the living area?"
+      - 'Change it to 20 for me.'
+    -
+      - 'Can you check the volume_level of the LG TV?'
+      - "Set it to 20 if you don't mind."

@@ -1,0 +1,19 @@
+name: lock_and_all_lights_off_at_11pm
+sentences:
+- Create an automation to lock the front door and turn off all lights at 11pm every
+  night
+- Set up a nightly rule at eleven to lock the front door and switch all lights off
+- Make an automation at 11pm to lock the front door and kill every light # Changed from: Make an automation at 11pm to lock up and kill every light
+- Automate the front door to lock and every light to go off at eleven each night
+- Can you create a routine at 11pm to lock the front door and turn all lights off
+- Please set up a nightly automation at eleven pm to lock the front door and turn
+  off all lights
+expected:
+  trigger:
+    platform: time
+    at: '23:00:00'
+  actions:
+  - action: lock.lock
+    entity_id: lock.front_door
+  - action: light.turn_off
+    domain: light

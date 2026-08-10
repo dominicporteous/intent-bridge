@@ -1,0 +1,14 @@
+-
+  name: sensor_bathroom_humidity_get_status
+  conditions:
+    -
+      type: query
+      entity_id: sensor.bathroom_humidity
+  sentences:
+    - "What's the humidity in the bathroom?"
+    - 'Bathroom humidity please'
+    - "If you don't mind, could you tell me the current bathroom humidity?"
+    - 'Get bathroom humidity'
+    - 'Please check the humidity level in the bathroom for me'
+    - 'Bathroom humidity status'
+    - "What's the current humidity reading in the bathroom?"

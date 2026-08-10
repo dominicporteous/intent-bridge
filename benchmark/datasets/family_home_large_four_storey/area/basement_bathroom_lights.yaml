@@ -1,0 +1,65 @@
+-
+  name: basement_bathroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: basement_bathroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the basement bathroom lights'
+    - 'Please flick on the lights in the basement bathroom for me'
+    - "If you don't mind, flip on the basement bathroom lights"
+    - 'Activate the lights downstairs in the bathroom'
+    - 'Hey, switch on the basement bathroom lights'
+    - 'Could you turn on the lights in the basement bathroom please'
+    - 'Illuminate the basement bathroom'
+    - 'Quick, turn on those basement bathroom lights'
+-
+  name: basement_bathroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: basement_bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the basement bathroom lights'
+    - 'Please switch off the lights in the basement bathroom for me'
+    - "Flick off the basement bathroom lights if you don't mind"
+    - 'Flip the lights off in the basement bathroom'
+    - 'Can you turn off the lights downstairs in the bathroom'
+    - 'Kill the lights in the basement bathroom please'
+    - 'Shut off the basement bathroom lights for me'
+-
+  name: basement_bathroom_lights_change_brightness
+  conditions:
+    -
+      area: basement_bathroom
+      domain: light
+      attributes:
+        brightness: 66
+  sentences:
+    - 'Set basement bathroom lights to 66 percent brightness'
+    - "Please dim the lights in the basement bathroom to 66 if you don't mind"
+    - 'Flick basement bathroom brightness to 66%'
+    - 'Turn the basement bathroom lights down to 66 brightness'
+    - 'Could you adjust the basement bathroom lights to 66 percent for me'
+    - 'Set brightness level 66 in basement bathroom'
+    - 'Make basement bathroom lights 66 percent bright please'
+-
+  name: basement_bathroom_lights_change_color
+  conditions:
+    -
+      area: basement_bathroom
+      domain: light
+      attributes:
+        color: green
+  sentences:
+    - 'Turn the basement bathroom lights green'
+    - 'Please set the basement bathroom lights to green for me'
+    - "Flick the basement bathroom lights to green if you don't mind"
+    - 'Change the basement bathroom lights to green'
+    - 'Flip the basement bathroom lights green'
+    - 'If you could, turn the basement bathroom lights green'
+    - 'Set the basement bathroom lights to green please'

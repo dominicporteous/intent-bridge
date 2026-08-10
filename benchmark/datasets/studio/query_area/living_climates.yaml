@@ -1,0 +1,15 @@
+-
+  name: living_climates_get_temperature
+  conditions:
+    -
+      type: query
+      area: living
+      domain: climate
+  sentences:
+    - "What's the temperature in the living room?"
+    - 'Climate status living room please'
+    - "Could you check the living room climate for me if you don't mind?"
+    - 'Living room climate'
+    - 'Tell me the current climate state in the living room'
+    - "Hey, what's the living room temperature right now?"
+    - 'Living room climate report'

@@ -1,0 +1,66 @@
+-
+  name: kitchen_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the kitchen lights'
+    - 'Kitchen lights on'
+    - 'Please flick on the lights in the kitchen for me'
+    - "If you don't mind, flip on the kitchen lights"
+    - 'Activate the kitchen lighting'
+    - 'Could you switch on the lights in the kitchen please'
+    - 'Hey, turn the kitchen lights on'
+-
+  name: kitchen_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the kitchen lights'
+    - 'Please switch off the lights in the kitchen for me'
+    - "Flick off the kitchen lights if you don't mind"
+    - 'Kill the lights in the kitchen'
+    - 'Can you flip off the kitchen lights please'
+    - 'Deactivate the kitchen lighting'
+    - 'Shut off the lights in the kitchen for me'
+-
+  name: kitchen_lights_change_brightness
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        brightness: 44
+  sentences:
+    - 'Set kitchen lights to 44%'
+    - 'Please dim the kitchen lights to 44 for me'
+    - "Flick kitchen brightness to 44 if you don't mind"
+    - 'Kitchen lights at 44 percent please'
+    - 'Turn kitchen illumination down to 44'
+    - 'Could you adjust kitchen lights to 44%'
+    - 'Flip kitchen brightness to 44'
+    - 'Make kitchen lights 44 percent'
+-
+  name: kitchen_lights_change_color
+  conditions:
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Change the kitchen lights to orange'
+    - 'Set kitchen lights orange'
+    - 'Please turn the kitchen lights orange for me'
+    - "If you don't mind, could you flick the kitchen lights to orange"
+    - 'Flip the kitchen lights on orange'
+    - 'Make the kitchen lights orange please'
+    - 'Quickly set kitchen lights to orange'
+    - 'Change kitchen lights color to orange'

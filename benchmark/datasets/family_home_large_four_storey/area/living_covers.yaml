@@ -1,0 +1,50 @@
+-
+  name: living_covers_open
+  conditions:
+    -
+      type: action
+      area: living
+      domain: cover
+      state: open
+  sentences:
+    - 'Open the living room blinds'
+    - 'Please open the curtains in the living room for me'
+    - 'Flick on the living room windows'
+    - "If you don't mind, could you open the living room curtains"
+    - 'Flip open the blinds in the living room'
+    - 'Open up the living room windows please'
+    - 'Raise the living room curtains'
+    - 'Crack open the living room blinds'
+-
+  name: living_covers_close
+  conditions:
+    -
+      type: action
+      area: living
+      domain: cover
+      state: closed
+  sentences:
+    - 'Close the living room blinds'
+    - 'Shut the curtains in the living room please'
+    - "If you don't mind, close the living room windows for me"
+    - 'Flick the living room blinds closed'
+    - 'Pull down the living room curtains'
+    - 'Close the living room windows if you could'
+    - 'Shut the living room blinds now'
+    - 'Draw the living room curtains closed'
+-
+  name: living_covers_set_position
+  conditions:
+    -
+      area: living
+      domain: cover
+      attributes:
+        position: 48
+  sentences:
+    - 'set living room blinds to 48'
+    - 'please adjust the living room curtains to 48 for me'
+    - "if you don't mind, set the living room windows to 48"
+    - 'flick living room blinds to position 48'
+    - 'move living room curtains to 48 percent'
+    - 'quickly set living room windows to 48'
+    - 'adjust living room blinds to 48 if possible'

@@ -1,0 +1,14 @@
+-
+  name: climate_main_thermostat_get_temperature
+  conditions:
+    -
+      type: query
+      entity_id: climate.main_thermostat
+  sentences:
+    - "What's the temperature on the main thermostat?"
+    - 'Tell me the current temperature in the living room'
+    - 'Climate main thermostat temperature please'
+    - "If you don't mind, could you check the thermostat temperature for me?"
+    - 'Main thermostat temp'
+    - 'Please get the living room temperature'
+    - "What's the climate main thermostat reading?"

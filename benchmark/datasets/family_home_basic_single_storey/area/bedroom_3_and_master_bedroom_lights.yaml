@@ -1,0 +1,85 @@
+-
+  name: bedroom_3_and_master_bedroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 3 and master bedroom'
+    - 'Please flick on the lights for me in bedroom 3 and the master bedroom'
+    - "If you don't mind, flip on the bedroom 3 and master bedroom lights"
+    - 'Activate lights bedroom 3 master bedroom'
+    - 'Could you switch on the lights in bedroom 3 and master bedroom please'
+    - 'Turn the bedroom 3 and master bedroom lights on'
+    - 'Lights on bedroom 3 master bedroom'
+    - 'Please turn on bedroom 3 and master bedroom lights for me'
+-
+  name: bedroom_3_and_master_bedroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: master_bedroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 3 and the master bedroom'
+    - 'Please switch off the lights in bedroom 3 and master bedroom for me'
+    - "If you don't mind, flick off the lights in bedroom 3 and the master bedroom"
+    - 'Kill the lights in bedroom 3 and master bedroom'
+    - 'Can you flip off the lights in bedroom 3 and master bedroom please'
+    - 'Shut down the lights in bedroom 3 and the master bedroom'
+    - 'Turn off bedroom 3 and master bedroom lights'
+-
+  name: bedroom_3_and_master_bedroom_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        brightness: 20
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        brightness: 20
+  sentences:
+    - 'Set bedroom 3 and master bedroom lights to 20 percent'
+    - 'Please dim the lights in bedroom 3 and master bedroom to 20 for me'
+    - 'Flick bedroom 3 and master bedroom brightness down to 20'
+    - "If you don't mind, turn the lights in bedroom 3 and master bedroom to 20"
+    - 'Quickly set bedroom 3 and master bedroom to 20 brightness'
+    - 'Flip bedroom 3 and master bedroom lights down to 20 please'
+    - 'Adjust bedroom 3 and master bedroom illumination to 20 percent'
+-
+  name: bedroom_3_and_master_bedroom_lights_change_color
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        color: orange
+    -
+      area: master_bedroom
+      domain: light
+      attributes:
+        color: orange
+  sentences:
+    - 'Change bedroom 3 and master bedroom lights to orange'
+    - 'Please set the lights in bedroom 3 and the master bedroom to orange for me'
+    - 'Flick on orange in bedroom 3 and master bedroom'
+    - "If you don't mind, flip the bedroom 3 and master bedroom lights to orange"
+    - 'Quickly turn bedroom 3 and master bedroom lights orange'
+    - 'Set bedroom 3 and master bedroom to orange color'
+    - 'Could you change the lights in bedroom 3 and master bedroom to orange please'

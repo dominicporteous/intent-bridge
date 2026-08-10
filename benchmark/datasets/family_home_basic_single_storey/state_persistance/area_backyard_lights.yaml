@@ -1,0 +1,35 @@
+-
+  name: backyard_lights_set_brightness
+  setup:
+    -
+      entity_id: light.backyard_lights
+      brightness: 61
+  conditions:
+    -
+      entity_id: light.backyard_lights
+      brightness: 33
+  sentences:
+    -
+      - 'What is the brightness of the backyard lights?'
+      - 'Set it to thirty three percent.'
+    -
+      - 'How bright are the backyard lights right now?'
+      - 'Please adjust to thirty three.'
+    -
+      - 'Tell me the brightness level in the backyard.'
+      - "If you don't mind, set it to thirty three percent for me."
+    -
+      - "What's the current brightness of the backyard lights?"
+      - 'Flick it to thirty three.'
+    -
+      - 'Can you check the backyard light brightness?'
+      - 'Flip it to thirty three percent please.'
+    -
+      - 'Backyard lights brightness status?'
+      - 'Make it thirty three.'
+    -
+      - 'Report the brightness for the backyard lights.'
+      - "Change to thirty three percent if you don't mind."
+    -
+      - 'How bright are the backyard lights?'
+      - 'Quickly set to thirty three.'

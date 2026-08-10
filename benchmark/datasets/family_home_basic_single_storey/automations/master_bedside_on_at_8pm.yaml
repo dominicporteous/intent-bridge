@@ -1,0 +1,14 @@
+name: master_bedside_on_at_8pm
+sentences:
+- Create an automation that turns on the master bedside lamp every evening at 8pm
+- Set up a rule at eight in the evening to switch on the master bedside lamp
+- Make an automation to turn the bedside lamp on at 8pm every night
+- Automate the master bedside lamp to come on at eight o'clock every evening
+- Can you create an evening routine at 8pm to turn on the master bedside lamp
+expected:
+  trigger:
+    platform: time
+    at: '20:00:00'
+  actions:
+  - action: light.turn_on
+    entity_id: light.master_lamp

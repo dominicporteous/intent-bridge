@@ -1,0 +1,105 @@
+-
+  name: cover_garage_door_left_open
+  setup:
+    -
+      entity_id: cover.garage_door_left
+      state: closed
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: open
+  sentences:
+    -
+      - "What's the status of the Left Garage Door?"
+      - 'Open it please.'
+    -
+      - 'Is the Left Garage Door open or closed?'
+      - 'Go ahead and open it for me.'
+    -
+      - 'Can you tell me if the Left Garage Door is closed?'
+      - "Flick it open if you don't mind."
+    -
+      - 'Left Garage Door status in the garage?'
+      - 'Flip it on quickly.'
+    -
+      - "What's happening with the Left Garage Door?"
+      - 'Please open it.'
+    -
+      - 'Check the Left Garage Door state.'
+      - 'Open it right now.'
+    -
+      - "How's the Left Garage Door doing?"
+      - "If you don't mind, open it for me."
+    -
+      - "Left Garage Door in the garage - what's its status?"
+      - 'Turn it on.'
+-
+  name: cover_garage_door_left_close
+  setup:
+    -
+      entity_id: cover.garage_door_left
+      state: open
+  conditions:
+    -
+      type: action
+      entity_id: cover.garage_door_left
+      state: closed
+  sentences:
+    -
+      - "What's the status of the Left Garage Door?"
+      - 'Close it please.'
+    -
+      - 'Is the garage door left open?'
+      - "Shut it if you don't mind."
+    -
+      - 'Check the Left Garage Door state.'
+      - 'Flick it closed.'
+    -
+      - "How's the garage door left doing?"
+      - 'Please close it for me.'
+    -
+      - 'Tell me if the Left Garage Door is open.'
+      - 'Flip it shut.'
+    -
+      - 'Status of the garage door left?'
+      - 'Close it now.'
+    -
+      - 'Is the Left Garage Door up?'
+      - 'Shut it if you would.'
+    -
+      - "What's going on with the garage door left?"
+      - 'Please close it for me.'
+-
+  name: cover_garage_door_left_persistance_position
+  setup:
+    -
+      entity_id: cover.garage_door_left
+      position: 66
+  conditions:
+    -
+      entity_id: cover.garage_door_left
+      attributes:
+        position: 79
+  sentences:
+    -
+      - "What's the position of the Left Garage Door?"
+      - 'Set it to 79.'
+    -
+      - 'Can you tell me where the garage door left is at?'
+      - 'Change it to 79 please.'
+    -
+      - "What's the status of the Left Garage Door in the garage?"
+      - "Adjust it to 79 if you don't mind."
+    -
+      - 'Position of garage door left?'
+      - 'Make it 79.'
+    -
+      - 'Where is the Left Garage Door right now?'
+      - 'Please set it to 79 for me.'
+    -
+      - 'Tell me the position of the Left Garage Door in the garage.'
+      - 'Change it to 79.'
+    -
+      - "What's the Left Garage Door's position?"
+      - 'Adjust it to 79 please.'

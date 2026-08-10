@@ -1,0 +1,17 @@
+name: master_light_lamp_vs_ceiling_on
+conditions:
+- type: action
+  entity_id: light.master_lamp
+  state: 'on'
+- type: action
+  entity_id: light.master_ceiling
+  state: 'off'
+sentences:
+- - turn on the master bedroom light # Changed from: turn on the bedroom light
+  - bedside lamp
+- - switch on the master bedroom light
+  - the lamp
+- - master bedroom light on # Changed from: bedroom light on
+  - lamp please
+- - flip on the master light
+  - just the lamp

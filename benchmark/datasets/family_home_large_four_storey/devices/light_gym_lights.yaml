@@ -1,0 +1,64 @@
+-
+  name: light_gym_lights_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.gym_lights
+      state: 'on'
+  sentences:
+    - 'Turn on the gym lights'
+    - 'Flick on the gym lights'
+    - 'Flip on the gym lights'
+    - 'Please turn on the gym lights for me'
+    - "If you don't mind, could you turn on the gym lights"
+    - 'Activate the gym lights'
+    - 'Switch on the gym lights'
+    - 'Hey, turn on the gym lights'
+-
+  name: light_gym_lights_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.gym_lights
+      state: 'off'
+  sentences:
+    - 'Turn off the gym lights'
+    - 'Please switch off the gym lights for me'
+    - "If you don't mind, flick off the gym lights"
+    - 'Deactivate the lights in the gym'
+    - 'Kill the gym lights'
+    - 'Flip off the gym lights if you could'
+    - 'Shut down the gym lights'
+    - 'Turn the gym lights off please'
+-
+  name: light_gym_lights_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.gym_lights
+      attributes:
+        brightness: 33
+  sentences:
+    - 'Set the gym lights to 33%'
+    - 'Gym lights brightness 33'
+    - 'Please turn the gym lights down to 33 for me'
+    - "If you don't mind, flick the gym lights to 33%"
+    - 'Hey, dim the gym lights to 33'
+    - 'Gym area lights brightness 33 please'
+    - 'Flip the gym lights down to 33%'
+-
+  name: light_gym_lights_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.gym_lights
+      attributes:
+        color: red
+  sentences:
+    - 'Turn the gym lights red'
+    - 'Flick on red for the gym lights'
+    - 'Please set the gym lights to red for me'
+    - "If you don't mind, flip the gym lights to red"
+    - 'Make the gym lights red right now'
+    - 'Change gym lights color to red'
+    - 'Quickly turn gym lights red'

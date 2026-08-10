@@ -1,0 +1,86 @@
+-
+  name: living_and_kitchen_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the living room and kitchen lights'
+    - 'Flick on lights in living and kitchen'
+    - 'Please flip on the lights for me in the living room and kitchen'
+    - "If you don't mind, could you turn on the living and kitchen lights"
+    - 'Activate lights living room kitchen'
+    - 'Hey turn on living kitchen lights now'
+    - 'Would you mind switching on the lights in living room and kitchen please'
+    - 'Flip on living and kitchen lights'
+-
+  name: living_and_kitchen_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+    -
+      type: action
+      area: kitchen
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in the living room and kitchen'
+    - 'Please switch off the lights in the living and kitchen for me'
+    - "If you don't mind, could you flick off the lights in the living room and kitchen"
+    - 'Kill the lights in the living and kitchen'
+    - 'Flip off the living room and kitchen lights'
+    - "Please turn off the lights in the living room and kitchen if you don't mind"
+    - 'Shut off the lights in the living and kitchen areas'
+    - 'Can you please kill the lights in the living room and kitchen for me'
+-
+  name: living_and_kitchen_lights_change_brightness
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 85
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        brightness: 85
+  sentences:
+    - 'Set the living room and kitchen lights to 85 percent brightness'
+    - 'Please adjust the brightness of the lights in the living room and kitchen to 85 for me'
+    - "Flick the living and kitchen lights up to 85 percent if you don't mind"
+    - 'Turn the lights in the living room and kitchen to 85 brightness'
+    - 'Could you please set the living and kitchen lights brightness to 85 for me'
+    - 'Flip the living room and kitchen lights to 85 percent'
+    - 'Make the lights in the living and kitchen 85 percent brightness please'
+-
+  name: living_and_kitchen_lights_change_color
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        color: red
+    -
+      area: kitchen
+      domain: light
+      attributes:
+        color: red
+  sentences:
+    - 'Turn the living room and kitchen lights red'
+    - 'Please set the lights in the living room and kitchen to red for me'
+    - 'Flick on red in the living and kitchen'
+    - "If you don't mind, could you change the living room and kitchen lights to red"
+    - 'Flip the living and kitchen lights to red'
+    - 'Make the living room and kitchen lights red please'
+    - 'Quickly set living and kitchen lights to red'

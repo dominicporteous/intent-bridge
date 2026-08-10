@@ -1,0 +1,28 @@
+-
+  name: light_bathroom_mirror_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.bathroom_mirror_light
+  sentences:
+    - "What's the status of the bathroom mirror light?"
+    - 'Mirror light state please'
+    - 'Can you tell me if the bathroom mirror light is on or off?'
+    - 'Please check the mirror light for me'
+    - "If you don't mind, what's the current state of the bathroom mirror light?"
+    - 'Mirror light bathroom status'
+    - 'Get me the bathroom mirror light state'
+-
+  name: light_bathroom_mirror_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.bathroom_mirror_light
+  sentences:
+    - "What's the brightness of the mirror light?"
+    - 'Mirror light brightness please'
+    - "If you don't mind, could you tell me the current brightness of the bathroom mirror light?"
+    - 'Please check the brightness level of the mirror light for me'
+    - 'How bright is the bathroom mirror light right now?'
+    - 'Tell me the mirror light brightness'
+    - "What's the current brightness setting on the mirror light in the bathroom?"

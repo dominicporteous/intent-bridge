@@ -1,0 +1,48 @@
+-
+  name: fan_master_fan_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      state: 'on'
+  sentences:
+    - 'Turn on the master fan'
+    - 'Please flick on the master fan for me'
+    - "Flip on the fan master fan if you don't mind"
+    - 'Activate the master fan in master_bedroom'
+    - 'Could you turn on the master fan please'
+    - 'Switch on the master fan'
+    - 'Start the master fan in the master_bedroom'
+-
+  name: fan_master_fan_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      state: 'off'
+  sentences:
+    - 'Turn off the master fan'
+    - 'Please switch off the master fan for me'
+    - 'Flick off the fan in master_bedroom'
+    - "If you don't mind, flip off the master fan"
+    - 'Deactivate the master fan'
+    - 'Shut down the fan in master_bedroom'
+    - 'Can you turn off the master fan please'
+    - 'Power down the master fan'
+-
+  name: fan_master_fan_set_fan_speed
+  conditions:
+    -
+      type: action
+      entity_id: fan.master_fan
+      attributes:
+        percentage: 48
+  sentences:
+    - 'Set the master fan to 48 percent'
+    - 'Flick the master fan speed to 48 in the master bedroom'
+    - "Please set fan master fan to 48 if you don't mind"
+    - 'Turn the Master Fan to 48%'
+    - 'Flip on master fan speed 48 in master_bedroom'
+    - 'Could you set the fan master fan to 48 for me'
+    - 'Adjust master fan to 48 percent please'
+    - 'Set fan speed of master fan to 48'

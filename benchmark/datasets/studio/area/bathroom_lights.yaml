@@ -1,0 +1,65 @@
+-
+  name: bathroom_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the bathroom lights'
+    - 'Flick on the bathroom lights please'
+    - "If you don't mind, flip on the lights in the bathroom for me"
+    - 'Bathroom lights on'
+    - 'Could you turn the bathroom lights on please'
+    - 'Switch on the bathroom lights'
+    - 'Please flip on the bathroom lights for me'
+-
+  name: bathroom_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bathroom
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the bathroom lights'
+    - 'Please switch off the lights in the bathroom for me'
+    - "If you don't mind, flick off the bathroom lights"
+    - 'Flip the bathroom lights off'
+    - 'Could you turn the bathroom lights off please'
+    - 'Kill the lights in the bathroom'
+    - 'Deactivate bathroom lighting'
+    - 'Shut off the bathroom lights if you would'
+-
+  name: bathroom_lights_change_brightness
+  conditions:
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        brightness: 60
+  sentences:
+    - 'Set bathroom lights to 60 percent'
+    - 'Please dim the bathroom to 60 for me'
+    - "Flick the bathroom lights down to 60 if you don't mind"
+    - 'Turn bathroom brightness to 60%'
+    - 'Could you adjust the bathroom lights to 60 please'
+    - 'Make the bathroom 60 brightness'
+    - 'Flip bathroom lights to 60 percent'
+-
+  name: bathroom_lights_change_color
+  conditions:
+    -
+      area: bathroom
+      domain: light
+      attributes:
+        color: purple
+  sentences:
+    - 'Turn the bathroom lights purple'
+    - 'Please set the bathroom lights to purple for me'
+    - "Flick the bathroom lights to purple if you don't mind"
+    - 'Flip the bathroom lights purple'
+    - 'Make the bathroom lights purple please'
+    - 'Change bathroom lights to purple'
+    - 'Set bathroom lights purple for me'

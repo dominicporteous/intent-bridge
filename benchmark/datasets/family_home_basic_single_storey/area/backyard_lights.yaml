@@ -1,0 +1,66 @@
+-
+  name: backyard_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: backyard
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the backyard lights'
+    - 'Please flick on the backyard lights for me'
+    - "If you don't mind, flip on the backyard lights"
+    - 'Activate backyard lighting'
+    - 'Hey, can you switch on the lights outside'
+    - 'Turn the backyard lights on please'
+    - 'Illuminate the backyard'
+    - 'Quickly turn on the backyard lights'
+-
+  name: backyard_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: backyard
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the backyard lights'
+    - 'Please kill the lights outside for me'
+    - "If you don't mind, flick off the backyard lights"
+    - 'Deactivate the lights in the yard'
+    - 'Can you flip off the outside lights please'
+    - 'Shut down the backyard lighting'
+    - "Kill the lights out back if you don't mind"
+-
+  name: backyard_lights_change_brightness
+  conditions:
+    -
+      area: backyard
+      domain: light
+      attributes:
+        brightness: 35
+  sentences:
+    - 'Set backyard lights to 35 percent'
+    - 'Please dim the backyard lights to 35 for me'
+    - "If you don't mind, flick the backyard lights down to 35"
+    - 'Backyard lights brightness 35'
+    - 'Could you turn the backyard lights to 35 please'
+    - 'Quickly set backyard lights brightness to 35'
+    - 'Flip backyard lights to 35 percent if possible'
+-
+  name: backyard_lights_change_color
+  conditions:
+    -
+      area: backyard
+      domain: light
+      attributes:
+        color: red
+  sentences:
+    - 'Turn the backyard lights red'
+    - 'Flick on red lights outside'
+    - 'Please change the backyard lights to red for me'
+    - "If you don't mind, flip the backyard lights to red"
+    - 'Set backyard lights red'
+    - 'Make the lights in the backyard red please'
+    - 'Quickly turn backyard lights red'
+    - 'Change outside lights to red'

@@ -1,0 +1,65 @@
+-
+  name: bedroom_2_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 2'
+    - 'Flick on bedroom 2 lights'
+    - 'Please flip on the lights in bedroom 2 for me'
+    - "If you don't mind, could you turn on bedroom 2 lights"
+    - 'Activate the bedroom 2 lighting'
+    - 'Switch on bedroom 2 lights please'
+    - 'Quickly turn on the lights in bedroom 2'
+    - 'Can you enable bedroom 2 lights'
+-
+  name: bedroom_2_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 2'
+    - 'Please switch off bedroom 2 lights for me'
+    - "If you don't mind, flick off the lights in bedroom 2"
+    - 'Flip off bedroom 2 lights'
+    - 'Kill the lights in bedroom 2 please'
+    - 'Could you shut off bedroom 2 lights'
+    - 'Turn bedroom 2 lights off if possible'
+-
+  name: bedroom_2_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        brightness: 62
+  sentences:
+    - 'Set bedroom 2 lights to 62 percent brightness'
+    - "Please adjust the bedroom 2 lights to 62 if you don't mind"
+    - 'Flick bedroom 2 lights to 62%'
+    - 'Could you dim the bedroom 2 lights to 62 for me'
+    - 'Change bedroom 2 lights brightness to 62'
+    - 'Turn bedroom 2 lights to 62 percent'
+    - 'Make bedroom 2 lights 62 brightness please'
+-
+  name: bedroom_2_lights_change_color
+  conditions:
+    -
+      area: bedroom_2
+      domain: light
+      attributes:
+        color: black
+  sentences:
+    - 'Turn the bedroom 2 lights black'
+    - 'Flick the bedroom 2 lights to black' # Changed from: Flick the bedroom 2 lights off
+    - 'Please set bedroom 2 lights to black for me'
+    - "If you don't mind, flip bedroom 2 lights to black"
+    - 'Make bedroom 2 lights black now'
+    - 'Could you turn bedroom 2 lights black please'
+    - 'Quickly set bedroom 2 lights black'

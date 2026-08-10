@@ -1,0 +1,49 @@
+-
+  name: bedroom_2_fans_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: fan
+      state: 'on'
+  sentences:
+    - 'Turn on the fans in bedroom 2'
+    - 'Flick on the bedroom 2 fans please'
+    - "If you don't mind, flip on the fans in bedroom 2 for me"
+    - 'Activate the fans in bedroom 2'
+    - 'Could you switch on the bedroom 2 fans'
+    - 'Please turn on the fans in bedroom 2'
+    - 'Quickly start the fans in bedroom 2'
+    - 'Spin up the bedroom 2 fans'
+-
+  name: bedroom_2_fans_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_2
+      domain: fan
+      state: 'off'
+  sentences:
+    - 'Turn off the fans in bedroom 2'
+    - 'Please switch off the bedroom 2 fans for me'
+    - "If you don't mind, kill the fans in bedroom 2"
+    - 'Flick off the bedroom 2 fans'
+    - 'Flip off the fans in bedroom 2'
+    - 'Could you shut down the bedroom 2 fans please'
+    - 'Stop the fans in bedroom 2 if possible'
+-
+  name: bedroom_2_fans_set_fan_speed
+  conditions:
+    -
+      area: bedroom_2
+      domain: fan
+      attributes:
+        percentage: 36
+  sentences:
+    - 'Set bedroom 2 fan speed to 36'
+    - 'Flick bedroom 2 fans to 36'
+    - 'Please set the bedroom 2 fans to 36 for me'
+    - "If you don't mind, flip the bedroom 2 fans to 36"
+    - 'Turn bedroom 2 fans to 36'
+    - 'Quickly adjust bedroom 2 fan speed to 36'
+    - 'Set bedroom 2 fans to 36 please'

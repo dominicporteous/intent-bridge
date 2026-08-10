@@ -1,0 +1,17 @@
+name: theater_light_bias_vs_ceiling_on
+conditions:
+- type: action
+  entity_id: light.theater_bias
+  state: 'on'
+- type: action
+  entity_id: light.theater_ceiling
+  state: 'off'
+sentences:
+- - turn on the theater light
+  - bias lighting
+- - switch on the home theater light
+  - the bias light
+- - theater light on
+  - bias please
+- - flip on the theater light
+  - bias lighting

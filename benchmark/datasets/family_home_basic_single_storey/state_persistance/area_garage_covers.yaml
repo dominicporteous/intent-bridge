@@ -1,0 +1,35 @@
+-
+  name: garage_covers_set_position
+  setup:
+    -
+      entity_id: cover.garage_door
+      position: 15
+  conditions:
+    -
+      entity_id: cover.garage_door
+      position: 27
+  sentences:
+    -
+      - 'What is the position of the garage windows?'
+      - 'Set it to 27.'
+    -
+      - 'Can you tell me where the blinds are in the garage?'
+      - 'Please set them to 27 for me.'
+    -
+      - 'Garage curtains position?'
+      - 'Flick them to 27.'
+    -
+      - "If you don't mind, could you check the garage window status?"
+      - "Flip them to 27 if you don't mind."
+    -
+      - 'Tell me the current position of the garage blinds please.'
+      - 'Set to 27.'
+    -
+      - "What's the status of the curtains in the garage?"
+      - 'Please adjust to 27 for me.'
+    -
+      - 'Garage window position check.'
+      - 'Turn them to 27.'
+    -
+      - 'Could you report the garage blinds position?'
+      - 'Set position to 27.'

@@ -1,0 +1,32 @@
+-
+  name: upper_hallway_climates_set_temperature
+  setup:
+    -
+      entity_id: climate.upper_thermostat
+      temperature: 44
+  conditions:
+    -
+      entity_id: climate.upper_thermostat
+      temperature: 46
+  sentences:
+    -
+      - "What's the temperature in the upper hallway?"
+      - 'Set it to 46.'
+    -
+      - 'Can you tell me the climate status upstairs?'
+      - 'Please change it to 46 for me.'
+    -
+      - 'Temperature check on the upper hallway climates?'
+      - "Flick it to 46 if you don't mind."
+    -
+      - 'How warm is it in the hallway upstairs?'
+      - 'Flip it to 46.'
+    -
+      - 'Report the upper hallway climate readings.'
+      - 'Adjust it to 46 please.'
+    -
+      - "What's the temp reading for the hallway climates?"
+      - 'Make it 46.'
+    -
+      - 'Check climate temperatures in the upper hallway.'
+      - 'Turn it to 46 for me.'

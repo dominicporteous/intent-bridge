@@ -1,0 +1,64 @@
+-
+  name: light_top_bath_light_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.top_bath_light
+      state: 'on'
+  sentences:
+    - 'Turn on the top bath light'
+    - 'Flick on the top bath light'
+    - 'Flip on the top bath light'
+    - 'Please turn on the top bath light for me'
+    - "If you don't mind, turn on the top bath light"
+    - 'Activate the top bath light'
+    - 'Switch on the top bath light'
+    - 'Turn on the light in the top bath'
+-
+  name: light_top_bath_light_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.top_bath_light
+      state: 'off'
+  sentences:
+    - 'Turn off the top bath light'
+    - 'Please switch off the top bath light for me'
+    - "If you don't mind, flick off the top bath light"
+    - 'Deactivate the top bath light'
+    - 'Can you turn off the top bath light please'
+    - 'Flip off the top bath light'
+    - 'Shut down the top bath light'
+    - 'Kill the top bath light'
+-
+  name: light_top_bath_light_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.top_bath_light
+      attributes:
+        brightness: 79
+  sentences:
+    - 'Set the top bath light brightness to 79'
+    - 'Please adjust the Top Bath Light to 79% brightness for me'
+    - "Flick the top_bath light to 79 if you don't mind"
+    - 'Turn the Top Bath Light brightness down to 79%'
+    - 'Could you set light top bath light to 79 brightness please'
+    - 'Make the top bath light 79 percent'
+    - 'Quickly change top_bath brightness to 79'
+-
+  name: light_top_bath_light_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.top_bath_light
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the top bath light white'
+    - 'Set top_bath to white'
+    - 'Please change the Top Bath Light to white for me'
+    - "If you don't mind, flick the top bath light to white"
+    - 'Make the top_bath light white'
+    - 'Flip the Top Bath Light to white please'
+    - 'Set the top bath light in top_bath to white'

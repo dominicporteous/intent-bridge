@@ -1,0 +1,19 @@
+name: kitchen_light_under_cabinet_vs_ceiling_on
+conditions:
+- type: action
+  entity_id: light.kitchen_under_cabinet_lights
+  state: 'on'
+- type: action
+  entity_id: light.kitchen_ceiling_lights
+  state: 'off'
+sentences:
+- - turn on the kitchen light
+  - under the cabinet
+- - switch on the kitchen lights
+  - the under cabinet ones
+- - kitchen light on
+  - under cabinet
+- - can you turn on the kitchen light
+  - the ones under the cabinet
+- - flip on the kitchen lights
+  - under cabinet lights

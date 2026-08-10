@@ -1,0 +1,78 @@
+-
+  name: living_and_kitchen_lights_get_state
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the living room and kitchen"
+    - 'lights living kitchen state'
+    - "Could you please check the lights for me in the living room and kitchen if you don't mind"
+    - 'Are the living room and kitchen lights on or off right now'
+    - 'get light status living kitchen'
+    - "If it's not too much trouble, can you tell me about the lights in living and kitchen"
+    - 'living kitchen lights current state please'
+    - 'lights status livingroom kitchen'
+-
+  name: living_and_kitchen_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the living room and kitchen"
+    - 'Lights living kitchen state'
+    - "Please tell me the current light status for living and kitchen if you don't mind"
+    - 'Get light states living room kitchen'
+    - 'Could you check the lights in living and kitchen for me'
+    - 'Living kitchen lights current state'
+    - 'Report light status living room and kitchen please'
+-
+  name: living_and_kitchen_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the living room and kitchen"
+    - 'lights living kitchen state'
+    - "Could you please check the lights for me in the living room and kitchen if you don't mind"
+    - 'are living room and kitchen lights on or off'
+    - 'get light status living kitchen'
+    - 'tell me about the lights living room kitchen'
+    - "lights living kitchen what's happening"
+-
+  name: living_and_kitchen_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: living
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in the living room and kitchen"
+    - 'lights living kitchen status'
+    - "please tell me the current state of the lights in the living room and kitchen if you don't mind"
+    - 'are the living room and kitchen lights on or off'
+    - 'check lights living kitchen'
+    - 'could you check the lights in the living and kitchen areas for me'
+    - 'living kitchen lights state'
+    - "what's the light situation in the living room and kitchen right now"

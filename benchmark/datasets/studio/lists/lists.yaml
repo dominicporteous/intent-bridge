@@ -1,0 +1,141 @@
+-
+  name: shopping_list_add_eggs
+  conditions:
+    -
+      type: shopping_list
+      item: eggs
+      complete: false
+  sentences:
+    - 'add eggs to the shopping list'
+    - 'put eggs on my list'
+    - 'please add eggs to the shopping list for me' # Changed from: please add eggs for me
+    - "stick eggs on the shopping list if you don't mind"
+    - 'place eggs in the list'
+    - 'add some eggs to my shopping list please'
+    - 'put eggs on the list for me'
+    - 'eggs to the shopping list'
+-
+  name: shopping_list_complete_olive_oil
+  setup:
+    -
+      shopping_list_item: 'olive oil'
+    -
+      shopping_list_item: chicken
+    -
+      shopping_list_item: rice
+    -
+      shopping_list_item: pasta
+    -
+      shopping_list_item: 'orange juice'
+  conditions:
+    -
+      type: shopping_list
+      item: 'olive oil'
+      complete: true
+  sentences:
+    - 'Mark olive oil as done on the shopping list'
+    - 'Put olive oil as completed please'
+    - "If you don't mind, stick olive oil as finished for me"
+    - 'Check off olive oil on the list'
+    - 'Please mark olive oil done'
+    - 'Add olive oil to the completed items'
+    - 'Cross olive oil off the shopping list if you could'
+-
+  name: shopping_list_last_items
+  setup:
+    -
+      shopping_list_item: 'olive oil'
+    -
+      shopping_list_item: chicken
+    -
+      shopping_list_item: rice
+    -
+      shopping_list_item: pasta
+    -
+      shopping_list_item: 'orange juice'
+  conditions:
+    -
+      type: query
+      intent: HassShoppingListLastItems
+  sentences:
+    - 'read the last items on my shopping list'
+    - "what's at the bottom of the shopping list"
+    - 'tell me the most recent shopping list entries'
+    - "please read back the last few things I added if you don't mind"
+    - 'could you list the latest shopping items for me'
+    - "show me what's new on the shopping list"
+    - 'recite the most recent additions to my list'
+-
+  name: chores_add_vacuum_the_living_ro
+  conditions:
+    -
+      type: todo_list
+      list_name: Chores
+      item: 'Vacuum the living room'
+      complete: false
+  sentences:
+    - 'Add vacuum the living room to the Chores list'
+    - 'Put vacuuming the living room on Chores'
+    - 'Please stick vacuum the living room on the Chores list for me'
+    - "If you don't mind, place vacuum the living room on Chores"
+    - 'Quickly add vacuum the living room to Chores'
+    - 'Stick vacuum the living room on the Chores list please'
+    - "Put vacuum the living room on Chores if you don't mind"
+-
+  name: chores_complete_do_the_laundry
+  setup:
+    -
+      list_name: Chores
+      todo_item: 'do the laundry'
+    -
+      list_name: Chores
+      todo_item: 'clean the bathroom'
+    -
+      list_name: Chores
+      todo_item: 'sweep the porch'
+    -
+      list_name: Chores
+      todo_item: 'water the plants'
+  conditions:
+    -
+      type: todo_list
+      list_name: Chores
+      item: 'Do the laundry'
+      complete: true
+  sentences:
+    - 'Mark the laundry as done on the Chores list'
+    - 'Please mark laundry complete for me'
+    - "If you don't mind, put laundry as finished on Chores"
+    - 'Stick laundry task as completed'
+    - 'Add laundry to done items on the list'
+    - 'Mark off laundry chore please'
+    - 'Place laundry as finished on Chores list'
+-
+  name: chores_remove_clean_the_bathroom
+  setup:
+    -
+      list_name: Chores
+      todo_item: 'do the laundry'
+    -
+      list_name: Chores
+      todo_item: 'clean the bathroom'
+    -
+      list_name: Chores
+      todo_item: 'sweep the porch'
+    -
+      list_name: Chores
+      todo_item: 'water the plants'
+  conditions:
+    -
+      type: todo_list
+      list_name: Chores
+      item: 'Clean the bathroom'
+      removed: true
+  sentences:
+    - 'Remove clean the bathroom from the Chores list'
+    - 'Please take clean the bathroom off the chores list for me'
+    - "If you don't mind, delete clean the bathroom from chores"
+    - 'Drop clean the bathroom from the list'
+    - 'Can you remove clean the bathroom off chores please'
+    - 'Take clean the bathroom out of the Chores list'
+    - 'Erase clean the bathroom from chores'

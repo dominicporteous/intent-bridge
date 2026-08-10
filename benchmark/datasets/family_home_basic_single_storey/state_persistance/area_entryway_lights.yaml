@@ -1,0 +1,32 @@
+-
+  name: entryway_lights_set_brightness
+  setup:
+    -
+      entity_id: light.entryway_light
+      brightness: 30
+  conditions:
+    -
+      entity_id: light.entryway_light
+      brightness: 28
+  sentences:
+    -
+      - "What's the brightness of the entryway lights?"
+      - 'Set it to 28.'
+    -
+      - 'Could you tell me the brightness level in the entryway please?'
+      - "Make it 28 if you don't mind."
+    -
+      - 'Entryway lights brightness status?'
+      - 'Flick it to 28.'
+    -
+      - 'How bright are the entryway lights right now?'
+      - 'Please adjust to 28 for me.'
+    -
+      - "What's the current brightness setting for the entryway?"
+      - 'Flip it to 28.'
+    -
+      - 'Entryway lights brightness check?'
+      - 'Set brightness to 28.'
+    -
+      - 'Can you check the brightness of the entryway lights?'
+      - 'Turn it to 28 please.'

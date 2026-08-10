@@ -1,0 +1,16 @@
+-
+  name: climate_master_ac_set_temperature
+  conditions:
+    -
+      type: action
+      entity_id: climate.master_ac
+      attributes:
+        temperature: 16
+  sentences:
+    - 'Set the Master AC to 16 degrees'
+    - 'Turn the climate master ac down to 16'
+    - "Please set the temperature in master_bedroom to 16 if you don't mind"
+    - 'Flick the Master AC to 16 degrees'
+    - 'Could you adjust the climate master ac to 16 for me'
+    - 'Make the master_bedroom AC 16 degrees'
+    - 'Flip the Master AC temperature to 16'

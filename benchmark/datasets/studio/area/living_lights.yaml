@@ -1,0 +1,64 @@
+-
+  name: living_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the living room lights'
+    - 'Flick on the lights in the living room'
+    - 'Please flip on the living room lights for me'
+    - "If you don't mind, could you turn on the living room lights"
+    - 'Activate the living room lights'
+    - 'Hey, switch on the lights in the living room'
+    - 'Can you please turn on the living room lights'
+-
+  name: living_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: living
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the living room lights'
+    - 'Please switch off the lights in the living room for me'
+    - "If you don't mind, flick off the living room lights"
+    - 'Kill the lights in the living room'
+    - 'Could you flip off the living room lights please'
+    - 'Deactivate the living room lighting'
+    - "Shut off the lights in the living room if you don't mind"
+-
+  name: living_lights_change_brightness
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        brightness: 27
+  sentences:
+    - 'Set living room lights to 27 percent'
+    - 'Please dim the living room lights to 27 for me'
+    - "If you don't mind, flick living room brightness down to 27"
+    - 'Living room lights 27'
+    - 'Turn living room lights to brightness level 27'
+    - 'Could you adjust living room lights to 27 please'
+    - 'Flip living room lights down to 27 percent'
+-
+  name: living_lights_change_color
+  conditions:
+    -
+      area: living
+      domain: light
+      attributes:
+        color: white
+  sentences:
+    - 'Set the living room lights to white'
+    - 'Please change the living room lights to white for me'
+    - 'Flick the living room lights to white'
+    - "If you don't mind, flip the living room lights to white for me"
+    - 'Turn the living room lights white'
+    - 'Could you make the living room lights white please'
+    - 'Switch living room lights to white'

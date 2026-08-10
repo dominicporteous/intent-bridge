@@ -1,0 +1,64 @@
+-
+  name: upper_hallway_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: upper_hallway
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the upper hallway lights'
+    - 'Flick on the upper hallway lights' # Changed from: Flick on the lights upstairs
+    - 'Please flip on the hallway lights for me'
+    - "If you don't mind, could you turn on the lights in the upper hallway"
+    - 'Activate the upstairs hallway lighting'
+    - 'Hey, switch on those upper hallway lights'
+    - 'Would you mind turning on the lights up there in the hallway'
+-
+  name: upper_hallway_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: upper_hallway
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the upper hallway lights'
+    - 'Please switch off the lights upstairs for me'
+    - "If you don't mind, flick off the hallway lights"
+    - 'Kill the lights in the upper hallway'
+    - 'Could you flip off the upstairs hallway lights please'
+    - 'Deactivate the upper hallway lighting'
+    - 'Turn the lights off upstairs if you would'
+-
+  name: upper_hallway_lights_change_brightness
+  conditions:
+    -
+      area: upper_hallway
+      domain: light
+      attributes:
+        brightness: 24
+  sentences:
+    - 'Set the upper hallway lights to 24 percent brightness'
+    - 'Please dim the upstairs hallway lights to 24 for me'
+    - "If you don't mind, could you flick the upper hallway lights down to 24"
+    - 'Upper hallway lights 24'
+    - "Turn the hallway lights upstairs to 24 brightness if it's not too much trouble"
+    - 'Adjust upstairs hallway illumination to 24 percent'
+    - 'Quickly set hallway lights upstairs brightness level 24'
+-
+  name: upper_hallway_lights_change_color
+  conditions:
+    -
+      area: upper_hallway
+      domain: light
+      attributes:
+        color: white
+  sentences:
+    - 'Set the upper hallway lights to white'
+    - 'Please change the upstairs hallway lights to white for me'
+    - 'Flick the upper hall lights to white'
+    - "If you don't mind, flip the hallway lights upstairs to white"
+    - 'Turn the upper hallway lights white'
+    - 'Quickly set the upstairs hallway lights to white'
+    - 'Change the upper hall lights to white please'

@@ -1,0 +1,61 @@
+-
+  name: bathroom_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+  sentences:
+    - "What's the status of the bathroom lights?"
+    - 'Are the bathroom lights on or off?'
+    - 'Please check the bathroom lights for me'
+    - "If you don't mind, what's the current state of the bathroom lights?"
+    - 'Bathroom lights status'
+    - 'Tell me if the bathroom lights are on'
+    - 'Could you check the bathroom lights please?'
+    - 'Quick check on bathroom lighting'
+-
+  name: bathroom_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+  sentences:
+    - "What's the status of the bathroom lights?"
+    - 'Are the lights on in the bathroom?'
+    - 'Please check the bathroom lights for me'
+    - "If you don't mind, could you tell me if the bathroom lights are on?"
+    - 'Bathroom lights status'
+    - 'Get me the current state of the bathroom lights'
+    - "Hey, what's going on with the lights in the bathroom?"
+-
+  name: bathroom_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+  sentences:
+    - "What's the status of the bathroom lights?"
+    - 'Are the lights on in the bathroom?'
+    - 'Please check the bathroom lights for me'
+    - "If you don't mind, what's the current state of the bathroom lights?"
+    - 'Bathroom lights status'
+    - 'Could you tell me if the bathroom lights are on or off?'
+    - 'Get bathroom light state'
+-
+  name: bathroom_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bathroom
+      domain: light
+  sentences:
+    - "What's the status of the bathroom lights?"
+    - 'Are the bathroom lights on or off?'
+    - 'Please check the bathroom lights for me'
+    - "If you don't mind, could you tell me about the bathroom lights?"
+    - 'Bathroom lights state'
+    - 'Get bathroom lights status'
+    - 'Can you check if the bathroom lights are on?'

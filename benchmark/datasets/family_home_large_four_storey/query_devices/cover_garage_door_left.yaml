@@ -1,0 +1,29 @@
+-
+  name: cover_garage_door_left_get_status
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_left
+  sentences:
+    - "What's the status of the left garage door?"
+    - 'Left garage door state please'
+    - "If you don't mind, could you check the left garage door for me?"
+    - 'Garage door left - current state'
+    - 'Please tell me if the left garage door is open or closed'
+    - 'Status check on left garage door in the garage'
+    - 'Get me the left garage door position'
+-
+  name: cover_garage_door_left_get_position
+  conditions:
+    -
+      type: query
+      entity_id: cover.garage_door_left
+  sentences:
+    - "What's the position of the left garage door?"
+    - 'Get status of cover garage door left'
+    - 'Please check the left garage door position for me'
+    - "If you don't mind, what's the current state of the garage door left?"
+    - 'Left garage door status'
+    - 'Can you tell me if the left garage door is open or closed?'
+    - 'Garage door left position please'
+    - "What's the left garage door doing right now?"

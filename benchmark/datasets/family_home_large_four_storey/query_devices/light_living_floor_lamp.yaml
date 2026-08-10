@@ -1,0 +1,28 @@
+-
+  name: light_living_floor_lamp_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.living_floor_lamp
+  sentences:
+    - "What's the status of the living room floor lamp?"
+    - 'living floor lamp state'
+    - 'please check the living room floor lamp for me'
+    - "if you don't mind, could you tell me if the living floor lamp is on or off?"
+    - 'living room floor lamp current state please'
+    - 'get living floor lamp status'
+    - 'is the living floor lamp on right now?'
+-
+  name: light_living_floor_lamp_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.living_floor_lamp
+  sentences:
+    - "What's the brightness of the living room floor lamp?"
+    - 'Living room floor lamp brightness please'
+    - "If you don't mind, could you tell me the current brightness level of the living room floor lamp?"
+    - 'Floor lamp brightness living room'
+    - 'Please check the brightness on the living room floor lamp for me'
+    - 'How bright is the living room floor lamp right now?'
+    - 'Living floor lamp brightness status'

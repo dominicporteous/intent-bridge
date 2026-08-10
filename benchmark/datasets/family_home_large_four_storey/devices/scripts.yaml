@@ -1,0 +1,30 @@
+-
+  name: good_night
+  conditions:
+    -
+      type: action
+      entity_id: script.good_night
+  sentences:
+    - 'Good night'
+    - 'Run the good night script'
+    - 'Please run good night for me'
+    - "If you don't mind, start good night"
+    - 'Activate good night script'
+    - 'Flip on good night'
+    - 'Hey, execute good night routine'
+    - 'Trigger good night script now'
+-
+  name: leaving_home
+  conditions:
+    -
+      type: action
+      entity_id: script.leaving_home
+  sentences:
+    - 'run leaving home script'
+    - 'please execute the leaving home script for me'
+    - "if you don't mind, could you start script.leaving_home"
+    - 'flick on the leaving home script'
+    - 'flip on leaving home'
+    - 'activate leaving home script please'
+    - "start the leaving home script if you don't mind"
+    - 'run script.leaving_home now'

@@ -1,0 +1,14 @@
+-
+  name: media_player_loft_tv_get_status
+  conditions:
+    -
+      type: query
+      entity_id: media_player.loft_tv
+  sentences:
+    - "What's the status of the Loft TV?"
+    - 'media player loft tv state'
+    - 'please check the loft tv for me'
+    - "if you don't mind, what's the current state of the loft tv"
+    - 'loft tv status please'
+    - 'can you tell me about the loft tv'
+    - "what's playing on the loft tv right now"

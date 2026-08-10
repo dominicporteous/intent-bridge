@@ -1,0 +1,28 @@
+-
+  name: light_garage_light_get_status
+  conditions:
+    -
+      type: query
+      entity_id: light.garage_light
+  sentences:
+    - "What's the status of the garage light?"
+    - 'Garage light state please'
+    - "If you don't mind, can you check the garage light for me?"
+    - 'Tell me if garage light is on or off'
+    - 'Current state of light.garage_light'
+    - 'Please check garage light status'
+    - 'Garage light on or off?'
+-
+  name: light_garage_light_get_brightness
+  conditions:
+    -
+      type: query
+      entity_id: light.garage_light
+  sentences:
+    - "What's the brightness of the garage light?"
+    - 'Tell me how bright the garage light is'
+    - 'Please check the brightness level of the garage light for me'
+    - "If you don't mind, what's the current brightness setting on the garage light?"
+    - 'Garage light brightness'
+    - 'Can you tell me the brightness of the garage light please'
+    - "What's the intensity level of the garage light right now"

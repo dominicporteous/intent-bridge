@@ -1,0 +1,32 @@
+-
+  name: upper_bath_switchs_turn_on
+  conditions:
+    -
+      type: action
+      area: upper_bath
+      domain: switch
+      state: 'on'
+  sentences:
+    - 'Turn on the upper bath switches'
+    - 'Flick on the switches in the upper bath'
+    - 'Please flip on the upper bath switches for me'
+    - "If you don't mind, turn on the upper bathroom switches"
+    - 'Activate the switches upstairs in the bath'
+    - 'Could you switch on the upper bath switches please'
+    - 'Flip on the switches in the upstairs bathroom if you would'
+-
+  name: upper_bath_switchs_turn_off
+  conditions:
+    -
+      type: action
+      area: upper_bath
+      domain: switch
+      state: 'off'
+  sentences:
+    - 'Turn off the upper bath switches'
+    - 'Please switch off the upper bathroom switches for me'
+    - 'Flick off the switches in the upper bath'
+    - "If you don't mind, flip off the upper bath switches"
+    - 'Deactivate the switches upstairs in the bathroom'
+    - 'Shut off the upper bath switches please'
+    - 'Could you turn off the switches in the upper bathroom'

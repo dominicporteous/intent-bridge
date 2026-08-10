@@ -1,0 +1,102 @@
+-
+  name: cover_living_blinds_open
+  setup:
+    -
+      entity_id: cover.living_blinds
+      state: closed
+  conditions:
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: open
+  sentences:
+    -
+      - "What's the status of the living room blinds?"
+      - 'Open them please.'
+    -
+      - 'Can you tell me if the living room blinds are open?'
+      - "Flick them open if you don't mind."
+    -
+      - 'Living room blinds status?'
+      - 'Flip them on for me.'
+    -
+      - 'Are the living room blinds closed right now?'
+      - 'Please open them.'
+    -
+      - 'Check the living room blinds state.'
+      - 'Open them up.'
+    -
+      - "What's going on with the living room blinds?"
+      - "If you don't mind, open them for me."
+    -
+      - 'Living room blinds report?'
+      - 'Quickly open them.'
+-
+  name: cover_living_blinds_close
+  setup:
+    -
+      entity_id: cover.living_blinds
+      state: open
+  conditions:
+    -
+      type: action
+      entity_id: cover.living_blinds
+      state: closed
+  sentences:
+    -
+      - "What's the status of the living room blinds?"
+      - 'Close them.'
+    -
+      - 'Can you tell me if the living room blinds are open?'
+      - 'Please shut them for me.'
+    -
+      - 'Living room blinds status?'
+      - 'Flick them closed.'
+    -
+      - "If you don't mind, what's the living room blinds state?"
+      - 'Flip them shut.'
+    -
+      - 'Are the living room blinds up or down?'
+      - "Close them if you don't mind."
+    -
+      - 'Quick check on living room blinds?'
+      - 'Shut them.'
+    -
+      - 'Tell me the living room blinds status please.'
+      - 'Close them for me.'
+-
+  name: cover_living_blinds_persistance_position
+  setup:
+    -
+      entity_id: cover.living_blinds
+      position: 29
+  conditions:
+    -
+      entity_id: cover.living_blinds
+      attributes:
+        position: 57
+  sentences:
+    -
+      - "What's the position of the living room blinds?"
+      - 'Set them to 57.'
+    -
+      - 'Can you tell me where the living room blinds are at?'
+      - 'Please change that to 57 for me.'
+    -
+      - 'Living room blinds position?'
+      - 'Adjust to 57.'
+    -
+      - "If you don't mind, what's the status of the living room blinds?"
+      - 'Set the position to 57 please.'
+    -
+      - 'Tell me the living room blinds position.'
+      - 'Change it to 57.'
+    -
+      - 'Could you check the living room blinds for me?'
+      - "Adjust them to 57 if you don't mind."
+    -
+      - 'Living room blinds status please?'
+      - 'Set to 57.'
+    -
+      - "What's the living room blinds at right now?"
+      - 'Please change that to 57.'

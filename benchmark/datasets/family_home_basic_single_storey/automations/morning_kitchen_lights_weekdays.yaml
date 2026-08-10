@@ -1,0 +1,14 @@
+name: morning_kitchen_lights_weekdays
+sentences:
+- Create an automation to turn on the kitchen ceiling light at 7am on weekdays
+- Set up a weekday morning rule at seven to switch on the kitchen ceiling light
+- Make an automation that turns the kitchen ceiling on at 7am Monday to Friday
+- Automate the kitchen ceiling light to come on at 7 every weekday morning
+- Can you set up the kitchen ceiling to turn on automatically at 7am on weekdays
+expected:
+  trigger:
+    platform: time
+    at: 07:00:00
+  actions:
+  - action: light.turn_on
+    entity_id: light.kitchen_ceiling

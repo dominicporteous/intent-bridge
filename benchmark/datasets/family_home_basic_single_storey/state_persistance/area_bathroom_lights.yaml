@@ -1,0 +1,35 @@
+-
+  name: bathroom_lights_set_brightness
+  setup:
+    -
+      entity_id: light.bathroom_light
+      brightness: 47
+  conditions:
+    -
+      entity_id: light.bathroom_light
+      brightness: 80
+  sentences:
+    -
+      - "What's the brightness of the bathroom lights?"
+      - 'Set it to 80.'
+    -
+      - 'Can you tell me the current brightness in the bathroom?'
+      - 'Please change it to 80 for me.'
+    -
+      - 'How bright are the lights in the bathroom right now?'
+      - "If you don't mind, make it 80."
+    -
+      - 'Bathroom light brightness?'
+      - 'Flick it up to 80.'
+    -
+      - "Tell me the bathroom lights' brightness level."
+      - 'Flip it to 80 please.'
+    -
+      - "What's the brightness setting for the bathroom?"
+      - 'Adjust it to 80 if you could.'
+    -
+      - 'How bright is the bathroom right now?'
+      - 'Set it around 80.'
+    -
+      - 'Bathroom brightness check?'
+      - 'Quickly set to 80.'

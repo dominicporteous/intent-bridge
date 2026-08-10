@@ -1,0 +1,102 @@
+-
+  name: light_kitchen_ceiling_lights_turn_on
+  setup:
+    -
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+  sentences:
+    -
+      - "What's the status of the kitchen light?"
+      - 'Please turn it on for me.'
+    -
+      - 'Is the kitchen light on or off?'
+      - 'Flick it on.'
+    -
+      - 'Can you check the kitchen light?'
+      - "If you don't mind, flip it on."
+    -
+      - 'Tell me the kitchen light state.'
+      - 'Go ahead and switch it on.'
+    -
+      - 'How is the kitchen light doing?'
+      - 'Turn it on please.'
+    -
+      - 'Kitchen light status?'
+      - 'Just turn it on.'
+    -
+      - "What's up with the kitchen light?"
+      - "If it's off, flick it on for me."
+-
+  name: light_kitchen_ceiling_lights_turn_off
+  setup:
+    -
+      entity_id: light.kitchen_ceiling_lights
+      state: 'on'
+  conditions:
+    -
+      type: action
+      entity_id: light.kitchen_ceiling_lights
+      state: 'off'
+  sentences:
+    -
+      - "What's the status of the kitchen light?"
+      - 'Please turn it off for me.'
+    -
+      - 'Is the kitchen light on?'
+      - 'Flick it off.'
+    -
+      - 'Can you check the kitchen light?'
+      - "If you don't mind, flip it off."
+    -
+      - 'Tell me about the kitchen light state.'
+      - 'Quickly turn it off.'
+    -
+      - 'Kitchen light status?'
+      - 'Switch it off now.'
+    -
+      - "How's the kitchen light doing?"
+      - 'Please shut it off.'
+    -
+      - 'Report on the kitchen light.'
+      - 'Turn it off for me.'
+-
+  name: light_kitchen_ceiling_lights_persistance_brightness
+  setup:
+    -
+      entity_id: light.kitchen_ceiling_lights
+      brightness: 67
+  conditions:
+    -
+      entity_id: light.kitchen_ceiling_lights
+      attributes:
+        brightness: 31
+  sentences:
+    -
+      - "What's the brightness of the ceiling lights?"
+      - 'Set it to 31.'
+    -
+      - 'How bright are the kitchen ceiling lights right now?'
+      - 'Please change it to 31 for me.'
+    -
+      - 'Tell me the current brightness level of the ceiling lights.'
+      - "Adjust it to 31 if you don't mind."
+    -
+      - 'Ceiling lights brightness?'
+      - 'Make it 31.'
+    -
+      - "What's the brightness setting on the kitchen ceiling lights?"
+      - 'Turn it up to 31.'
+    -
+      - 'How bright is the ceiling light in the kitchen?'
+      - 'Change it to 31 please.'
+    -
+      - 'Current brightness of the ceiling lights?'
+      - 'Set brightness to 31.'
+    -
+      - 'Brightness level for the kitchen ceiling lights?'
+      - 'Adjust brightness to 31 for me.'

@@ -1,0 +1,63 @@
+-
+  name: light_living_lamp_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: light.living_lamp
+      state: 'on'
+  sentences:
+    - 'Turn on the living room lamp'
+    - 'Flick on the living lamp'
+    - 'Please flip on the living room lamp for me' # Changed from: Please flip on the living room light for me
+    - "If you don't mind, could you turn on the living lamp"
+    - 'Activate living room lamp'
+    - 'Switch on the living lamp please'
+    - 'Hey, turn on the living room lamp' # Changed from: Hey, turn on the living room light
+    - 'Can you flip on the living lamp for me'
+-
+  name: light_living_lamp_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: light.living_lamp
+      state: 'off'
+  sentences:
+    - 'Turn off the living room lamp'
+    - 'Please switch off the living lamp for me'
+    - "Flick off the living room lamp if you don't mind" # Changed from: Flick off the living room light if you don't mind
+    - 'Flip off the living lamp'
+    - 'Could you turn off the living room lamp please'
+    - 'Deactivate the living lamp'
+    - 'Kill the living room lamp for me' # Changed from: Kill the living room light for me
+-
+  name: light_living_lamp_change_brightness
+  conditions:
+    -
+      type: action
+      entity_id: light.living_lamp
+      attributes:
+        brightness: 44
+  sentences:
+    - 'Set the living room lamp to 44 percent brightness'
+    - 'Please turn the living lamp down to 44 for me'
+    - "If you don't mind, flick the living room lamp to 44" # Changed from: If you don't mind, flick the living room light to 44
+    - 'Quickly dim living lamp to 44%'
+    - 'Flip living room lamp brightness to 44'
+    - 'Change living lamp to 44 brightness please'
+    - 'Set living room lamp to 44 if you could' # Changed from: Set living room light to 44 if you could
+-
+  name: light_living_lamp_change_color
+  conditions:
+    -
+      type: action
+      entity_id: light.living_lamp
+      attributes:
+        color: white
+  sentences:
+    - 'Turn the living room lamp white'
+    - 'Set living lamp to white'
+    - 'Please change the living room lamp to white for me' # Changed from: Please change the living room light to white for me
+    - "If you don't mind, flip the living lamp to white"
+    - 'Make the living room lamp white'
+    - 'Quickly set living lamp color to white'
+    - 'Flick the living room lamp to white please' # Changed from: Flick the living room light to white please

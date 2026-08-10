@@ -1,0 +1,65 @@
+-
+  name: bedroom_3_lights_turn_on
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'on'
+  sentences:
+    - 'Turn on the lights in bedroom 3'
+    - 'Flick on bedroom 3 lights'
+    - 'Please flip on the lights in bedroom 3 for me'
+    - "If you don't mind, turn on bedroom 3 lights"
+    - 'Activate the bedroom 3 lighting'
+    - 'Switch on bedroom 3 lights please'
+    - 'Could you turn on the lights in bedroom 3'
+-
+  name: bedroom_3_lights_turn_off
+  conditions:
+    -
+      type: action
+      area: bedroom_3
+      domain: light
+      state: 'off'
+  sentences:
+    - 'Turn off the lights in bedroom 3'
+    - 'Please switch off bedroom three lights for me'
+    - "If you don't mind, flick off the lights in bedroom 3"
+    - 'Kill the lights in bedroom 3'
+    - 'Could you flip off bedroom three lights please'
+    - 'Deactivate the bedroom 3 lighting'
+    - "Turn off bedroom three lights if you don't mind"
+-
+  name: bedroom_3_lights_change_brightness
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        brightness: 53
+  sentences:
+    - 'Set bedroom 3 lights to 53 percent'
+    - 'Please dim the bedroom 3 lights to 53 for me'
+    - "If you don't mind, flick the bedroom 3 lights down to 53"
+    - 'Quickly adjust bedroom 3 brightness to 53%'
+    - 'Flip bedroom 3 lights to 53 brightness'
+    - 'Could you set the bedroom 3 lights at 53 please'
+    - 'Turn bedroom 3 lights down to 53 percent'
+    - 'Make bedroom 3 lights 53 brightness'
+-
+  name: bedroom_3_lights_change_color
+  conditions:
+    -
+      area: bedroom_3
+      domain: light
+      attributes:
+        color: purple
+  sentences:
+    - 'Change bedroom 3 lights to purple'
+    - 'Please set the bedroom 3 lights to purple for me'
+    - "Flick bedroom 3 lights purple if you don't mind"
+    - 'Flip bedroom 3 lights to purple now'
+    - 'Make bedroom 3 lights purple please'
+    - 'Turn bedroom 3 lights purple'
+    - 'Set bedroom 3 lights to purple color'

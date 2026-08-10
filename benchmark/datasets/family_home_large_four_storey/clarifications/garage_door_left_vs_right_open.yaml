@@ -1,0 +1,17 @@
+name: garage_door_left_vs_right_open
+conditions:
+- type: action
+  entity_id: cover.garage_door_left
+  state: open
+- type: action
+  entity_id: cover.garage_door_right
+  state: closed
+sentences:
+- - open the garage door
+  - left one
+- - can you open the garage door
+  - left door please
+- - open up the garage door
+  - the left
+- - garage door open
+  - left side

@@ -1,0 +1,14 @@
+-
+  name: media_player_theater_receiver_get_status
+  conditions:
+    -
+      type: query
+      entity_id: media_player.theater_receiver
+  sentences:
+    - "What's the status of the AV receiver in the home theater?"
+    - 'Check the media player theater receiver state'
+    - "Please tell me the current state of the AV receiver if you don't mind"
+    - 'AV receiver status in home_theater'
+    - 'Could you get the state of the media player theater receiver for me'
+    - 'home_theater AV receiver current state'
+    - "What's going on with the theater receiver right now"

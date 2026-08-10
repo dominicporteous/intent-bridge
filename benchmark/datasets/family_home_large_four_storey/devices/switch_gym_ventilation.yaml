@@ -1,0 +1,31 @@
+-
+  name: switch_gym_ventilation_turn_on
+  conditions:
+    -
+      type: action
+      entity_id: switch.gym_ventilation
+      state: 'on'
+  sentences:
+    - 'Turn on the gym ventilation'
+    - 'Flick on gym ventilation'
+    - 'Please turn on the gym ventilation for me'
+    - "If you don't mind, flip on the gym ventilation"
+    - 'Activate gym ventilation'
+    - 'Switch on the ventilation in the gym'
+    - 'Can you turn on gym ventilation please'
+-
+  name: switch_gym_ventilation_turn_off
+  conditions:
+    -
+      type: action
+      entity_id: switch.gym_ventilation
+      state: 'off'
+  sentences:
+    - 'Turn off the gym ventilation'
+    - 'Please switch off the gym ventilation for me'
+    - 'Flick off the ventilation in the gym'
+    - "If you don't mind, turn off the gym ventilation"
+    - 'Deactivate the gym ventilation'
+    - 'Flip off the ventilation switch in the gym'
+    - 'Could you please shut off the gym ventilation'
+    - 'Kill the gym ventilation'

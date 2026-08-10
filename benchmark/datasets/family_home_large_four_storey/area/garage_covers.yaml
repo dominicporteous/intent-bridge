@@ -1,0 +1,48 @@
+-
+  name: garage_covers_open
+  conditions:
+    -
+      type: action
+      area: garage
+      domain: cover
+      state: open
+  sentences:
+    - 'Open the garage windows'
+    - 'Please open the garage blinds for me'
+    - "If you don't mind, could you flick open the garage curtains"
+    - 'Flip on the garage windows'
+    - 'Quickly open the garage blinds'
+    - 'Turn on the garage curtains if possible'
+    - 'Open up the garage windows please'
+-
+  name: garage_covers_close
+  conditions:
+    -
+      type: action
+      area: garage
+      domain: cover
+      state: closed
+  sentences:
+    - 'Close the garage windows'
+    - 'Shut the blinds in the garage please'
+    - "If you don't mind, close the curtains for me"
+    - 'Flick the garage blinds closed'
+    - 'Please shut the garage curtains'
+    - "Close the garage windows if you don't mind"
+    - 'Flip the blinds shut in the garage'
+-
+  name: garage_covers_set_position
+  conditions:
+    -
+      area: garage
+      domain: cover
+      attributes:
+        position: 37
+  sentences:
+    - 'Set the garage blinds to 37 percent'
+    - "Please adjust the garage curtains to 37 if you don't mind"
+    - 'Flick the garage windows to position 37'
+    - 'Could you set the garage blinds to 37 for me'
+    - 'Garage curtains position 37 now'
+    - 'Move the garage windows to 37 percent please'
+    - 'Set garage blinds at 37'

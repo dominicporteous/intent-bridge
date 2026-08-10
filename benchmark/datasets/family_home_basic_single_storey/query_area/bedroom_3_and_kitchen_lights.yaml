@@ -1,0 +1,78 @@
+-
+  name: bedroom_3_and_kitchen_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen status'
+    - 'please check the lights for me in bedroom 3 and kitchen'
+    - "if you don't mind, could you tell me the light states in bedroom 3 and kitchen"
+    - 'bedroom 3 kitchen lights state'
+    - 'get me the current light status bedroom 3 kitchen'
+    - 'lights status bedroom 3 kitchen please'
+-
+  name: bedroom_3_and_kitchen_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen state'
+    - "please tell me the current light status for bedroom 3 and kitchen if you don't mind"
+    - 'get light states bedroom 3 kitchen'
+    - 'could you check the lights in bedroom 3 and the kitchen for me'
+    - 'bedroom 3 kitchen lights status please'
+    - 'report current lighting conditions bedroom 3 kitchen'
+-
+  name: bedroom_3_and_kitchen_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen state'
+    - "please tell me the current state of the lights in bedroom 3 and kitchen if you don't mind"
+    - 'get light status bedroom 3 kitchen'
+    - 'could you check the lights in bedroom 3 and kitchen for me'
+    - 'bedroom 3 kitchen lights current state'
+    - "if you could, what's the light status in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen'
+-
+  name: bedroom_3_and_kitchen_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: kitchen
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen status'
+    - "please tell me the current state of the lights in bedroom 3 and kitchen if you don't mind"
+    - 'get light states bedroom 3 kitchen'
+    - 'could you check the lights in bedroom 3 and kitchen for me'
+    - 'bedroom 3 kitchen lights state'
+    - "if you wouldn't mind, what's the light status in bedroom 3 and kitchen"
+    - 'lights bedroom 3 kitchen current state'

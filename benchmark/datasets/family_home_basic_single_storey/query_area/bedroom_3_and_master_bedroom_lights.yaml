@@ -1,0 +1,77 @@
+-
+  name: bedroom_3_and_master_bedroom_lights_get_state
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and master bedroom"
+    - 'lights bedroom 3 master bedroom state'
+    - "please tell me the current light status for bedroom 3 and master bedroom if you don't mind"
+    - 'get light states bedroom 3 master'
+    - 'could you check the lights in bedroom 3 and the master bedroom for me'
+    - 'bedroom 3 master bedroom lights current state'
+    - 'lights status bedroom 3 master bedroom please'
+-
+  name: bedroom_3_and_master_bedroom_lights_list_on_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and master bedroom"
+    - 'lights bedroom 3 master bedroom state'
+    - "please tell me the current light status for bedroom 3 and master bedroom if you don't mind"
+    - 'get light states bedroom 3 master'
+    - 'could you check the lights in bedroom 3 and the master bedroom for me'
+    - 'bedroom 3 master bedroom lights status'
+    - 'report lighting state bedroom 3 master bedroom'
+    - "what's the light situation in bedroom 3 and master bedroom"
+-
+  name: bedroom_3_and_master_bedroom_lights_list_off_lights
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and master bedroom"
+    - 'Get light states for bedroom 3 and master bedroom'
+    - 'Please check the lights in bedroom 3 and master bedroom for me'
+    - "If you don't mind, could you tell me the current state of lights in bedroom 3 and master bedroom"
+    - 'Lights bedroom 3 master bedroom status'
+    - 'Report light status bedroom 3 and master bedroom'
+    - 'Can you show me the lights state in bedroom 3 and master bedroom please'
+-
+  name: bedroom_3_and_master_bedroom_lights_get_brightness
+  conditions:
+    -
+      type: query
+      area: bedroom_3
+      domain: light
+    -
+      type: query
+      area: master_bedroom
+      domain: light
+  sentences:
+    - "What's the status of the lights in bedroom 3 and master bedroom"
+    - 'lights bedroom 3 master bedroom state'
+    - "please tell me the current light status for bedroom 3 and master bedroom if you don't mind"
+    - 'get light states bedroom 3 master'
+    - 'could you check the lights in bedroom 3 and master bedroom for me'
+    - 'bedroom 3 master bedroom lights status'
+    - 'show me the light states for bedroom 3 and master bedroom please'
