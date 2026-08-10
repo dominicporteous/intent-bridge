@@ -127,6 +127,71 @@ def test_multiple_requested_quantities_produce_ordered_direct_readings(
     ]
 
 
+def test_shared_measurement_query_resolves_each_named_sensor_independently():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity(
+                "sensor.indoor_temperature",
+                "Indoor Sensor",
+                (),
+                "sensor",
+                measurements=(_measurement("temperature", "20", "Â°C"),),
+            ),
+            CatalogEntity(
+                "sensor.outdoor_temperature",
+                "Outdoor Sensor",
+                (),
+                "sensor",
+                measurements=(_measurement("temperature", "12", "Â°C"),),
+            ),
+        )
+    )
+
+    plan = MeasurementIntentPlanner().plan(
+        "what are the temperature readings of the indoor sensor and outdoor sensor",
+        catalog,
+    )
+
+    assert [step.entity_ids for step in plan.steps] == [
+        ("sensor.indoor_temperature",),
+        ("sensor.outdoor_temperature",),
+    ]
+    assert {step.effect.property for step in plan.steps if step.effect} == {"temperature"}
+
+
+def test_shared_measurement_query_resolves_multiple_areas_independently():
+    catalog = CatalogSnapshot(
+        areas=(CatalogArea("kitchen", "Kitchen"), CatalogArea("bedroom", "Bedroom")),
+        entities=(
+            CatalogEntity(
+                "sensor.kitchen_temperature",
+                "Kitchen Temperature",
+                (),
+                "sensor",
+                "kitchen",
+                measurements=(_measurement("temperature", "21", "Â°C"),),
+            ),
+            CatalogEntity(
+                "sensor.bedroom_temperature",
+                "Bedroom Temperature",
+                (),
+                "sensor",
+                "bedroom",
+                measurements=(_measurement("temperature", "19", "Â°C"),),
+            ),
+        ),
+    )
+
+    plan = MeasurementIntentPlanner().plan(
+        "what is the temperature in the kitchen and bedroom", catalog
+    )
+
+    assert [step.entity_ids for step in plan.steps] == [
+        ("sensor.kitchen_temperature",),
+        ("sensor.bedroom_temperature",),
+    ]
+
+
 @pytest.mark.parametrize(
     ("text", "entity_id", "quantity"),
     [
@@ -288,6 +353,15 @@ def test_measurement_planner_declines_mutating_requests(bedroom_measurements):
             "set the bedroom temperature to 21",
             bedroom_measurements,
         )
+
+
+def test_polite_modal_prefix_is_still_a_measurement_query(bedroom_measurements):
+    plan = MeasurementIntentPlanner().plan(
+        "Can you tell me the bedroom temperature?",
+        bedroom_measurements,
+    )
+
+    assert plan.steps[0].entity_ids == ("sensor.bedroom_climate_temperature",)
 
 
 @dataclass

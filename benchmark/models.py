@@ -187,8 +187,52 @@ class BenchmarkCorpus:
 
 @dataclass(frozen=True, slots=True)
 class BenchmarkResult:
+    """Observable effects, including their conversation-time provenance.
+
+    ``operations`` is the compatibility/evaluation view: every mutation in
+    the conversation plus observations made on the final turn.  Earlier
+    observations remain available in ``turn_operations`` but are explicitly
+    treated as setup observations by corpora whose expectation describes the
+    final turn.  ``mutation_ledger`` deliberately preserves duplicates: two
+    identical commands on different turns are two safety-relevant effects.
+    """
+
     operations: tuple[Operation, ...]
     response: str = ""
+    turn_operations: tuple[tuple[Operation, ...], ...] = ()
+    mutation_ledger: tuple[Operation, ...] = ()
+    ignored_setup_observations: tuple[Operation, ...] = ()
+
+    @classmethod
+    def from_turn_operations(
+        cls,
+        turn_operations: Sequence[Sequence[Operation]],
+        *,
+        response: str = "",
+    ) -> BenchmarkResult:
+        turns = tuple(tuple(operations) for operations in turn_operations)
+        mutations = tuple(
+            operation
+            for operations in turns
+            for operation in operations
+            if operation.kind != "query"
+        )
+        final_observations = tuple(
+            operation for operation in (turns[-1] if turns else ()) if operation.kind == "query"
+        )
+        setup_observations = tuple(
+            operation
+            for operations in turns[:-1]
+            for operation in operations
+            if operation.kind == "query"
+        )
+        return cls(
+            operations=(*mutations, *final_observations),
+            response=response,
+            turn_operations=turns,
+            mutation_ledger=mutations,
+            ignored_setup_observations=setup_observations,
+        )
 
 
 class BenchmarkMatcher(Protocol):

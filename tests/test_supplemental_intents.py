@@ -12,6 +12,7 @@ from intent_bridge.intent_engine.models import (
     IntentPlan,
     OhfIntentCall,
     PlannedIntent,
+    semantic_effect_for_call,
 )
 from intent_bridge.intent_engine.supplemental import (
     DialogueState,
@@ -111,11 +112,13 @@ def test_timer_planning_uses_named_and_active_timer_context(catalog):
     )
     paused = planner.plan("Freeze the laundry timer", catalog)
 
+    started_call = OhfIntentCall(
+        "HassStartTimer", {"name": "Oven", "minutes": 2, "seconds": 30}
+    )
     assert started.steps[0] == PlannedIntent(
-        call=OhfIntentCall(
-            "HassStartTimer", {"name": "Oven", "minutes": 2, "seconds": 30}
-        ),
+        call=started_call,
         entity_ids=("timer.oven",),
+        effect=semantic_effect_for_call(started_call),
     )
     assert increased.steps[0].call == OhfIntentCall(
         "HassIncreaseTimer", {"name": "Laundry", "minutes": 5}
@@ -270,9 +273,11 @@ def test_dialogue_qualifier_repeats_prior_multi_entity_intent(catalog):
     second = session.plan_turn("The left one", lamp_catalog)
 
     assert first.state.referent_intent_name == "HassTurnOff"
+    qualifier_call = OhfIntentCall("HassTurnOff", {"name": "Left Bedside Lamp"})
     assert second.plan.steps[0] == PlannedIntent(
-        OhfIntentCall("HassTurnOff", {"name": "Left Bedside Lamp"}),
+        qualifier_call,
         ("light.left_bedside",),
+        effect=semantic_effect_for_call(qualifier_call),
     )
 
 

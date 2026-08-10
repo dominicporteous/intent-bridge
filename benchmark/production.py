@@ -280,6 +280,54 @@ def _expand_script(home: Home, entity_id: str) -> tuple[Operation, ...]:
     return tuple(operations)
 
 
+def expand_static_invocation(
+    home: Home,
+    entity_id: str,
+    *,
+    _visited: frozenset[str] = frozenset(),
+) -> tuple[Operation, ...]:
+    """Return the statically configured effects of a scene or script invocation.
+
+    Home Assistant performs these effects itself in production.  Fixture-backed
+    execution has no HA automation engine, so the benchmark must interpret the
+    same declarative definitions.  Unknown and cyclic invocations remain
+    observable as invocation operations instead of silently disappearing.
+    """
+
+    domain = entity_id.partition(".")[0]
+    invocation = _state_operation((entity_id,), None, payload={"invoked": True})
+    if domain not in {"scene", "script"} or entity_id in _visited:
+        return (invocation,)
+
+    visited = _visited | {entity_id}
+    if domain == "scene":
+        effects = _expand_scene(home, entity_id)
+    else:
+        effects = _expand_script(home, entity_id)
+    if not effects:
+        return (invocation,)
+
+    expanded: list[Operation] = []
+    for effect in effects:
+        nested_ids = tuple(
+            nested_id
+            for nested_id in effect.entity_ids
+            if nested_id.partition(".")[0] in {"scene", "script"}
+        )
+        ordinary_ids = tuple(
+            nested_id for nested_id in effect.entity_ids if nested_id not in nested_ids
+        )
+        if ordinary_ids:
+            expanded.append(
+                _state_operation(ordinary_ids, effect.state, payload=effect.payload)
+            )
+        for nested_id in nested_ids:
+            expanded.extend(
+                expand_static_invocation(home, nested_id, _visited=visited)
+            )
+    return tuple(expanded) or (invocation,)
+
+
 def _resolve_domain(step: PlannedIntent, home: Home) -> str:
     if value := step.call.data.get("domain"):
         return str(value)
@@ -402,17 +450,11 @@ def _step_operations(
     domain = _resolve_domain(step, home)
 
     if intent in {"HassTurnOn", "HassTurnOff"}:
-        if domain == "scene":
+        if domain in {"scene", "script"} and intent == "HassTurnOn":
             return tuple(
                 operation
                 for entity_id in entity_ids
-                for operation in _expand_scene(home, entity_id)
-            )
-        if domain == "script":
-            return tuple(
-                operation
-                for entity_id in entity_ids
-                for operation in _expand_script(home, entity_id)
+                for operation in expand_static_invocation(home, entity_id)
             )
         return (_state_operation(entity_ids, _state_for_activation(intent, domain)),)
 

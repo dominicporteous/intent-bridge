@@ -90,18 +90,76 @@ class PlannedReading:
 
 
 @dataclass(frozen=True, slots=True)
+class SemanticEffect:
+    """Provider-neutral meaning retained independently of an HA transport call."""
+
+    speech_act: str
+    property: str
+    operator: str
+    value: Any = None
+    explicit_power_transition: bool = False
+
+
+# ``RequestedEffect`` is the public vocabulary for command semantics.  Keep the
+# older name as the concrete class so dialogue-state callers introduced before
+# this name remain source and pickle compatible.
+RequestedEffect = SemanticEffect
+
+
+def semantic_effect_for_call(call: OhfIntentCall) -> SemanticEffect:
+    """Describe an OHF call without importing Home Assistant service semantics."""
+
+    intent = call.intent_name
+    data = call.data
+    if intent in {"HassGetState", "HassClimateGetTemperature"}:
+        property_name = "temperature" if intent == "HassClimateGetTemperature" else "state"
+        return SemanticEffect("query", property_name, "read")
+    if intent in {"HassTurnOn", "HassTurnOff"}:
+        return SemanticEffect(
+            "command",
+            "power",
+            "set",
+            intent == "HassTurnOn",
+            explicit_power_transition=True,
+        )
+    property_by_intent = {
+        "HassClimateSetTemperature": "temperature",
+        "HassFanSetSpeed": "percentage",
+        "HassLightSet": next(
+            (
+                key
+                for key in ("brightness", "color", "color_temp", "temperature")
+                if key in data
+            ),
+            "light_attribute",
+        ),
+        "HassSetPosition": "position",
+        "HassSetVolume": "volume_level",
+    }
+    property_name = property_by_intent.get(intent, "operation")
+    return SemanticEffect("command", property_name, "set", data.get(property_name))
+
+
+@dataclass(frozen=True, slots=True)
 class PlannedIntent:
     """One resolved, side-effect-free operation in an intent plan."""
 
     call: OhfIntentCall
     entity_ids: tuple[str, ...] = ()
     reading: PlannedReading | None = None
+    effect: SemanticEffect | None = None
 
     @property
     def operation(self) -> str:
         """Return the canonical OHF operation name."""
 
         return self.call.intent_name
+
+    @property
+    def requested_effect(self) -> RequestedEffect | None:
+        """The requested meaning, independent of the provider transport."""
+
+        return self.effect
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,5 +188,8 @@ __all__ = [
     "OhfIntentCall",
     "PlannedIntent",
     "PlannedReading",
+    "RequestedEffect",
+    "SemanticEffect",
     "SlotValue",
+    "semantic_effect_for_call",
 ]

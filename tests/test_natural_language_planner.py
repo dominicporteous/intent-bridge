@@ -45,6 +45,7 @@ def catalog() -> CatalogSnapshot:
             CatalogArea("bedroom", "Bedroom", floor_id="upstairs"),
             CatalogArea("entry", "Entryway", floor_id="ground"),
             CatalogArea("backyard", "Backyard", floor_id="ground"),
+            CatalogArea("bathroom", "Bathroom", floor_id="ground"),
         ),
         floors=(
             CatalogFloor("ground", "Ground Floor", aliases=("Downstairs",)),
@@ -68,15 +69,22 @@ def catalog() -> CatalogSnapshot:
             _entity("sensor.living_temperature", "Living Temperature Sensor", "living"),
             _entity("scene.movie_night", "Movie Night", "living"),
             _entity("script.leaving_home", "Leaving Home", "entry"),
-            _entity("switch.bathroom_fan", "Bathroom Fan", "living"),
+            _entity(
+                "switch.bathroom_fan",
+                "Bathroom Fan",
+                "bathroom",
+                aliases=("Bathroom Exhaust Fan",),
+            ),
+            _entity("light.bathroom_mirror", "Mirror Light", "bathroom"),
+            _entity("switch.bathroom_wall", "Wall Switch", "bathroom"),
+            _entity("switch.coffee_maker", "Coffee Maker", "kitchen"),
             _entity("light.backyard", "Backyard Lights", "backyard"),
         ),
     )
 
 
-@pytest.mark.parametrize("noun", ["light", "lights"])
-def test_area_singular_and_plural_resolve_same_group(catalog, noun):
-    plan = NaturalLanguageIntentPlanner().plan(f"please turn the kitchen {noun} off", catalog)
+def test_plural_area_target_resolves_group(catalog):
+    plan = NaturalLanguageIntentPlanner().plan("please turn the kitchen lights off", catalog)
 
     assert len(plan.steps) == 1
     assert plan.steps[0].operation == "HassTurnOff"
@@ -85,6 +93,13 @@ def test_area_singular_and_plural_resolve_same_group(catalog, noun):
         "light.kitchen_ceiling",
         "light.kitchen_counter",
     )
+
+
+def test_singular_area_target_requires_clarification_when_multiple_entities_exist(catalog):
+    plan = NaturalLanguageIntentPlanner().plan("please turn the kitchen light off", catalog)
+
+    assert plan.steps == ()
+    assert plan.response == "I found more than one possible target. Please be more specific."
 
 
 def test_named_entity_is_more_specific_than_area(catalog):
@@ -97,6 +112,135 @@ def test_named_entity_is_more_specific_than_area(catalog):
         "entity_id": "light.kitchen_ceiling",
     }
     assert plan.steps[0].entity_ids == ("light.kitchen_ceiling",)
+
+
+def test_shared_power_predicate_distributes_over_cross_domain_targets(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "turn on the bathroom fan and the living room lamp", catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("switch.bathroom_fan",),
+        ("light.living_lamp",),
+    }
+    assert {step.operation for step in plan.steps} == {"HassTurnOn"}
+
+
+def test_shared_query_predicate_distributes_over_cross_domain_targets(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "what is the state of the bathroom fan and the living room lamp", catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("switch.bathroom_fan",),
+        ("light.living_lamp",),
+    }
+    assert {step.operation for step in plan.steps} == {"HassGetState"}
+
+
+@pytest.mark.parametrize(
+    ("text", "operation"),
+    [
+        ("turn on the bathroom exhaust fan and mirror light", "HassTurnOn"),
+        ("what is the status of the mirror light and exhaust fan", "HassGetState"),
+    ],
+)
+def test_shared_predicate_distributes_over_area_scoped_elliptical_names(
+    catalog, text, operation
+):
+    plan = NaturalLanguageIntentPlanner().plan(text, catalog)
+
+    assert [step.operation for step in plan.steps] == [operation, operation]
+    assert {step.entity_ids for step in plan.steps} == {
+        ("switch.bathroom_fan",),
+        ("light.bathroom_mirror",),
+    }
+
+
+def test_homogeneous_coordinated_names_are_independent_targets(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "turn on the kitchen ceiling and counter lights", catalog
+    )
+
+    assert [step.operation for step in plan.steps] == ["HassTurnOn", "HassTurnOn"]
+    assert {step.entity_ids for step in plan.steps} == {
+        ("light.kitchen_ceiling",),
+        ("light.kitchen_counter",),
+    }
+
+
+@pytest.mark.parametrize(
+    ("text", "entity_ids"),
+    [
+        (
+            "turn on the bedroom fan and bathroom wall switch",
+            {("fan.bedroom",), ("switch.bathroom_wall",)},
+        ),
+        (
+            "turn on the bedside lamp and living room tv",
+            {("light.bedside",), ("media_player.living_tv",)},
+        ),
+    ],
+)
+def test_power_coordination_is_not_device_type_specific(catalog, text, entity_ids):
+    plan = NaturalLanguageIntentPlanner().plan(text, catalog)
+
+    assert {step.entity_ids for step in plan.steps} == entity_ids
+    assert {step.operation for step in plan.steps} == {"HassTurnOn"}
+
+
+@pytest.mark.parametrize("verb", ["turn on", "turn off", "deactivate"])
+def test_polymorphic_predicate_does_not_inherit_fan_domain_into_named_switch(catalog, verb):
+    plan = NaturalLanguageIntentPlanner().plan(
+        f"{verb} the bathroom exhaust fan and coffee maker", catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("switch.bathroom_fan",),
+        ("switch.coffee_maker",),
+    }
+
+
+def test_generic_area_member_resolves_the_complete_area_group():
+    local_catalog = CatalogSnapshot(
+        areas=(CatalogArea("kitchen", "Kitchen"), CatalogArea("bathroom", "Bathroom")),
+        entities=(
+            _entity("fan.exhaust", "Exhaust Fan", "bathroom"),
+            _entity("light.ceiling", "Ceiling Lights", "kitchen"),
+            _entity("light.under_cabinet", "Under Cabinet Lights", "kitchen"),
+        ),
+    )
+
+    plan = NaturalLanguageIntentPlanner().plan(
+        "tell me the state of the bathroom exhaust fan and kitchen lights", local_catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("fan.exhaust",),
+        ("light.ceiling", "light.under_cabinet"),
+    }
+
+
+def test_shared_property_update_distributes_when_every_member_is_capable(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "set the kitchen ceiling and counter lights brightness to 20 percent", catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("light.kitchen_ceiling",),
+        ("light.kitchen_counter",),
+    }
+    assert {step.operation for step in plan.steps} == {"HassLightSet"}
+    assert {step.call.data["brightness"] for step in plan.steps} == {20}
+
+
+def test_shared_property_update_rejects_an_incompatible_member(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "set the bedside lamp and living room tv brightness to 20 percent", catalog
+    )
+
+    assert plan.steps == ()
+    assert plan.response == "I found more than one possible target. Please be more specific."
 
 
 @pytest.mark.parametrize(
@@ -167,6 +311,43 @@ def test_numeric_operations(catalog, text, operation, attribute, value, entity_i
     assert step.operation == operation
     assert step.call.data[attribute] == value
     assert step.entity_ids == (entity_id,)
+    assert step.effect is not None
+    assert step.effect.property == attribute
+    assert step.effect.value == value
+    assert step.effect.operator == "set"
+    assert step.effect.explicit_power_transition is False
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Living room lights 27",
+        "Turn living room lights to brightness level 27",
+    ],
+)
+def test_area_brightness_shorthand_is_a_property_only_effect(catalog, text):
+    plan = NaturalLanguageIntentPlanner().plan(text, catalog)
+
+    assert plan.response is None
+    assert len(plan.steps) == 1
+    step = plan.steps[0]
+    assert step.operation == "HassLightSet"
+    assert step.entity_ids == ("light.living_lamp",)
+    assert step.call.data["brightness"] == 27
+    assert step.requested_effect is step.effect
+    assert step.requested_effect.property == "brightness"
+    assert step.requested_effect.value == 27
+    assert step.requested_effect.explicit_power_transition is False
+
+
+def test_explicit_power_command_is_marked_as_a_power_transition(catalog):
+    step = NaturalLanguageIntentPlanner().plan(
+        "turn the living room lights on", catalog
+    ).steps[0]
+
+    assert step.requested_effect.property == "power"
+    assert step.requested_effect.value is True
+    assert step.requested_effect.explicit_power_transition is True
 
 
 @pytest.mark.parametrize(
@@ -397,6 +578,22 @@ def test_temperature_sensor_query_is_not_misclassified_as_thermostat_query(catal
 
     assert step.operation == "HassGetState"
     assert step.entity_ids == ("sensor.living_temperature",)
+
+
+def test_area_temperature_prefers_unique_settable_climate_for_follow_up(catalog):
+    step = NaturalLanguageIntentPlanner().plan(
+        "can you tell me the living room temperature", catalog
+    ).steps[0]
+
+    assert step.operation == "HassClimateGetTemperature"
+    assert step.entity_ids == ("climate.living",)
+
+
+def test_bare_area_domain_phrase_is_an_elliptical_query(catalog):
+    step = NaturalLanguageIntentPlanner().plan("living room climate", catalog).steps[0]
+
+    assert step.operation == "HassClimateGetTemperature"
+    assert step.entity_ids == ("climate.living",)
 
 
 @pytest.mark.parametrize(

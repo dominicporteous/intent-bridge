@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import Mapping
 from typing import Any
 
@@ -13,6 +14,11 @@ from intent_bridge.intent_engine.models import (
     IntentPlan,
     OhfIntentCall,
     PlannedIntent,
+    semantic_effect_for_call,
+)
+from intent_bridge.intent_engine.natural_language import (
+    singular_generic_target,
+    split_compound_request,
 )
 from intent_bridge.intent_engine.ports import (
     CatalogProvider,
@@ -135,9 +141,69 @@ class DeterministicIntentEngine:
         """Recognize and resolve a request without executing any operations."""
 
         catalog = self._catalog_provider.snapshot()
+        clauses = split_compound_request(request.text)
+        if len(clauses) > 1:
+            steps: list[PlannedIntent] = []
+            context = dict(request.origin_context or {})
+            for clause in clauses:
+                clause_request = VoiceRequest(
+                    text=clause,
+                    conversation_key=request.conversation_key,
+                    client_history=request.client_history,
+                    origin_context=context,
+                )
+                clause_plan = self._plan_single(clause_request, catalog)
+                # A compound is one transaction: never execute the clauses that
+                # happened to resolve when another clause still needs clarification.
+                if clause_plan.response is not None:
+                    return IntentPlan(response=clause_plan.response)
+                if not clause_plan.steps:
+                    raise RouteDeclined(f"No deterministic intent matched clause: {clause}")
+                steps.extend(clause_plan.steps)
+                context["last_entity_ids"] = tuple(
+                    dict.fromkeys(
+                        entity_id
+                        for step in clause_plan.steps
+                        for entity_id in step.entity_ids
+                    )
+                )
+            return IntentPlan(steps=tuple(steps))
+
+        return self._plan_single(request, catalog)
+
+    def _plan_single(
+        self,
+        request: VoiceRequest,
+        catalog: CatalogSnapshot,
+    ) -> IntentPlan:
+        """Plan one structural clause using the configured recognizer chain."""
+
+        # Property-bearing language must retain its requested effect before a
+        # broad power grammar can consume words such as ``on`` or ``off``.
+        # This is capability-level precedence, independent of device type.
+        normalized_text = request.text.casefold()
+        property_semantics = bool(
+            re.search(r"\b(?:audio|mute|sound)\b", normalized_text)
+            or (
+                re.search(
+                    r"\b(?:brightness|bright|color|colour|position|speed|"
+                    r"temperature|temp|volume)\b",
+                    normalized_text,
+                )
+                and re.search(
+                    r"\b(?:adjust|change|dim|increase|lower|make|raise|restore|set|turn)\b",
+                    normalized_text,
+                )
+            )
+        )
+        if property_semantics and (
+            semantic := self._try_planner(self._fallback_planner, request, catalog)
+        ):
+            return self._validate_target_cardinality(request.text, semantic, catalog)
+
         preferred = self._try_planner(self._preferred_planner, request, catalog)
         if preferred is not None:
-            return preferred
+            return self._validate_target_cardinality(request.text, preferred, catalog)
 
         matches = self._recognizer.recognize(
             request.text,
@@ -146,7 +212,7 @@ class DeterministicIntentEngine:
         )
         if not matches:
             if fallback := self._try_planner(self._fallback_planner, request, catalog):
-                return fallback
+                return self._validate_target_cardinality(request.text, fallback, catalog)
             raise RouteDeclined("No deterministic intent matched the request")
 
         origin_area = _origin_area(request.origin_context)
@@ -163,7 +229,7 @@ class DeterministicIntentEngine:
         ]
         if not resolved:
             if fallback := self._try_planner(self._fallback_planner, request, catalog):
-                return fallback
+                return self._validate_target_cardinality(request.text, fallback, catalog)
             raise RouteDeclined("No deterministic intent resolved to a catalog target")
 
         by_semantics: dict[tuple[Any, ...], list[ResolvedCandidate]] = {}
@@ -172,20 +238,42 @@ class DeterministicIntentEngine:
 
         if len(by_semantics) != 1:
             if fallback := self._try_planner(self._fallback_planner, request, catalog):
-                return fallback
+                return self._validate_target_cardinality(request.text, fallback, catalog)
             return IntentPlan(response=self._ambiguity_response)
 
         equivalent_candidates = next(iter(by_semantics.values()))
         selected = max(equivalent_candidates, key=lambda candidate: candidate.specificity)
         call = _call_for_match(selected.match, request.origin_context)
-        return IntentPlan(
+        return self._validate_target_cardinality(request.text, IntentPlan(
             steps=(
                 PlannedIntent(
                     call=call,
                     entity_ids=tuple(sorted(selected.entity_ids)),
+                    effect=semantic_effect_for_call(call),
                 ),
             )
-        )
+        ), catalog)
+
+    def _validate_target_cardinality(
+        self,
+        text: str,
+        plan: IntentPlan,
+        catalog: CatalogSnapshot,
+    ) -> IntentPlan:
+        """Prevent a singular generic target from silently becoming a group."""
+
+        if plan.response is not None or len(plan.steps) != 1:
+            return plan
+        step = plan.steps[0]
+        if len(step.entity_ids) < 2:
+            return plan
+        by_id = {entity.entity_id: entity for entity in catalog.entities}
+        domains = {
+            by_id[entity_id].domain for entity_id in step.entity_ids if entity_id in by_id
+        }
+        if len(domains) == 1 and singular_generic_target(text, next(iter(domains))):
+            return IntentPlan(response=self._ambiguity_response)
+        return plan
 
     @staticmethod
     def _try_planner(

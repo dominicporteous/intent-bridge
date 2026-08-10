@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
+from enum import Enum
 from typing import Any
 
 from intent_bridge.core.text import normalize_search_text
@@ -21,6 +22,8 @@ from intent_bridge.intent_engine.models import (
     IntentPlan,
     OhfIntentCall,
     PlannedIntent,
+    SemanticEffect,
+    semantic_effect_for_call,
 )
 from intent_bridge.intent_engine.ports import IntentPlanner
 
@@ -303,11 +306,13 @@ def _action_entities(
 
 
 def _step(intent_name: str, data: Mapping[str, Any], *entity_ids: str) -> IntentPlan:
+    call = OhfIntentCall(intent_name=intent_name, data=dict(data))
     return IntentPlan(
         steps=(
             PlannedIntent(
-                call=OhfIntentCall(intent_name=intent_name, data=dict(data)),
+                call=call,
                 entity_ids=tuple(sorted(set(entity_ids))),
+                effect=semantic_effect_for_call(call),
             ),
         )
     )
@@ -920,14 +925,111 @@ class PendingClarification:
     response: str = "Which one did you mean?"
 
 
+class ReferentCardinality(str, Enum):
+    """The discourse meaning of an entity focus, independent of its size."""
+
+    SINGULAR = "singular"
+    GROUP = "group"
+
+
+@dataclass(frozen=True, slots=True)
+class EntityFocus:
+    """The entity or collection currently at the centre of the dialogue."""
+
+    entity_set: tuple[str, ...] = ()
+    cardinality: ReferentCardinality = ReferentCardinality.SINGULAR
+    selected_member: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PropertyFocus:
+    """The property most recently discussed and the clause that established it."""
+
+    property: str
+    source_clause: str
+
+
+@dataclass(frozen=True, slots=True)
+class DiscourseCondition:
+    """A condition guarding an operation in a conversational follow-up."""
+
+    property: str
+    operator: str
+    value: Any
+    target_frame_id: str | None = None
+    source_clause: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class DiscourseOperationFrame:
+    """One clause-level operation and the targets resolved for that clause."""
+
+    frame_id: str
+    predicate: str
+    resolved_targets: tuple[str, ...]
+    data: Mapping[str, Any] = field(default_factory=dict)
+    effect: SemanticEffect | None = None
+    source_clause: str = ""
+    condition: DiscourseCondition | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class UnresolvedDiscourseFrame:
+    """An operation which cannot execute until a target constraint is supplied."""
+
+    original_frame: DiscourseOperationFrame
+    candidate_targets: tuple[str, ...]
+    required_constraint: str
+
+
+@dataclass(frozen=True, slots=True)
+class ClauseReferent:
+    """The frame and target set denoted by a local pronoun."""
+
+    frame_id: str | None
+    target_set: tuple[str, ...]
+
+
 @dataclass(frozen=True, slots=True)
 class DialogueState:
-    """Explicit state retained by a caller between voice turns."""
+    """Typed discourse state retained by a caller between voice turns.
+
+    The ``referent_*`` fields remain as a compatibility view for callers which
+    predate discourse frames. New code should use ``focus``, ``property_focus``
+    and ``prior_operations``.
+    """
 
     referent_entity_ids: tuple[str, ...] = ()
     referent_data: Mapping[str, Any] = field(default_factory=dict)
     referent_intent_name: str | None = None
+    referent_effect: SemanticEffect | None = None
     pending: PendingClarification | None = None
+    focus: EntityFocus | None = None
+    property_focus: PropertyFocus | None = None
+    prior_operations: Mapping[str, DiscourseOperationFrame] = field(default_factory=dict)
+    unresolved: UnresolvedDiscourseFrame | None = None
+    clause_referents: Mapping[str, ClauseReferent] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        # Make legacy explicitly-constructed states immediately usable by the
+        # typed resolver, and expose typed states through the old read API.
+        if self.focus is None and self.referent_entity_ids:
+            entity_set = tuple(dict.fromkeys(self.referent_entity_ids))
+            object.__setattr__(
+                self,
+                "focus",
+                EntityFocus(
+                    entity_set=entity_set,
+                    cardinality=(
+                        ReferentCardinality.SINGULAR
+                        if len(entity_set) == 1
+                        else ReferentCardinality.GROUP
+                    ),
+                    selected_member=entity_set[0] if len(entity_set) == 1 else None,
+                ),
+            )
+        elif self.focus is not None and not self.referent_entity_ids:
+            object.__setattr__(self, "referent_entity_ids", self.focus.entity_set)
 
 
 @dataclass(frozen=True, slots=True)
@@ -945,15 +1047,18 @@ def _relative_plan(
 ) -> IntentPlan | None:
     normal = _normal(text)
     compact = _normal(_clean_item(text))
-    if not state.referent_entity_ids:
+    target_ids = state.focus.entity_set if state.focus is not None else state.referent_entity_ids
+    if not target_ids:
         return None
     entities = tuple(
-        entity for entity in catalog.entities if entity.entity_id in state.referent_entity_ids
+        entity for entity in catalog.entities if entity.entity_id in target_ids
     )
     domains = {entity.domain for entity in entities}
     data = dict(state.referent_data)
     number = _first_number(text)
-    explicit_referent = bool(re.search(r"\b(it|them|that|those)\b", normal))
+    explicit_referent = bool(
+        re.search(r"\b(it|its|them|their|theirs|they|that|those)\b", normal)
+    )
     contextual_command = bool(
         re.fullmatch(
             r"(?:(?:flick|flip|turn)\s+(?:the\s+)?locks?\s+"
@@ -978,7 +1083,16 @@ def _relative_plan(
     if not explicit_referent and not contextual_command and not bare_numeric:
         return None
     if number is not None:
-        if domains == {"light"}:
+        property_operation = {
+            "brightness": ("HassLightSet", "brightness", "light"),
+            "percentage": ("HassFanSetSpeed", "percentage", "fan"),
+            "position": ("HassSetPosition", "position", "cover"),
+            "temperature": ("HassClimateSetTemperature", "temperature", "climate"),
+            "volume_level": ("HassSetVolume", "volume_level", "media_player"),
+        }.get(state.referent_effect.property if state.referent_effect else "")
+        if property_operation is not None and domains == {property_operation[2]}:
+            intent, slot, _ = property_operation
+        elif domains == {"light"}:
             intent, slot = "HassLightSet", "brightness"
         elif domains == {"cover"}:
             intent, slot = "HassSetPosition", "position"
@@ -1032,7 +1146,7 @@ def _relative_plan(
     else:
         return None
     data.pop("state", None)
-    return _step(intent, data, *state.referent_entity_ids)
+    return _step(intent, data, *target_ids)
 
 
 def _referent_qualifier_plan(
@@ -1116,6 +1230,47 @@ def _resolve_pending(
     return _step(pending.intent_name, data, entity.entity_id)
 
 
+def _singular_pronoun_for_group(text: str, state: DialogueState) -> bool:
+    """Return whether a singular pronoun conflicts with the current group focus."""
+
+    return bool(
+        state.focus is not None
+        and state.focus.cardinality == ReferentCardinality.GROUP
+        and re.search(r"\b(it|its|this|that)\b", _normal(text))
+    )
+
+
+def _predicate_from_followup(text: str) -> tuple[str, SemanticEffect | None]:
+    normal = _normal(text)
+    if re.search(r"\b(off|deactivate|disable)\b", normal):
+        return "HassTurnOff", SemanticEffect("command", "activation", "set", False)
+    if re.search(r"\b(on|activate|enable)\b", normal):
+        return "HassTurnOn", SemanticEffect("command", "activation", "set", True)
+    return "unresolved", None
+
+
+def _state_with_unresolved_singular(text: str, state: DialogueState) -> DialogueState:
+    """Retain a singular follow-up transaction instead of applying it to a group."""
+
+    predicate, effect = _predicate_from_followup(text)
+    frame_id = f"frame-{len(state.prior_operations) + 1}"
+    original = DiscourseOperationFrame(
+        frame_id=frame_id,
+        predicate=predicate,
+        resolved_targets=(),
+        effect=effect,
+        source_clause=text.strip(),
+    )
+    return replace(
+        state,
+        unresolved=UnresolvedDiscourseFrame(
+            original_frame=original,
+            candidate_targets=state.focus.entity_set if state.focus else (),
+            required_constraint="single target",
+        ),
+    )
+
+
 class PlanningSession:
     """Apply an ``IntentPlanner`` while explicitly retaining dialogue state."""
 
@@ -1142,18 +1297,24 @@ class PlanningSession:
             return PlanningTurn(plan=plan, state=next_state)
 
         if plan := _referent_qualifier_plan(text, catalog, self.state):
-            next_state = _state_from_plan(plan)
+            next_state = _state_from_plan(plan, text, self.state)
+            self.state = next_state
+            return PlanningTurn(plan=plan, state=next_state)
+
+        if _singular_pronoun_for_group(text, self.state):
+            next_state = _state_with_unresolved_singular(text, self.state)
+            plan = IntentPlan(response="Which one did you mean?")
             self.state = next_state
             return PlanningTurn(plan=plan, state=next_state)
 
         if plan := _relative_plan(text, catalog, self.state):
-            next_state = _state_from_plan(plan)
+            next_state = _state_from_plan(plan, text, self.state)
             self.state = next_state
             return PlanningTurn(plan=plan, state=next_state)
 
         plan = self._planner.plan(text, catalog, origin_context)
         if plan.steps:
-            next_state = _state_from_plan(plan)
+            next_state = _state_from_plan(plan, text, self.state)
         elif plan.response and (pending := _pending_from_request(text, catalog, plan.response)):
             next_state = DialogueState(pending=pending)
         else:
@@ -1178,14 +1339,17 @@ def _state_from_plan(plan: IntentPlan) -> DialogueState:
     )
     data: dict[str, Any] = {}
     intent_name: str | None = None
+    effect: SemanticEffect | None = None
     if len(plan.steps) == 1:
         intent_name = plan.steps[0].operation
+        effect = plan.steps[0].effect or semantic_effect_for_call(plan.steps[0].call)
         call_data = plan.steps[0].call.data
         data.update(call_data)
     return DialogueState(
         referent_entity_ids=entity_ids,
         referent_data=data,
         referent_intent_name=intent_name,
+        referent_effect=effect,
     )
 
 

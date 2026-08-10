@@ -19,10 +19,10 @@ from benchmark.models import BenchmarkRequest, BenchmarkResult, Home, Operation
 from benchmark.production import (
     ProductionBenchmarkMatcher,
     _catalog,
-    _dedupe,
     _planning_context,
     _service_effect,
     _step_operations,
+    expand_static_invocation,
 )
 from intent_bridge.agents.factory import make_fallback_agent
 from intent_bridge.agents.plugins import HOME_ASSISTANT_PLUGIN
@@ -210,7 +210,15 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
         volume = data.get("volume_level")
         if isinstance(volume, (int, float)) and 0 <= volume <= 1:
             data["volume_level"] = round(volume * 100)
-        self.operations.extend(_service_effect(f"{domain}.{service}", entity_ids, data))
+        if domain in {"scene", "script"} and service == "turn_on":
+            effects = tuple(
+                effect
+                for entity_id in entity_ids
+                for effect in expand_static_invocation(self.home, entity_id)
+            )
+        else:
+            effects = _service_effect(f"{domain}.{service}", entity_ids, data)
+        self.operations.extend(effects)
 
         state_by_service = {
             "turn_on": "on",
@@ -226,9 +234,11 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
             "return_to_base": "returning",
         }
         if new_state := state_by_service.get(service):
-            for entity_id in entity_ids:
-                if entity_id in self.states:
-                    self.states[entity_id]["state"] = new_state
+            for effect in effects:
+                effect_state = effect.state or new_state
+                for entity_id in effect.entity_ids:
+                    if entity_id in self.states:
+                        self.states[entity_id]["state"] = effect_state
 
         response: dict[str, Any] = {}
         if payload.get("return_response"):
@@ -321,6 +331,7 @@ class FullPipelineBenchmarkMatcher:
 
     async def match(self, request: BenchmarkRequest) -> BenchmarkResult:
         deterministic_operations: list[Operation] = []
+        operations_by_turn: list[tuple[Operation, ...]] = []
         synthetic_ha = BenchmarkHomeAssistant(request)
         deterministic = _EndpointDeterministicRoute(
             request,
@@ -353,6 +364,8 @@ class FullPipelineBenchmarkMatcher:
                 base_url="http://benchmark.local",
             ) as client:
                 for turn_index, turn in enumerate(request.turns):
+                    deterministic_start = len(deterministic_operations)
+                    ha_start = len(synthetic_ha.operations)
                     messages.append({"role": "user", "content": turn})
                     body: dict[str, Any] = {
                         "model": settings.api.model_name,
@@ -367,14 +380,19 @@ class FullPipelineBenchmarkMatcher:
                     response_text = str(payload["choices"][0]["message"]["content"])
                     routes.append(str(payload["home_intent_proxy"]["route"]))
                     messages.append({"role": "assistant", "content": response_text})
+                    turn_operations = (
+                        *deterministic_operations[deterministic_start:],
+                        *synthetic_ha.operations[ha_start:],
+                    )
+                    operations_by_turn.append(turn_operations)
         finally:
             runtime.ha_ws = previous_ws
             runtime.fallback_agent = previous_agent
             runtime.advanced_agent = previous_advanced
 
         self.last_routes = tuple(routes)
-        return BenchmarkResult(
-            operations=_dedupe([*deterministic_operations, *synthetic_ha.operations]),
+        return BenchmarkResult.from_turn_operations(
+            operations_by_turn,
             response=response_text,
         )
 

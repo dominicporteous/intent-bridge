@@ -18,10 +18,12 @@ from intent_bridge.intent_engine.models import (
     OhfIntentCall,
     PlannedIntent,
     PlannedReading,
+    SemanticEffect,
 )
 
 _QUERY_RE = re.compile(
-    r"^(?:what(?:s| is| are)?|how(?: much| high| low| hot| cold| warm| cool| humid)?|"
+    r"^(?:(?:can|could|would|will) you\s+)?(?:what(?:s| is| are)?|"
+    r"how(?: much| high| low| hot| cold| warm| cool| humid)?|"
     r"tell me|give me|check|get|read|report|show me)\b|\b(?:current|reading|level)\b"
 )
 _MUTATION_RE = re.compile(r"\b(?:set|change|adjust|make|raise|lower|increase|decrease|turn)\b")
@@ -218,6 +220,33 @@ def _candidate_score(
     return score, tuple(evidence)
 
 
+def _coordinated_target_members(
+    text: str,
+    catalog: CatalogSnapshot,
+) -> tuple[str, ...]:
+    """Return sensor/area conjuncts when each side has independent target evidence."""
+
+    parts = tuple(
+        part.strip(" ,")
+        for part in re.split(r"\s*(?:,\s*(?:and\s+)?|\b(?:and|plus|as well as)\b)\s*", text)
+        if part.strip(" ,")
+    )
+    if len(parts) < 2:
+        return ()
+
+    def has_evidence(part: str) -> bool:
+        if _mentioned_areas(part, catalog) or _mentioned_floors(part, catalog):
+            return True
+        return any(
+            _contains_phrase(part, label)
+            for entity in catalog.entities
+            for label in _labels(entity)
+            if set(label.split()) - _GENERIC_IDENTITY_WORDS
+        )
+
+    return parts if all(has_evidence(part) for part in parts) else ()
+
+
 class MeasurementIntentPlanner:
     """Resolve measurement queries by quantity and topology, independent of domain."""
 
@@ -267,6 +296,83 @@ class MeasurementIntentPlanner:
 
         steps: list[PlannedIntent] = []
         for quantity in quantities:
+            coordinated_members = _coordinated_target_members(normal, catalog)
+            if coordinated_members:
+                selected: list[tuple[CatalogEntity, CatalogMeasurement]] = []
+                for member in coordinated_members:
+                    member_areas = _mentioned_areas(member, catalog)
+                    member_floors = _mentioned_floors(member, catalog)
+                    if not member_areas and len(areas) == 1:
+                        member_areas = areas
+                    if not member_floors and not member_areas and len(floors) == 1:
+                        member_floors = floors
+                    member_area_ids = {area.area_id for area in member_areas}
+                    if member_floors:
+                        member_floor_ids = {floor.floor_id for floor in member_floors}
+                        member_area_ids.update(
+                            area.area_id
+                            for area in catalog.areas
+                            if area.floor_id in member_floor_ids
+                        )
+                    member_candidates = [
+                        (entity, measurement)
+                        for entity in catalog.entities
+                        if not member_area_ids or entity.area_id in member_area_ids
+                        for measurement in entity.measurements
+                        if measurement.quantity == quantity
+                    ]
+                    if not member_candidates:
+                        raise RouteDeclined(
+                            f"No {quantity} reading matched coordinated target {member!r}"
+                        )
+                    member_tokens = _specific_request_tokens(
+                        member,
+                        quantity,
+                        member_areas,
+                        member_floors,
+                    )
+                    scored = [
+                        (
+                            _candidate_score(
+                                member,
+                                quantity,
+                                entity,
+                                measurement,
+                                member_tokens,
+                            )[0],
+                            entity,
+                            measurement,
+                        )
+                        for entity, measurement in member_candidates
+                    ]
+                    highest = max(score for score, _, _ in scored)
+                    winners = [
+                        (entity, measurement)
+                        for score, entity, measurement in scored
+                        if score == highest
+                    ]
+                    if len(winners) != 1:
+                        return IntentPlan(response=self._ambiguity_response)
+                    selected.extend(winners)
+
+                seen_entities: set[str] = set()
+                for entity, measurement in selected:
+                    if entity.entity_id in seen_entities:
+                        continue
+                    seen_entities.add(entity.entity_id)
+                    steps.append(
+                        PlannedIntent(
+                            call=OhfIntentCall(
+                                "HassGetMeasurement",
+                                {"entity_id": entity.entity_id, "quantity": quantity},
+                            ),
+                            entity_ids=(entity.entity_id,),
+                            reading=PlannedReading(entity.entity_id, entity.name, measurement),
+                            effect=SemanticEffect("query", quantity, "read", measurement.value),
+                        )
+                    )
+                continue
+
             candidates = [
                 (entity, measurement)
                 for entity in catalog.entities
@@ -357,6 +463,7 @@ class MeasurementIntentPlanner:
                     ),
                     entity_ids=(entity.entity_id,),
                     reading=PlannedReading(entity.entity_id, entity.name, measurement),
+                    effect=SemanticEffect("query", quantity, "read", measurement.value),
                 )
             )
 

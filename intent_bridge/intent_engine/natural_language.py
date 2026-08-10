@@ -29,6 +29,7 @@ from intent_bridge.intent_engine.models import (
     OhfIntentCall,
     PlannedIntent,
     SlotValue,
+    semantic_effect_for_call,
 )
 
 _DOMAIN_ALIASES: tuple[tuple[str, str], ...] = (
@@ -182,16 +183,22 @@ _QUERY_MARKERS = (
     "whether",
 )
 _ACTION_START = (
-    r"turn|turning|switch|power|flip|flick|set|setting|change|adjust|dim|brighten|"
-    r"illuminate|open|close|shut|"
-    r"raise|lower|lock|unlock|secure|activate|deactivate|run|start|stop|launch|"
-    r"pause|resume|continue|play|mute|unmute|skip|next|previous|check|checking|"
-    r"tell|let|report|give|read|confirm|what|is|are|how"
+    r"turn|turning|switch|switching|power|powering|flip|flipping|flick|flicking|"
+    r"set|setting|change|changing|adjust|adjusting|dim|dimming|brighten|brightening|"
+    r"illuminate|open|opening|close|closing|shut|"
+    r"raise|raising|lower|lowering|lock|locking|unlock|unlocking|secure|securing|"
+    r"activate|activating|deactivate|deactivating|run|running|start|starting|"
+    r"stop|stopping|launch|launching|pause|pausing|resume|resuming|continue|"
+    r"continuing|play|playing|mute|muting|unmute|unmuting|skip|skipping|"
+    r"next|previous|check|checking|"
+    r"tell|let|get|report|give|read|confirm|what|is|are|how"
 )
 _COMPOUND_RE = re.compile(
-    rf"\b(?:and\s+then|and\s+also|and\s+oh\s+and|"
-    rf"and\s+while(?:\s+you(?:\s+(?:are|re))?(?:\s+at\s+it)?)?|plus|then|after|"
-    rf"as\s+well\s+as|while(?:\s+you(?:\s+(?:are|re))?(?:\s+at\s+it)?)?|and)\b\s+"
+    rf"\b(?P<connector>and\s+then|and\s+also|and\s+oh\s+and|"
+    rf"and\s+while\s+you\s+(?:are|re)\s+at\s+it|"
+    rf"and\s+while(?!\s+you\s+(?:are|re)\s+at\s+it)|plus|then|after|"
+    rf"as\s+well\s+as|while\s+you\s+(?:are|re)\s+at\s+it|"
+    rf"while(?!\s+you\s+(?:are|re)\s+at\s+it)|and)\b\s+"
     rf"(?=(?:(?:please|also|then|oh|you|could\s+you)\s+)*(?:{_ACTION_START})\b)",
     re.IGNORECASE,
 )
@@ -201,7 +208,7 @@ _POLITE_RE = re.compile(
     r"while you re at it|while you are at it|right away|oh and|oh|quickly|quick)\b",
     re.IGNORECASE,
 )
-_PRONOUN_RE = re.compile(r"\b(?:it|them|those|these|that|there)\b")
+_PRONOUN_RE = re.compile(r"\b(?:it|its|them|their|theirs|they|those|these|that|there)\b")
 _COVER_SUBTYPE_FORMS: Mapping[str, tuple[str, ...]] = {
     "window_covering": (
         "blind",
@@ -235,6 +242,21 @@ class _Operation:
 class _Target:
     slots: Mapping[str, Any]
     entity_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class _TargetMember:
+    """One independently resolvable member of a coordinated noun phrase."""
+
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
+class _TargetSet:
+    """The semantic target of an operation, before catalog resolution."""
+
+    relation: str
+    members: tuple[_TargetMember, ...]
 
 
 class _AmbiguousTarget(Exception):
@@ -334,19 +356,73 @@ def _clean_clause(text: str) -> str:
     text = re.sub(r"^(?:you\s+)?turning\b", "turn", text)
     text = re.sub(r"^(?:you\s+)?setting\b", "set", text)
     text = re.sub(r"^(?:you\s+)?checking\b", "check", text)
+    text = re.sub(r"^(?:you\s+)?closing\b", "close", text)
+    text = re.sub(r"^(?:you\s+)?opening\b", "open", text)
+    gerunds = {
+        "activating": "activate",
+        "adjusting": "adjust",
+        "changing": "change",
+        "checking": "check",
+        "continuing": "continue",
+        "deactivating": "deactivate",
+        "dimming": "dim",
+        "launching": "launch",
+        "locking": "lock",
+        "lowering": "lower",
+        "muting": "mute",
+        "pausing": "pause",
+        "playing": "play",
+        "powering": "power",
+        "raising": "raise",
+        "resuming": "resume",
+        "running": "run",
+        "securing": "secure",
+        "skipping": "skip",
+        "starting": "start",
+        "stopping": "stop",
+        "switching": "switch",
+        "unlocking": "unlock",
+        "unmuting": "unmute",
+    }
+    for gerund, imperative in gerunds.items():
+        text = re.sub(rf"^(?:you\s+)?{gerund}\b", imperative, text)
     return re.sub(r"\s+", " ", text).strip()
 
 
 def split_compound_request(text: str) -> tuple[str, ...]:
-    """Split only where the right side starts another operation.
+    """Return independently recognizable clauses in dependency order.
 
     This intentionally leaves target lists such as ``bedroom and kitchen lights``
-    intact because ``kitchen`` is not an operation word.
+    intact because ``kitchen`` is not an operation word. For ``A after B``, B is
+    returned first so execution order reflects the dependency expressed by the
+    utterance rather than its surface word order.
     """
 
     normalized = _normal(text)
-    clauses = tuple(_clean_clause(part) for part in _COMPOUND_RE.split(normalized))
-    return tuple(clause for clause in clauses if clause)
+    matches = tuple(_COMPOUND_RE.finditer(normalized))
+    if not matches:
+        clause = _clean_clause(normalized)
+        return (clause,) if clause else ()
+
+    raw_parts: list[str] = []
+    connectors: list[str] = []
+    start = 0
+    for match in matches:
+        raw_parts.append(normalized[start : match.start()])
+        connectors.append(match.group("connector").casefold())
+        start = match.end()
+    raw_parts.append(normalized[start:])
+
+    ordered = [_clean_clause(raw_parts[0])]
+    for connector, raw_part in zip(connectors, raw_parts[1:], strict=True):
+        clause = _clean_clause(raw_part)
+        if not clause:
+            continue
+        if connector == "after":
+            ordered.insert(0, clause)
+        else:
+            ordered.append(clause)
+    return tuple(clause for clause in ordered if clause)
 
 
 def _words_to_number(words: Sequence[str]) -> int | None:
@@ -447,7 +523,24 @@ def _number_after_relation(text: str) -> int | None:
     return None
 
 
+def _trailing_number(text: str) -> int | None:
+    """Return a numeric value at the end of an otherwise resolved setter."""
+
+    tokens = text.rstrip(" .?!").split()
+    start = len(tokens)
+    while start > 0 and (tokens[start - 1] in _NUMBER_WORDS or tokens[start - 1].isdigit()):
+        start -= 1
+    return _words_to_number(tokens[start:]) if start < len(tokens) else None
+
+
 def _explicit_domain(text: str) -> str | None:
+    # Explicit automation-container nouns own the target even when their name
+    # contains another capability word (for example, ``lock up script``).
+    if re.search(r"\bscripts?\b", text):
+        return "script"
+    if re.search(r"\bscenes?\b", text):
+        return "scene"
+    imperative_switch = bool(re.match(r"^(?:please\s+)?switch\s+(?:on|off)\b", text))
     # A terminal control noun is stronger than a phrase embedded within it:
     # "garage door locks" means locks, not every garage-door cover.
     for pattern, domain in (
@@ -456,9 +549,13 @@ def _explicit_domain(text: str) -> str | None:
         (r"\b(?:lights?|lamps?|lighting|illumination)\b", "light"),
         (r"\b(?:switches?)\b", "switch"),
     ):
+        if domain == "switch" and imperative_switch:
+            continue
         if re.search(pattern, text):
             return domain
     for phrase, domain in _DOMAIN_ALIASES:
+        if domain == "switch" and imperative_switch:
+            continue
         if _contains_phrase(text, phrase):
             return domain
     return None
@@ -541,6 +638,7 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
     if is_query:
         generic_temperature_query = bool(
             re.search(r"\b(?:temperature|temp)\b", text)
+            and contextual_domain != "climate"
             and not re.search(
                 r"\b(?:thermostat|climate|sensor)\b|"
                 r"\btemperature\s+(?:in|at|of|for)\b",
@@ -592,6 +690,7 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         percentage = _number_after_keyword(
             text,
             "brightness",
+            "level",
             "fan speed",
             "speed",
             "position",
@@ -601,6 +700,14 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         percentage = _number_before_keyword(text, "brightness", "speed", "position", "volume")
     if percentage is None:
         percentage = _number_after_relation(text)
+    if percentage is None and domain in {
+        "climate",
+        "cover",
+        "fan",
+        "light",
+        "media_player",
+    }:
+        percentage = _trailing_number(text)
     if percentage is not None and not 0 <= percentage <= 100:
         return None
     if "volume" in text and percentage is not None:
@@ -614,6 +721,8 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
 
     if "temperature" in text or re.search(r"\btemp\b", text) or domain == "climate":
         temperature = _number_before_marker(text, ("degrees", "degree", "c", "f"))
+        if temperature is None:
+            temperature = percentage
         if temperature is not None:
             return _Operation(
                 "HassClimateSetTemperature",
@@ -640,14 +749,17 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         return _Operation("HassSetVolumeRelative", {"volume_step": "up"}, "media_player")
     if "volume" in text and re.search(r"\b(?:down|decrease|quieter)\b", text):
         return _Operation("HassSetVolumeRelative", {"volume_step": "down"}, "media_player")
-    if re.search(r"\bunmute\b", text):
+    if re.search(r"\bunmute\b|\b(?:restore|enable)\s+(?:the\s+)?(?:audio|sound)\b", text):
         return _Operation("HassMediaPlayerUnmute", {}, "media_player")
     if domain == "media_player" and re.search(
         r"\bmute\s+off\b|\b(?:sound|volume)\b.*\b(?:back\s+on|on\s+again)\b",
         text,
     ):
         return _Operation("HassMediaPlayerUnmute", {}, "media_player")
-    if domain == "media_player" and re.search(r"\b(?:sound|volume)\b.*\boff\b", text):
+    if domain == "media_player" and re.search(
+        r"(?:\b(?:sound|volume)\b.*\boff\b|\boff\b.*\b(?:sound|volume)\b)",
+        text,
+    ):
         return _Operation("HassMediaPlayerMute", {}, "media_player")
     if re.search(r"\bmute\b", text):
         return _Operation("HassMediaPlayerMute", {}, "media_player")
@@ -657,7 +769,7 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         return _Operation("HassMediaPrevious", {}, "media_player")
     if re.search(r"\b(?:resume|unpause|continue)\b", text) or (
         domain == "media_player"
-        and re.search(r"\b(?:back\s+on|start\s+again|play\s+again)\b", text)
+        and re.search(r"\b(?:back\s+on|start\s+again|play\s+again|restart)\b", text)
     ):
         return _Operation("HassMediaUnpause", {}, "media_player")
     if re.search(r"\b(?:pause|hold)\b", text) or (
@@ -673,9 +785,9 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         return _Operation("HassTurnOff", {}, "lock")
     if domain == "lock" and re.search(r"\b(?:close|closed|closing|shut)\b", text):
         return _Operation("HassTurnOn", {}, "lock")
-    if re.search(r"\b(?:unlock|unlocked)\b", text):
+    if domain not in {"scene", "script"} and re.search(r"\b(?:unlock|unlocked)\b", text):
         return _Operation("HassTurnOff", {}, "lock")
-    if re.search(r"\b(?:lock|locked|secure)\b", text):
+    if domain not in {"scene", "script"} and re.search(r"\b(?:lock|locked|secure)\b", text):
         return _Operation("HassTurnOn", {}, "lock")
     if domain == "vacuum" and re.search(
         r"\b(?:turn|switch|power|activate|run|start)\b.*\bon\b|\b(?:run|start)\b",
@@ -720,6 +832,10 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         return _Operation("HassTurnOn", {}, domain or "cover")
     if domain == "cover" and re.search(r"\b(?:pull|roll)\b.*\bdown\b|\bdraw\b.*\bclosed\b", text):
         return _Operation("HassTurnOff", {}, domain or "cover")
+    if domain == "cover" and re.search(r"\b(?:flip|flick|move|push)\b.*\bdown\b", text):
+        return _Operation("HassTurnOff", {}, "cover")
+    if domain == "cover" and re.search(r"\b(?:flip|flick|move|push)\b.*\bup\b", text):
+        return _Operation("HassTurnOn", {}, "cover")
     if re.search(r"\b(?:deactivate|stop|kill)\b", text):
         return _Operation("HassTurnOff", {}, domain)
     if re.search(r"\b(?:disengage|release)\b", text):
@@ -817,11 +933,19 @@ def _distinctive_tokens(entity: CatalogEntity, catalog: CatalogSnapshot) -> froz
             "lights",
             "lighting",
             "illumination",
+            "fan",
             "fans",
+            "cover",
             "covers",
+            "window",
             "windows",
+            "light",
+            "lamp",
+            "lock",
             "locks",
+            "switch",
             "switches",
+            "sensor",
             "sensors",
             *entity.domain.split("_"),
         }
@@ -958,6 +1082,39 @@ def _named_entities(
     return tuple((entity, False) for entity, _ in selected)
 
 
+def _target_evidence(
+    text: str,
+    catalog: CatalogSnapshot,
+    ignored_entity_domains: frozenset[str],
+) -> bool:
+    """Return whether a conjunct contains an independently meaningful target."""
+
+    if _explicit_domain(text) or _mentioned_areas(text, catalog) or _mentioned_floors(text, catalog):
+        return True
+    return bool(
+        _named_entities(text, catalog, None, (), ignored_entity_domains)
+    )
+
+
+def _target_set(
+    text: str,
+    catalog: CatalogSnapshot,
+    ignored_entity_domains: frozenset[str],
+) -> _TargetSet:
+    """Parse target coordination without mistaking ordinary ``and`` for a target list."""
+
+    parts = tuple(
+        part.strip(" ,")
+        for part in re.split(r"\s*(?:,\s*(?:and\s+)?|\b(?:and|plus|as well as)\b)\s*", text)
+        if part.strip(" ,")
+    )
+    if len(parts) >= 2 and all(
+        _target_evidence(part, catalog, ignored_entity_domains) for part in parts
+    ):
+        return _TargetSet("conjunction", tuple(_TargetMember(part) for part in parts))
+    return _TargetSet("single", (_TargetMember(text),))
+
+
 def _context_entity_ids(
     context: Mapping[str, object] | None,
     catalog: CatalogSnapshot,
@@ -1000,6 +1157,21 @@ def _named_domain_hint(
     catalog: CatalogSnapshot,
     ignored_entity_domains: frozenset[str],
 ) -> str | None:
+    # Area-scoped temperature wording without an explicit sensor noun refers
+    # to the area's temperature-control capability when that target is unique.
+    # This keeps ``living room temperature`` usable for a later ``set it``
+    # follow-up while preserving explicit ``temperature sensor`` queries.
+    if re.search(r"\b(?:temperature|temp)\b", text) and not re.search(
+        r"\bsensors?\b", text
+    ):
+        area_ids = {area.area_id for area in _mentioned_areas(text, catalog)}
+        climates = tuple(
+            entity
+            for entity in catalog.entities
+            if entity.domain == "climate" and entity.area_id in area_ids
+        )
+        if len(climates) == 1:
+            return "climate"
     try:
         entities = _named_entities(
             text,
@@ -1035,12 +1207,37 @@ def _elliptical_query(
         )
     except _AmbiguousTarget:
         return None
-    if len(entities) != 1:
-        return None
-    entity, ambiguous = entities[0]
-    if ambiguous or not _has_distinctive_mention(text, entity, catalog):
-        return None
-    return _Operation("HassGetState", {}, entity.domain)
+    if len(entities) == 1:
+        entity, ambiguous = entities[0]
+        if not ambiguous and _has_distinctive_mention(text, entity, catalog):
+            return _Operation("HassGetState", {}, entity.domain)
+
+    # A bare area-plus-domain phrase can still be an unambiguous elliptical
+    # query even when it contains no device name (``living room climate``).
+    # Resolve it only when topology leaves exactly one compatible entity.
+    domain = _explicit_domain(text) or _semantic_domain(text)
+    areas = _mentioned_areas(text, catalog)
+    floors = _mentioned_floors(text, catalog)
+    if domain and (areas or floors):
+        area_ids = {area.area_id for area in areas}
+        if floors:
+            floor_ids = {floor.floor_id for floor in floors}
+            area_ids.update(area.area_id for area in catalog.areas if area.floor_id in floor_ids)
+        compatible = tuple(
+            entity
+            for entity in catalog.entities
+            if entity.domain.casefold() not in ignored_entity_domains
+            and _domain_compatible(entity, domain)
+            and entity.area_id in area_ids
+        )
+        if len(compatible) == 1:
+            intent = (
+                "HassClimateGetTemperature"
+                if domain == "climate" and re.search(r"\b(?:climate|temperature|temp)\b", text)
+                else "HassGetState"
+            )
+            return _Operation(intent, {}, domain)
+    return None
 
 
 def _origin_area(
@@ -1098,6 +1295,164 @@ def _group_target(
     )
 
 
+def singular_generic_target(text: str, domain: str) -> bool:
+    forms = {
+        "cover": ("blind", "curtain", "cover", "shade", "shutter"),
+        "fan": ("fan",),
+        "light": ("light", "lamp"),
+        "lock": ("lock", "deadbolt"),
+        "media_player": ("television", "tv", "speaker", "media player"),
+        "sensor": ("sensor",),
+        "switch": ("switch",),
+    }.get(domain, ())
+    if re.search(r"\b(?:all|both|every|each|whole|entire)\b", text):
+        return False
+    return any(
+        re.search(rf"\b{re.escape(form)}\b", text)
+        and not re.search(rf"\b{re.escape(form)}s\b", text)
+        for form in forms
+    )
+
+
+_DOMAIN_POLYMORPHIC_INTENTS = frozenset({"HassGetState", "HassTurnOff", "HassTurnOn"})
+
+
+def _resolve_target_member(
+    member: _TargetMember,
+    operation: _Operation,
+    catalog: CatalogSnapshot,
+    shared_areas: Sequence[CatalogArea],
+    shared_floors: Sequence[CatalogFloor],
+    ignored_entity_domains: frozenset[str],
+) -> tuple[_Target, ...]:
+    """Resolve one conjunct without inheriting another conjunct's domain."""
+
+    text = member.text
+    member_areas = _mentioned_areas(text, catalog)
+    member_floors = _mentioned_floors(text, catalog)
+
+    # Entity nouns constrain a member more strongly than the shared property's
+    # words (``TV brightness`` still names a media player target).
+    mentioned_domain = _explicit_domain(text) or _semantic_domain(text)
+    polymorphic = operation.intent_name in _DOMAIN_POLYMORPHIC_INTENTS
+    if not polymorphic and operation.domain and mentioned_domain:
+        # A shared property setter is valid only when every target exposes the
+        # capability represented by the operation's domain.
+        if mentioned_domain != operation.domain:
+            return ()
+    domain = (
+        mentioned_domain
+        if polymorphic and mentioned_domain is not None
+        else operation.domain or mentioned_domain
+    )
+    cover_subtype = _cover_subtype(text) if domain == "cover" else None
+
+    # A polymorphic power/state predicate must not use the domain inferred
+    # from a different conjunct to filter an explicitly named member. Resolve
+    # unrestricted names first; retain the operation domain only as the
+    # fallback for generic area/floor phrases such as ``kitchen lights``.
+    name_domain = None if polymorphic and mentioned_domain is None else domain
+    named = _named_entities(
+        text,
+        catalog,
+        name_domain,
+        member_areas,
+        ignored_entity_domains,
+    )
+    if any(ambiguous for _, ambiguous in named):
+        raise _AmbiguousTarget
+    if named:
+        return tuple(_target_for_entity(entity) for entity, _ in named)
+
+    # A single area/floor named elsewhere in the conjunction may modify an
+    # elliptical member (``bathroom exhaust fan and mirror light``). Apply it
+    # only after exact unscoped name resolution, so it cannot override a name
+    # such as ``bedside lamp`` merely because the other member names an area.
+    if not member_areas and len(shared_areas) == 1:
+        member_areas = tuple(shared_areas)
+    if not member_floors and not member_areas and len(shared_floors) == 1:
+        member_floors = tuple(shared_floors)
+    if member_areas or member_floors:
+        named = _named_entities(
+            text,
+            catalog,
+            name_domain,
+            member_areas,
+            ignored_entity_domains,
+        )
+        if any(ambiguous for _, ambiguous in named):
+            raise _AmbiguousTarget
+        if named:
+            return tuple(_target_for_entity(entity) for entity, _ in named)
+
+    if domain is None:
+        return ()
+    if member_areas:
+        return tuple(
+            target
+            for area in member_areas
+            if (
+                target := _group_target(
+                    catalog=catalog,
+                    domain=domain,
+                    area=area,
+                    cover_subtype=cover_subtype,
+                )
+            )
+            is not None
+        )
+    if member_floors:
+        return tuple(
+            target
+            for floor in member_floors
+            if (
+                target := _group_target(
+                    catalog=catalog,
+                    domain=domain,
+                    floor=floor,
+                    cover_subtype=cover_subtype,
+                )
+            )
+            is not None
+        )
+    return ()
+
+
+def _resolve_target_set(
+    target_set: _TargetSet,
+    operation: _Operation,
+    catalog: CatalogSnapshot,
+    ignored_entity_domains: frozenset[str],
+) -> tuple[_Target, ...]:
+    """Resolve every conjunction member, rejecting partial target sets."""
+
+    if target_set.relation != "conjunction":
+        return ()
+    full_text = " and ".join(member.text for member in target_set.members)
+    shared_areas = _mentioned_areas(full_text, catalog)
+    shared_floors = _mentioned_floors(full_text, catalog)
+    targets: list[_Target] = []
+    for member in target_set.members:
+        resolved = _resolve_target_member(
+            member,
+            operation,
+            catalog,
+            shared_areas,
+            shared_floors,
+            ignored_entity_domains,
+        )
+        if not resolved:
+            raise _AmbiguousTarget
+        targets.extend(resolved)
+    unique: list[_Target] = []
+    seen: set[tuple[str, ...]] = set()
+    for target in targets:
+        if target.entity_ids not in seen:
+            unique.append(target)
+            seen.add(target.entity_ids)
+    return tuple(unique)
+
+
 def _resolve_targets(
     text: str,
     operation: _Operation,
@@ -1128,12 +1483,23 @@ def _resolve_targets(
         cover_subtype,
         _format_targets(previous_targets),
     )
-    entity_hits = _named_entities(
-        text,
+    # Coordination is represented before catalog matching. Each member is
+    # resolved independently, then the shared predicate is distributed over
+    # the complete set. This prevents a domain inferred from the first noun
+    # phrase from filtering out later heterogeneous members.
+    target_set = _target_set(text, catalog, ignored_entity_domains)
+    coordinated_targets = _resolve_target_set(
+        target_set,
+        operation,
         catalog,
-        domain,
-        areas,
         ignored_entity_domains,
+    )
+    if coordinated_targets:
+        LOGGER.info("Coordinated target set resolved: %s", _format_targets(coordinated_targets))
+        return coordinated_targets
+
+    entity_hits = _named_entities(
+        text, catalog, domain, areas, ignored_entity_domains
     )
     if entity_hits:
         unambiguous_entities = tuple(entity for entity, ambiguous in entity_hits if not ambiguous)
@@ -1222,6 +1588,16 @@ def _resolve_targets(
             )
             is not None
         )
+        if (
+            len(targets) == 1
+            and len(targets[0].entity_ids) > 1
+            and singular_generic_target(text, domain)
+        ):
+            LOGGER.info(
+                "Singular generic target has multiple area candidates: %s",
+                _format_targets(targets),
+            )
+            raise _AmbiguousTarget
         LOGGER.info("Area group targets resolved: %s", _format_targets(targets))
         return targets
     if floors:
@@ -1378,10 +1754,12 @@ class NaturalLanguageIntentPlanner:
                 # not part of the official HassGetState query contract.
                 if operation.intent_name in {"HassGetState", "HassClimateGetTemperature"}:
                     data.pop("entity_id", None)
+                call = OhfIntentCall(operation.intent_name, data)
                 steps.append(
                     PlannedIntent(
-                        call=OhfIntentCall(operation.intent_name, data),
+                        call=call,
                         entity_ids=target.entity_ids,
+                        effect=semantic_effect_for_call(call),
                     )
                 )
             previous_targets = targets
@@ -1424,5 +1802,6 @@ class NaturalLanguageIntentRecognizer:
 __all__ = [
     "NaturalLanguageIntentPlanner",
     "NaturalLanguageIntentRecognizer",
+    "singular_generic_target",
     "split_compound_request",
 ]
