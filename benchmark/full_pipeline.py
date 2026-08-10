@@ -1,49 +1,34 @@
-"""Opt-in benchmark adapter for the complete HTTP -> routes -> LLM/tool path.
+"""Benchmark adapter around the production voice pipeline.
 
-Unlike :mod:`benchmark.production`, this adapter intentionally invokes the
-OpenAI-compatible endpoint and may call a configured model.  Benchmark homes
-are exposed through an in-memory Home Assistant WebSocket-compatible transport;
-no command is sent to the user's real Home Assistant instance.
+The adapter replaces only Home Assistant's external I/O boundary. Grammar,
+planning, dialogue state, route ordering, execution, and LLM fallback are all
+constructed by :func:`intent_bridge.application.build_voice_pipeline`.
 """
 
 from __future__ import annotations
 
-import time
+import asyncio
 import uuid
 from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
 
-import httpx
-
 from benchmark.models import BenchmarkRequest, BenchmarkResult, Home, Operation
-from benchmark.production import (
-    ProductionBenchmarkMatcher,
-    _catalog,
-    _planning_context,
-    _service_effect,
-    _step_operations,
-    expand_static_invocation,
-)
+from benchmark.production import _service_effect, _step_operations, expand_static_invocation
 from intent_bridge.agents.factory import make_fallback_agent
-from intent_bridge.agents.plugins import HOME_ASSISTANT_PLUGIN
-from intent_bridge.application import create_app
+from intent_bridge.application import build_voice_pipeline
 from intent_bridge.config import settings
-from intent_bridge.core.voice import (
-    FunctionVoiceRoute,
-    RouteDeclined,
-    VoiceActionPipeline,
-    VoiceRequest,
-)
-from intent_bridge.home_assistant.client import HomeAssistantWebSocket
-from intent_bridge.intent_engine.models import CatalogSnapshot
-from intent_bridge.intent_engine.supplemental import PlanningSession
-from intent_bridge.llm import process_llm_fallback
+from intent_bridge.core.voice import VoiceRequest
+from intent_bridge.intent_engine.grammar import load_intent_grammar
+from intent_bridge.intent_engine.models import ExecutionResult, OhfIntentCall, PlannedIntent
+from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 from intent_bridge.runtime.dependencies import runtime
 
 FallbackHandler = Callable[[VoiceRequest], Awaitable[str]]
 
 
 def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
+    """Build fixture metadata in the shape exposed by Home Assistant."""
+
     def definition(domain: str, *fields: str, returns_data: bool = False) -> dict[str, Any]:
         value: dict[str, Any] = {
             "target": {"entity": {"domain": domain}},
@@ -53,17 +38,14 @@ def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
             value["response"] = {"optional": True}
         return value
 
-    templates: dict[str, dict[str, dict[str, Any]]] = {
+    templates = {
         "light": {
             "turn_on": definition(
                 "light", "brightness", "brightness_pct", "color_name", "rgb_color", "kelvin"
             ),
             "turn_off": definition("light"),
         },
-        "switch": {
-            "turn_on": definition("switch"),
-            "turn_off": definition("switch"),
-        },
+        "switch": {"turn_on": definition("switch"), "turn_off": definition("switch")},
         "fan": {
             "turn_on": definition("fan", "percentage"),
             "turn_off": definition("fan"),
@@ -74,13 +56,8 @@ def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
             "close_cover": definition("cover"),
             "set_cover_position": definition("cover", "position"),
         },
-        "lock": {
-            "lock": definition("lock"),
-            "unlock": definition("lock"),
-        },
-        "climate": {
-            "set_temperature": definition("climate", "temperature", "hvac_mode"),
-        },
+        "lock": {"lock": definition("lock"), "unlock": definition("lock")},
+        "climate": {"set_temperature": definition("climate", "temperature", "hvac_mode")},
         "media_player": {
             "media_play": definition("media_player"),
             "media_pause": definition("media_player"),
@@ -95,19 +72,18 @@ def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
         },
         "scene": {"turn_on": definition("scene")},
         "script": {"turn_on": definition("script")},
-        "weather": {
-            "get_forecasts": definition("weather", "type", returns_data=True),
-        },
+        "weather": {"get_forecasts": definition("weather", "type", returns_data=True)},
     }
-    domains = {entity.domain for entity in home.entities}
-    return {domain: templates.get(domain, {}) for domain in domains}
+    return {
+        domain: templates.get(domain, {})
+        for domain in {entity.domain for entity in home.entities}
+    }
 
 
-class BenchmarkHomeAssistant(HomeAssistantWebSocket):
-    """A fixture-backed HA cache that records service effects in memory."""
+class BenchmarkHomeAssistant:
+    """Fixture-backed implementation of the production HA cache/tool boundary."""
 
     def __init__(self, request: BenchmarkRequest) -> None:
-        super().__init__("http://benchmark.invalid", "benchmark-only")
         self.home = request.home
         self.setup = request.setup
         setup_states = {
@@ -132,6 +108,7 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
             }
             for entity in request.home.entities
         }
+        self.devices: dict[str, dict[str, Any]] = {}
         self.areas = {
             area.area_id: {
                 "name": area.name,
@@ -150,9 +127,8 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
         }
         self.services = _service_definitions(request.home)
         self.operations: list[Operation] = []
+        self.ready = asyncio.Event()
         self.ready.set()
-        self._services_loaded_at = time.monotonic()
-        self._registries_loaded_at = time.monotonic()
 
     async def refresh_services(self, *, force: bool = False) -> None:
         del force
@@ -160,8 +136,31 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
     async def refresh_registries(self, *, force: bool = False) -> None:
         del force
 
+    async def wait_for_expected_state(
+        self,
+        entity_id: str,
+        expected_state: str,
+        timeout: float,
+    ) -> str | None:
+        del timeout
+        state = self.states.get(entity_id)
+        return expected_state if state and state.get("state") == expected_state else None
+
     def record_state_read(self, entity_id: str) -> None:
         self.operations.append(Operation(kind="query", entity_ids=(entity_id,)))
+
+    def record_step(self, step: PlannedIntent) -> None:
+        effects = _step_operations(step, self.home, self.setup)
+        self.operations.extend(effects)
+        self._apply_states(effects)
+
+    def _apply_states(self, effects: tuple[Operation, ...]) -> None:
+        for effect in effects:
+            if effect.state is None:
+                continue
+            for entity_id in effect.entity_ids:
+                if entity_id in self.states:
+                    self.states[entity_id]["state"] = effect.state
 
     def _targets(self, domain: str, target: Mapping[str, Any]) -> tuple[str, ...]:
         raw_ids = target.get("entity_id")
@@ -171,10 +170,7 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
             return tuple(str(item) for item in raw_ids)
         area_id = target.get("area_id")
         if isinstance(area_id, str):
-            return tuple(
-                entity.entity_id
-                for entity in self.home.entities_in(area_id, domain)
-            )
+            return tuple(entity.entity_id for entity in self.home.entities_in(area_id, domain))
         candidates = tuple(
             entity.entity_id for entity in self.home.entities if entity.domain == domain
         )
@@ -210,87 +206,38 @@ class BenchmarkHomeAssistant(HomeAssistantWebSocket):
         volume = data.get("volume_level")
         if isinstance(volume, (int, float)) and 0 <= volume <= 1:
             data["volume_level"] = round(volume * 100)
-        if domain in {"scene", "script"} and service == "turn_on":
-            effects = tuple(
+
+        expanded = domain in {"scene", "script"} and service == "turn_on"
+        effects = (
+            tuple(
                 effect
                 for entity_id in entity_ids
                 for effect in expand_static_invocation(self.home, entity_id)
             )
-        else:
-            effects = _service_effect(f"{domain}.{service}", entity_ids, data)
+            if expanded
+            else _service_effect(f"{domain}.{service}", entity_ids, data)
+        )
         self.operations.extend(effects)
+        self._apply_states(effects)
 
-        state_by_service = {
-            "turn_on": "on",
-            "turn_off": "off",
-            "open_cover": "open",
-            "close_cover": "closed",
-            "lock": "locked",
-            "unlock": "unlocked",
-            "media_play": "playing",
-            "media_pause": "paused",
-            "start": "cleaning" if domain == "vacuum" else "on",
-            "stop": "idle",
-            "return_to_base": "returning",
-        }
-        if new_state := state_by_service.get(service):
-            for effect in effects:
-                effect_state = effect.state or new_state
-                for entity_id in effect.entity_ids:
-                    if entity_id in self.states:
-                        self.states[entity_id]["state"] = effect_state
-
-        response: dict[str, Any] = {}
-        if payload.get("return_response"):
-            response = {
-                entity_id: self.states.get(entity_id, {}) for entity_id in entity_ids
-            }
+        response = (
+            {entity_id: self.states.get(entity_id, {}) for entity_id in entity_ids}
+            if payload.get("return_response")
+            else {}
+        )
         return {"success": True, "result": {"response": response}}
 
 
-class _EndpointDeterministicRoute:
-    name = "ohf-hassil"
+class _FixtureIntentExecutor:
+    """Successful HA intent boundary; the production engine supplies resolved steps."""
 
-    def __init__(
-        self,
-        request: BenchmarkRequest,
-        operations: list[Operation],
-        *,
-        enabled: bool,
-    ) -> None:
-        self._request = request
-        self._catalog: CatalogSnapshot = _catalog(request)
-        self._context = _planning_context(request)
-        self._operations = operations
-        self._enabled = enabled
-        self._session = PlanningSession(ProductionBenchmarkMatcher())
-
-    async def handle(self, request: VoiceRequest) -> str:
-        if not self._enabled:
-            raise RouteDeclined("Deterministic route disabled by full benchmark")
-        plan = self._session.plan(request.text, self._catalog, self._context)
-        if plan.response is not None:
-            return plan.response
-        if not plan.steps:
-            raise RouteDeclined("No deterministic intent matched the request")
-        for step in plan.steps:
-            self._operations.extend(
-                _step_operations(step, self._request.home, self._request.setup)
-            )
-        self._context["last_entity_ids"] = tuple(
-            dict.fromkeys(
-                entity_id for step in plan.steps for entity_id in step.entity_ids
-            )
-        )
-        return settings.api.action_confirmation
+    async def execute(self, call: OhfIntentCall) -> ExecutionResult:
+        del call
+        return ExecutionResult(speech=settings.api.action_confirmation)
 
 
 class FullPipelineBenchmarkMatcher:
-    """Exercise the HTTP endpoint and production route order against fixtures.
-
-    The adapter owns process-global runtime integration slots while ``match`` is
-    active, so corpus execution must use concurrency=1.
-    """
+    """Run requests through the production pipeline against an isolated HA fixture."""
 
     def __init__(
         self,
@@ -314,81 +261,53 @@ class FullPipelineBenchmarkMatcher:
                     "Full-pipeline LLM benchmark configuration is incomplete: "
                     + ", ".join(missing)
                 )
-            self._fallback_agent = make_fallback_agent(
-                False,
-                plugins=(HOME_ASSISTANT_PLUGIN,),
-            )
+            self._fallback_agent = make_fallback_agent(False)
         else:
             self._fallback_agent = None
-
-    async def _live_fallback(self, request: VoiceRequest) -> str:
-        return await process_llm_fallback(
-            request.text,
-            conversation_key=request.conversation_key,
-            client_history=list(request.client_history),
-            origin_context=request.origin_context,
+        grammar = load_intent_grammar(
+            language=settings.deterministic.language,
+            custom_sentences_path=settings.deterministic.custom_sentences_path,
         )
+        self._intent_recognizer = HassilIntentRecognizer(grammar)
 
     async def match(self, request: BenchmarkRequest) -> BenchmarkResult:
-        deterministic_operations: list[Operation] = []
-        operations_by_turn: list[tuple[Operation, ...]] = []
-        synthetic_ha = BenchmarkHomeAssistant(request)
-        deterministic = _EndpointDeterministicRoute(
-            request,
-            deterministic_operations,
-            enabled=not self.force_llm,
+        fixture = BenchmarkHomeAssistant(request)
+        pipeline = build_voice_pipeline(
+            intent_executor=_FixtureIntentExecutor(),
+            intent_recognizer=self._intent_recognizer,
+            fallback_handler=self._fallback_handler,
+            step_observer=fixture.record_step,
+            include_deterministic=not self.force_llm,
         )
-        fallback = self._fallback_handler or self._live_fallback
-        pipeline = VoiceActionPipeline(
-            (
-                deterministic,
-                FunctionVoiceRoute("llm-ha-ws", fallback),
-            )
-        )
-        app = create_app(pipeline=pipeline)
 
         previous_ws = runtime.ha_ws
         previous_agent = runtime.fallback_agent
-        previous_advanced = runtime.advanced_agent
-        runtime.ha_ws = synthetic_ha
-        runtime.fallback_agent = self._fallback_agent
-        runtime.advanced_agent = None
         routes: list[str] = []
         response_text = ""
+        operations_by_turn: list[tuple[Operation, ...]] = []
         conversation_id = f"benchmark-{uuid.uuid4().hex}"
         messages: list[dict[str, str]] = []
+        runtime.ha_ws = fixture
+        if self._fallback_agent is not None:
+            runtime.fallback_agent = self._fallback_agent
         try:
-            transport = httpx.ASGITransport(app=app)
-            async with httpx.AsyncClient(
-                transport=transport,
-                base_url="http://benchmark.local",
-            ) as client:
-                for turn_index, turn in enumerate(request.turns):
-                    deterministic_start = len(deterministic_operations)
-                    ha_start = len(synthetic_ha.operations)
-                    messages.append({"role": "user", "content": turn})
-                    body: dict[str, Any] = {
-                        "model": settings.api.model_name,
-                        "messages": messages,
-                        "conversation_id": conversation_id,
-                        "reset_conversation": turn_index == 0,
-                        **dict(request.origin_context),
-                    }
-                    response = await client.post("/v1/chat/completions", json=body)
-                    response.raise_for_status()
-                    payload = response.json()
-                    response_text = str(payload["choices"][0]["message"]["content"])
-                    routes.append(str(payload["home_intent_proxy"]["route"]))
-                    messages.append({"role": "assistant", "content": response_text})
-                    turn_operations = (
-                        *deterministic_operations[deterministic_start:],
-                        *synthetic_ha.operations[ha_start:],
-                    )
-                    operations_by_turn.append(turn_operations)
+            for turn in request.turns:
+                operation_start = len(fixture.operations)
+                messages.append({"role": "user", "content": turn})
+                voice_request = VoiceRequest(
+                    text=turn,
+                    conversation_key=conversation_id,
+                    client_history=tuple(messages),
+                    origin_context=dict(request.origin_context),
+                )
+                result = await pipeline.handle(voice_request)
+                response_text = result.speech
+                routes.append(result.route)
+                messages.append({"role": "assistant", "content": response_text})
+                operations_by_turn.append(tuple(fixture.operations[operation_start:]))
         finally:
             runtime.ha_ws = previous_ws
             runtime.fallback_agent = previous_agent
-            runtime.advanced_agent = previous_advanced
 
         self.last_routes = tuple(routes)
         return BenchmarkResult.from_turn_operations(

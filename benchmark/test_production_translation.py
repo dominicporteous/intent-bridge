@@ -10,6 +10,7 @@ from benchmark.production import (
     _catalog,
     _planning_context,
     _step_operations,
+    expand_static_invocation,
 )
 from benchmark.runner import compare_operations
 from intent_bridge.intent_engine.models import OhfIntentCall, PlannedIntent
@@ -110,6 +111,32 @@ def test_timer_translation_resolves_runtime_targets_without_fixture_identity(cor
     assert cancel_all[0].entity_ids == ("timer.laundry", "timer.oven")
 
 
+@pytest.mark.parametrize(
+    ("intent", "payload", "entity_id"),
+    [
+        ("HassLightSet", {"brightness": 27}, "light.living_room_lamp"),
+        ("HassSetPosition", {"position": 44}, "cover.living_room_blinds"),
+        ("HassFanSetSpeed", {"percentage": 68}, "fan.living_room_ceiling_fan"),
+        (
+            "HassClimateSetTemperature",
+            {"temperature": 21},
+            "climate.living_room_thermostat",
+        ),
+        ("HassSetVolume", {"volume_level": 63}, "media_player.main_lg_tv"),
+    ],
+)
+def test_property_setters_record_no_implicit_power_transition(
+    corpus, intent, payload, entity_id
+):
+    home = next(home for home in corpus.homes if home.home_id == "studio")
+
+    operations = _step_operations(_step(intent, payload, entity_id), home)
+
+    assert operations == (
+        Operation(kind="action", entity_ids=(entity_id,), state=None, payload=payload),
+    )
+
+
 def test_list_and_shopping_query_fields_use_gold_schema(corpus):
     home = next(home for home in corpus.homes if home.home_id == "studio")
 
@@ -171,6 +198,64 @@ def test_scene_invocation_and_gold_expand_to_the_same_device_effects(corpus):
         not entity_id.startswith("scene.")
         for operation in scenario.expected
         for entity_id in operation.entity_ids
+    )
+
+
+def test_static_invocation_interpreter_expands_nested_automation_definitions():
+    from benchmark.models import Home, HomeEntity
+
+    home = Home(
+        home_id="nested",
+        name="Nested",
+        difficulty="basic",
+        floors=(),
+        areas=(),
+        entities=(
+            HomeEntity("script.routine", "Routine", "script"),
+            HomeEntity("scene.evening", "Evening", "scene"),
+            HomeEntity("light.one", "One", "light"),
+            HomeEntity("light.two", "Two", "light"),
+        ),
+        metadata={
+            "scripts": [
+                {
+                    "id": "routine",
+                    "actions": [
+                        {
+                            "action": "light.turn_off",
+                            "target": {"entity_id": ["light.one", "light.two"]},
+                        },
+                        {
+                            "action": "scene.turn_on",
+                            "target": {"entity_id": "scene.evening"},
+                        },
+                    ],
+                }
+            ],
+            "scenes": [
+                {
+                    "id": "evening",
+                    "entities": {"light.one": {"state": "on", "brightness": 35}},
+                }
+            ],
+        },
+    )
+
+    assert expand_static_invocation(home, "script.routine") == (
+        Operation(kind="action", entity_ids=("light.one", "light.two"), state="off"),
+        Operation(
+            kind="action",
+            entity_ids=("light.one",),
+            state="on",
+            payload={"brightness": 35},
+        ),
+    )
+    assert expand_static_invocation(home, "script.undefined") == (
+        Operation(
+            kind="action",
+            entity_ids=("script.undefined",),
+            payload={"invoked": True},
+        ),
     )
 
 

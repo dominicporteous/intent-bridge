@@ -170,7 +170,7 @@ dynamically. Run all 14,243 sentence/dialogue examples with:
 uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
-The runner loads `.env` and automatically exercises the full HTTP/LLM/tool
+The runner loads `.env` and automatically exercises the production voice/LLM/tool
 pipeline when the LLM is enabled and its base URL and model are configured.
 Runs are exhaustive unless `BENCHMARK_LIMIT` is explicitly set; see
 [`benchmark/README.md`](benchmark/README.md) for filtering, limiting, and

@@ -75,7 +75,7 @@ def select_examples(
 
 
 def make_benchmark_matcher(options: BenchmarkOptions) -> BenchmarkMatcher:
-    """Choose the endpoint/LLM adapter when configured, otherwise deterministic."""
+    """Choose the production pipeline adapter when configured, otherwise deterministic."""
 
     if options.use_full_pipeline:
         from benchmark.full_pipeline import FullPipelineBenchmarkMatcher

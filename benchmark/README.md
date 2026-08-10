@@ -126,19 +126,19 @@ setup state, and origin context. Fixture paths, scenario names, and expected
 operations are deliberately excluded from matcher input, preventing an
 implementation from passing by looking up fixture answers.
 
-## Full endpoint and LLM pipeline benchmark
+## Full production and LLM pipeline benchmark
 
-The same pytest runner automatically uses the full HTTP endpoint and configured
-LLM/tool fallback when these application options are all set:
+The same pytest runner automatically uses the production voice pipeline and
+configured LLM/tool fallback when these application options are all set:
 
 - `INTENT_BRIDGE_LLM_ENABLED=true`
 - `INTENT_BRIDGE_LLM_BASE_URL`
 - `INTENT_BRIDGE_LLM_MODEL`
 
 The runner loads the repository `.env` before importing application settings.
-When those options are complete, it sends every turn through
-`/v1/chat/completions`. It preserves production
-route order: deterministic planning runs first and `llm-ha-ws` runs only when
+When those options are complete, every turn is passed directly to the pipeline
+constructed by `intent_bridge.application.build_voice_pipeline`. This preserves
+production route order: deterministic planning runs first and `llm-ha-ws` runs only when
 the deterministic route declines. Each corpus home is presented to the normal
 LLM HA tools as an isolated in-memory HA cache; service calls are recorded and
 compared with the fixture's expected operations. It never controls the HA
