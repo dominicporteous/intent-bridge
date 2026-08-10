@@ -1,6 +1,5 @@
 """Extracted application layer; see README architecture map."""
 
-import asyncio
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -50,10 +49,17 @@ from intent_bridge.indicators.controller import (
 )
 from intent_bridge.intent_engine.engine import DeterministicIntentEngine
 from intent_bridge.intent_engine.grammar import load_intent_grammar
+from intent_bridge.intent_engine.measurement import MeasurementIntentPlanner
 from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
+from intent_bridge.intent_engine.planning import IntentPlannerChain
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 from intent_bridge.intent_engine.route import DeterministicVoiceRoute
 from intent_bridge.intent_engine.supplemental import SupplementalIntentPlanner
+from intent_bridge.llm import (
+    process_llm_fallback,
+    validate_fallback_config,
+    validate_music_assistant_config,
+)
 from intent_bridge.music_assistant.client import (
     NativeMusicAssistant,
 )
@@ -64,11 +70,6 @@ from intent_bridge.runtime.stores import (
 )
 from intent_bridge.runtime.stores import (
     pending_requests as pending,
-)
-from intent_bridge.llm import (
-    process_llm_fallback,
-    validate_fallback_config,
-    validate_music_assistant_config,
 )
 
 # ---------------------------------------------------------------------------
@@ -269,7 +270,9 @@ def build_voice_pipeline() -> VoiceActionPipeline:
             settings.home_assistant.access_token,
             timeout=settings.home_assistant.websocket.command_timeout_seconds,
         ),
-        preferred_planner=SupplementalIntentPlanner(),
+        preferred_planner=IntentPlannerChain(
+            (MeasurementIntentPlanner(), SupplementalIntentPlanner())
+        ),
         fallback_planner=NaturalLanguageIntentPlanner(),
         default_response=settings.api.action_confirmation,
     )

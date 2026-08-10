@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -21,6 +22,8 @@ from intent_bridge.intent_engine.ports import (
 )
 from intent_bridge.intent_engine.resolution import ResolvedCandidate, resolve_candidate
 from intent_bridge.runtime.dependencies import runtime
+
+LOGGER = logging.getLogger(__name__)
 
 _CONTEXT_RELATIVE_INTENTS = frozenset(
     {
@@ -61,6 +64,17 @@ _ENTITY_TARGETING_INTENTS = frozenset(
         "HassVacuumStart",
     }
 )
+
+
+def _reading_speech(step: PlannedIntent) -> str:
+    reading = step.reading
+    if reading is None:
+        return ""
+    measurement = reading.measurement
+    unit = (measurement.unit or "").strip()
+    separator = "" if unit in {"%", "°"} else " "
+    rendered_value = f"{measurement.value}{separator}{unit}" if unit else measurement.value
+    return f"{reading.entity_name} is {rendered_value}"
 
 
 def _origin_area(origin_context: Mapping[str, object] | None) -> str | None:
@@ -196,6 +210,21 @@ class DeterministicIntentEngine:
 
         responses: list[str] = []
         for step in plan.steps:
+            if speech := _reading_speech(step):
+                reading = step.reading
+                assert reading is not None
+                LOGGER.info(
+                    "MEASUREMENT CACHE HIT entity=%s quantity=%s source=%s value=%r "
+                    "unit=%r speech=%r",
+                    reading.entity_id,
+                    reading.measurement.quantity,
+                    reading.measurement.source,
+                    reading.measurement.value,
+                    reading.measurement.unit,
+                    speech,
+                )
+                responses.append(speech)
+                continue
             try:
                 # Short-circuit simple state queries using the HA WebSocket cache
                 if step.call.intent_name in ("HassGetState", "HassClimateGetTemperature"):
@@ -204,7 +233,20 @@ class DeterministicIntentEngine:
                         # Avoid short-circuiting broad "weather" or forecast requests which require richer
                         # attribute inspection or natural-language summarisation.
                         qtext = (request.text or "").lower()
-                        if any(keyword in qtext for keyword in ("weather", "forecast", "today", "tomorrow", "conditions")) and "temperature" not in qtext and "temp" not in qtext:
+                        if (
+                            any(
+                                keyword in qtext
+                                for keyword in (
+                                    "weather",
+                                    "forecast",
+                                    "today",
+                                    "tomorrow",
+                                    "conditions",
+                                )
+                            )
+                            and "temperature" not in qtext
+                            and "temp" not in qtext
+                        ):
                             result = await self._executor.execute(step.call)
                         else:
                             ha_ws = runtime.ha_ws
@@ -214,14 +256,21 @@ class DeterministicIntentEngine:
                                 state = ha_ws.states.get(entity_id)
                                 if isinstance(state, dict):
                                     attributes = state.get("attributes") or {}
-                                    unit = attributes.get("unit_of_measurement") or attributes.get("temperature_unit") or ""
-                                    friendly = attributes.get("friendly_name") or entity_id
+                                    unit = (
+                                        attributes.get("unit_of_measurement")
+                                        or attributes.get("temperature_unit")
+                                        or ""
+                                    )
                                     value = state.get("state")
                                     domain = entity_id.split(".", 1)[0] if "." in entity_id else ""
                                     # If the entity is a simple measurement, return concise value. Otherwise defer.
-                                    if domain in ("sensor",) or "temperature" in (attributes.get("device_class") or ""):
+                                    if domain in ("sensor",) or "temperature" in (
+                                        attributes.get("device_class") or ""
+                                    ):
                                         speech = f"{value}{(' ' + unit) if unit else ''}"
-                                        result = type("R", (), {"speech": speech, "response": state})()
+                                        result = type(
+                                            "R", (), {"speech": speech, "response": state}
+                                        )()
                                     else:
                                         result = await self._executor.execute(step.call)
                                 else:

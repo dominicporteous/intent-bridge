@@ -43,6 +43,16 @@ class CatalogFloor:
 
 
 @dataclass(frozen=True, slots=True)
+class CatalogMeasurement:
+    """One provider-neutral reading exposed by a catalog entity."""
+
+    quantity: str
+    value: str
+    unit: str | None = None
+    source: str = "state"
+
+
+@dataclass(frozen=True, slots=True)
 class CatalogEntity:
     entity_id: str
     name: str
@@ -51,6 +61,8 @@ class CatalogEntity:
     area_id: str | None = None
     device_class: str | None = None
     state: str | None = None
+    measurements: tuple[CatalogMeasurement, ...] = ()
+    entity_category: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,11 +81,21 @@ class OhfIntentCall:
 
 
 @dataclass(frozen=True, slots=True)
+class PlannedReading:
+    """A resolved catalog reading that needs no provider-side target matching."""
+
+    entity_id: str
+    entity_name: str
+    measurement: CatalogMeasurement
+
+
+@dataclass(frozen=True, slots=True)
 class PlannedIntent:
     """One resolved, side-effect-free operation in an intent plan."""
 
     call: OhfIntentCall
     entity_ids: tuple[str, ...] = ()
+    reading: PlannedReading | None = None
 
     @property
     def operation(self) -> str:
@@ -100,11 +122,13 @@ __all__ = [
     "CatalogArea",
     "CatalogEntity",
     "CatalogFloor",
+    "CatalogMeasurement",
     "CatalogSnapshot",
     "ExecutionResult",
     "IntentMatch",
     "IntentPlan",
     "OhfIntentCall",
     "PlannedIntent",
+    "PlannedReading",
     "SlotValue",
 ]

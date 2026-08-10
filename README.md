@@ -161,7 +161,7 @@ copies and makes integration replacement explicit in tests.
 Tests must mock network boundaries. No test should require a live MQTT broker,
 Home Assistant instance, Music Assistant server, or language model.
 
-## Deterministic acceptance benchmark
+## Acceptance benchmark
 
 The exhaustive corpus now lives in `benchmark/datasets/` and is collected
 dynamically. Run all 14,243 sentence/dialogue examples with:
@@ -169,6 +169,12 @@ dynamically. Run all 14,243 sentence/dialogue examples with:
 ```powershell
 uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
+
+The runner loads `.env` and automatically exercises the full HTTP/LLM/tool
+pipeline when the LLM is enabled and its base URL and model are configured.
+Runs are exhaustive unless `BENCHMARK_LIMIT` is explicitly set; see
+[`benchmark/README.md`](benchmark/README.md) for filtering, limiting, and
+force-LLM controls.
 
 To run only one benchmark home:
 

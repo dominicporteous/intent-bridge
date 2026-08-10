@@ -17,7 +17,7 @@ from intent_bridge.home_assistant.intent_executor import (
     _error_detail,
     _speech_from_response,
 )
-from intent_bridge.intent_engine.models import CatalogSnapshot, OhfIntentCall
+from intent_bridge.intent_engine.models import CatalogMeasurement, CatalogSnapshot, OhfIntentCall
 
 
 def test_clean_aliases_rejects_invalid_canonical_and_duplicate_values():
@@ -136,6 +136,61 @@ def test_catalog_snapshot_accepts_missing_or_non_mapping_floor_cache(floors):
         client.floors = floors
 
     assert snapshot_from_client(client).floors == ()
+
+
+def test_catalog_snapshot_extracts_domain_neutral_measurements():
+    client = SimpleNamespace(
+        states={
+            "sensor.bedroom_temperature": {
+                "state": "19.1",
+                "attributes": {
+                    "friendly_name": "Bedroom Temperature",
+                    "device_class": "temperature",
+                    "unit_of_measurement": "°C",
+                },
+            },
+            "climate.bedroom_aircon": {
+                "state": "off",
+                "attributes": {
+                    "friendly_name": "Bedroom Aircon",
+                    "current_temperature": 20.0,
+                    "temperature": 22.0,
+                    "temperature_unit": "°C",
+                },
+            },
+            "humidifier.bedroom": {
+                "state": "on",
+                "attributes": {
+                    "friendly_name": "Bedroom Humidifier",
+                    "current_humidity": 48,
+                },
+            },
+            "sensor.unavailable_power": {
+                "state": "unavailable",
+                "attributes": {
+                    "device_class": "power",
+                    "unit_of_measurement": "W",
+                },
+            },
+        },
+        entity_registry={"sensor.bedroom_temperature": {"ec": 1}},
+        devices={},
+        areas={},
+    )
+
+    entities = {entity.entity_id: entity for entity in snapshot_from_client(client).entities}
+
+    assert entities["sensor.bedroom_temperature"].measurements == (
+        CatalogMeasurement("temperature", "19.1", "°C"),
+    )
+    assert entities["sensor.bedroom_temperature"].entity_category == "1"
+    assert entities["climate.bedroom_aircon"].measurements == (
+        CatalogMeasurement("temperature", "20.0", "°C", "current_temperature"),
+    )
+    assert entities["humidifier.bedroom"].measurements == (
+        CatalogMeasurement("humidity", "48", "%", "current_humidity"),
+    )
+    assert entities["sensor.unavailable_power"].measurements == ()
 
 
 def test_catalog_provider_returns_empty_or_fresh_snapshot():

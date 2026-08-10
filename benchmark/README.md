@@ -1,4 +1,4 @@
-# Deterministic intent benchmark
+# Intent benchmark
 
 This folder contains the exhaustive, data-driven acceptance benchmark for the
 local voice-to-action matcher. It is intentionally separate from the fast unit
@@ -128,15 +128,16 @@ implementation from passing by looking up fixture answers.
 
 ## Full endpoint and LLM pipeline benchmark
 
-The exhaustive pytest benchmark above is deterministic and never calls an LLM.
-For an opt-in integration measurement, run:
+The same pytest runner automatically uses the full HTTP endpoint and configured
+LLM/tool fallback when these application options are all set:
 
-```powershell
-.\.venv\Scripts\python.exe scripts\run_full_pipeline_benchmark.py
-```
+- `INTENT_BRIDGE_LLM_ENABLED=true`
+- `INTENT_BRIDGE_LLM_BASE_URL`
+- `INTENT_BRIDGE_LLM_MODEL`
 
-The runner loads the repository `.env` before importing application settings,
-then sends every turn through `/v1/chat/completions`. It preserves production
+The runner loads the repository `.env` before importing application settings.
+When those options are complete, it sends every turn through
+`/v1/chat/completions`. It preserves production
 route order: deterministic planning runs first and `llm-ha-ws` runs only when
 the deterministic route declines. Each corpus home is presented to the normal
 LLM HA tools as an isolated in-memory HA cache; service calls are recorded and
@@ -148,7 +149,7 @@ Start with a small filtered sample because LLM cases make real model requests:
 ```powershell
 $env:BENCHMARK_HOME = "studio"
 $env:BENCHMARK_LIMIT = "25"
-.\.venv\Scripts\python.exe scripts\run_full_pipeline_benchmark.py
+uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
 To measure the LLM/tool route for every selected example, including examples
@@ -157,12 +158,14 @@ the deterministic route normally handles:
 ```powershell
 $env:BENCHMARK_FORCE_LLM = "true"
 $env:BENCHMARK_LIMIT = "10"
-.\.venv\Scripts\python.exe scripts\run_full_pipeline_benchmark.py
+uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
 Supported controls are `BENCHMARK_HOME`, `BENCHMARK_SOURCE`,
-`BENCHMARK_LIMIT` (default 25), and `BENCHMARK_FORCE_LLM`. Execution is
-sequential because the agent-facing HA transport is process-global.
+`BENCHMARK_LIMIT`, and `BENCHMARK_FORCE_LLM`. Runs remain exhaustive by
+default, including when LLM-backed; set `BENCHMARK_LIMIT` explicitly to control
+model usage and cost. Execution is sequential because the agent-facing HA
+transport is process-global.
 
 The normal fallback agent and its `ha_search`, `ha_get_state`,
 `ha_list_services`, and `ha_call_service` tools are exercised. The advanced

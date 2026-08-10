@@ -18,6 +18,7 @@ from typing import Any
 from intent_bridge.config import settings
 from intent_bridge.core.text import normalize_search_text
 from intent_bridge.core.voice import RouteDeclined
+from intent_bridge.intent_engine.measurement import MeasurementIntentPlanner
 from intent_bridge.intent_engine.models import (
     CatalogArea,
     CatalogEntity,
@@ -531,9 +532,12 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
             text,
         )
     )
-    is_query = text.startswith(("is ", "are ", "what ", "whats ", "how ")) or any(
-        marker in text for marker in _QUERY_MARKERS
-    ) or paired_state_query or text.startswith("get ")
+    is_query = (
+        text.startswith(("is ", "are ", "what ", "whats ", "how "))
+        or any(marker in text for marker in _QUERY_MARKERS)
+        or paired_state_query
+        or text.startswith("get ")
+    )
     if is_query:
         generic_temperature_query = bool(
             re.search(r"\b(?:temperature|temp)\b", text)
@@ -543,7 +547,10 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
                 text,
             )
         )
-        if re.search(r"\b(?:weather|outside|outdoors|outdoor)\b", text) or generic_temperature_query:
+        if (
+            re.search(r"\b(?:weather|outside|outdoors|outdoor)\b", text)
+            or generic_temperature_query
+        ):
             return _Operation("HassGetWeather", {}, "weather")
         if re.search(r"\b(?:brightness|bright)\b", text):
             return _Operation("HassGetState", {}, "light")
@@ -675,9 +682,7 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         text,
     ):
         return _Operation("HassVacuumStart", {}, "vacuum")
-    if domain == "vacuum" and re.search(
-        r"\b(?:dock|return)(?:\s+to\s+(?:base|dock))?\b", text
-    ):
+    if domain == "vacuum" and re.search(r"\b(?:dock|return)(?:\s+to\s+(?:base|dock))?\b", text):
         return _Operation("HassVacuumReturnToBase", {}, "vacuum")
     if re.search(r"\b(?:turn|switch|power|flip|flick)\b.*\boff\b|\boff\b$", text):
         return _Operation("HassTurnOff", {}, domain)
@@ -822,9 +827,7 @@ def _distinctive_tokens(entity: CatalogEntity, catalog: CatalogSnapshot) -> froz
         }
     )
     return frozenset(
-        token
-        for token in tokens
-        if len(token) >= 2 and token not in _GENERIC_ENTITY_MATCH_TOKENS
+        token for token in tokens if len(token) >= 2 and token not in _GENERIC_ENTITY_MATCH_TOKENS
     )
 
 
@@ -847,6 +850,7 @@ def _fuzzy_phrase(text: str, phrase: str) -> bool:
             if SequenceMatcher(None, phrase, candidate).ratio() >= 0.9:
                 return True
     return False
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -884,14 +888,16 @@ def _named_entities(
     hits = [
         (entity, phrase)
         for entity, phrases in candidates
-        if (phrase := next(
-            (
-                item
-                for item in phrases
-                if not _is_generic_entity_phrase(item) and _contains_phrase(text, item)
-            ),
-            None,
-        ))
+        if (
+            phrase := next(
+                (
+                    item
+                    for item in phrases
+                    if not _is_generic_entity_phrase(item) and _contains_phrase(text, item)
+                ),
+                None,
+            )
+        )
         is not None
     ]
     if not hits:
@@ -927,7 +933,9 @@ def _named_entities(
     by_phrase: dict[str, list[CatalogEntity]] = {}
     for entity, phrase in hits:
         by_phrase.setdefault(phrase, []).append(entity)
-    ambiguous_phrases = [(phrase, entities) for phrase, entities in by_phrase.items() if len(entities) > 1]
+    ambiguous_phrases = [
+        (phrase, entities) for phrase, entities in by_phrase.items() if len(entities) > 1
+    ]
     if ambiguous_phrases:
         LOGGER.info(
             "Ambiguous target phrases %s match multiple devices: %s",
@@ -1144,7 +1152,9 @@ def _resolve_targets(
             )
             if areas and domain:
                 distinct_entities = tuple(
-                    entity for entity in unambiguous_entities if _has_distinctive_mention(text, entity, catalog)
+                    entity
+                    for entity in unambiguous_entities
+                    if _has_distinctive_mention(text, entity, catalog)
                 )
                 if distinct_entities:
                     targets = [_target_for_entity(entity) for entity in distinct_entities]
@@ -1286,15 +1296,19 @@ class NaturalLanguageIntentPlanner:
         ignored_entity_domains: tuple[str, ...] | None = None,
     ) -> None:
         self._ambiguity_response = ambiguity_response
-        self._ignored_entity_domains = frozenset(
-            domain.casefold()
-            for domain in (
-                ignored_entity_domains
-                if ignored_entity_domains is not None
-                else settings.home_assistant.ignored_entity_domains
+        self._measurement_planner = MeasurementIntentPlanner(ambiguity_response=ambiguity_response)
+        self._ignored_entity_domains = (
+            frozenset(
+                domain.casefold()
+                for domain in (
+                    ignored_entity_domains
+                    if ignored_entity_domains is not None
+                    else settings.home_assistant.ignored_entity_domains
+                )
+                if domain
             )
-            if domain
-        ) or DEFAULT_IGNORED_ENTITY_DOMAINS
+            or DEFAULT_IGNORED_ENTITY_DOMAINS
+        )
 
     def plan(
         self,
@@ -1302,6 +1316,17 @@ class NaturalLanguageIntentPlanner:
         catalog: CatalogSnapshot,
         origin_context: Mapping[str, object] | None = None,
     ) -> IntentPlan:
+        try:
+            measurement_plan = self._measurement_planner.plan(
+                text,
+                catalog,
+                origin_context,
+            )
+        except RouteDeclined:
+            pass
+        else:
+            return measurement_plan
+
         clauses = split_compound_request(text)
         if not clauses:
             raise RouteDeclined("The request was empty")
@@ -1317,7 +1342,8 @@ class NaturalLanguageIntentPlanner:
             )
             operation = _classify(
                 clause,
-                contextual_domain or _named_domain_hint(
+                contextual_domain
+                or _named_domain_hint(
                     clause,
                     catalog,
                     self._ignored_entity_domains,

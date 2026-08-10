@@ -10,8 +10,74 @@ from intent_bridge.intent_engine.models import (
     CatalogArea,
     CatalogEntity,
     CatalogFloor,
+    CatalogMeasurement,
     CatalogSnapshot,
 )
+
+_UNAVAILABLE_STATES = frozenset({"", "none", "unknown", "unavailable"})
+
+
+def _measurement_quantity(value: object) -> str:
+    return normalize_search_text(value).replace(" ", "_")
+
+
+def _measurement_unit(attributes: dict[str, Any], quantity: str) -> str | None:
+    if "temperature" in quantity:
+        value = attributes.get("temperature_unit") or attributes.get("unit_of_measurement")
+    else:
+        value = attributes.get("unit_of_measurement")
+    if isinstance(value, str) and value.strip():
+        return value.strip()
+    if quantity in {"battery", "humidity", "position"}:
+        return "%"
+    return None
+
+
+def _measurements(
+    state: dict[str, Any], attributes: dict[str, Any]
+) -> tuple[CatalogMeasurement, ...]:
+    """Extract readings using HA's semantic metadata rather than entity domains."""
+
+    readings: dict[str, CatalogMeasurement] = {}
+    raw_state = state.get("state")
+    state_text = str(raw_state).strip() if raw_state is not None else ""
+    device_class = _measurement_quantity(attributes.get("device_class"))
+    if device_class and state_text.casefold() not in _UNAVAILABLE_STATES:
+        try:
+            float(state_text)
+        except ValueError:
+            pass
+        else:
+            readings[device_class] = CatalogMeasurement(
+                quantity=device_class,
+                value=state_text,
+                unit=_measurement_unit(attributes, device_class),
+            )
+
+    for key, raw_value in attributes.items():
+        if (
+            not isinstance(key, str)
+            or isinstance(raw_value, bool)
+            or not isinstance(raw_value, (int, float))
+        ):
+            continue
+        normalized_key = _measurement_quantity(key)
+        if normalized_key.startswith("current_"):
+            quantity = normalized_key.removeprefix("current_")
+        elif normalized_key.endswith("_level"):
+            quantity = normalized_key.removesuffix("_level")
+        else:
+            continue
+        if not quantity or quantity in readings:
+            continue
+        readings[quantity] = CatalogMeasurement(
+            quantity=quantity,
+            value=str(raw_value),
+            unit=_measurement_unit(attributes, quantity),
+            source=key,
+        )
+
+    return tuple(readings[key] for key in sorted(readings))
 
 
 class CachedHomeAssistant(Protocol):
@@ -122,6 +188,10 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                     else None
                 ),
                 state=(str(state["state"]) if state.get("state") is not None else None),
+                measurements=_measurements(state, attributes),
+                entity_category=(
+                    str(registry["ec"]) if registry.get("ec") not in (None, "") else None
+                ),
             )
         )
 

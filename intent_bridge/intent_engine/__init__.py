@@ -8,6 +8,7 @@ from intent_bridge.intent_engine.grammar import (
     SentenceProvenance,
     load_intent_grammar,
 )
+from intent_bridge.intent_engine.measurement import MeasurementIntentPlanner
 from intent_bridge.intent_engine.natural_language import (
     NaturalLanguageIntentPlanner,
     NaturalLanguageIntentRecognizer,
@@ -30,6 +31,7 @@ __all__ = [
     "LoadedIntentGrammar",
     "NaturalLanguageIntentPlanner",
     "NaturalLanguageIntentRecognizer",
+    "MeasurementIntentPlanner",
     "IntentPlannerChain",
     "PendingClarification",
     "PlanningSession",
