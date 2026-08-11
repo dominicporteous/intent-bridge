@@ -1,54 +1,25 @@
-"""Adapter from the production deterministic planners to benchmark effects."""
+"""Translation helpers for observable production-pipeline effects."""
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Mapping
-from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
 from benchmark.models import (
     BenchmarkRequest,
-    BenchmarkResult,
     Home,
     Operation,
 )
-from intent_bridge.core.voice import RouteDeclined, VoiceRequest
-from intent_bridge.intent_engine.engine import DeterministicIntentEngine
-from intent_bridge.intent_engine.grammar import load_intent_grammar
 from intent_bridge.intent_engine.models import (
     CatalogArea,
     CatalogEntity,
     CatalogFloor,
     CatalogSnapshot,
-    ExecutionResult,
-    IntentPlan,
-    OhfIntentCall,
     PlannedIntent,
-)
-from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
-from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
-from intent_bridge.intent_engine.supplemental import (
-    PlanningSession,
-    SupplementalIntentPlanner,
 )
 
 _TARGET_KEYS = frozenset({"area", "domain", "floor", "name"})
 _DURATION_KEYS = ("days", "hours", "minutes", "seconds", "milliseconds")
-
-
-@dataclass(frozen=True, slots=True)
-class _CatalogProvider:
-    catalog: CatalogSnapshot
-
-    def snapshot(self) -> CatalogSnapshot:
-        return self.catalog
-
-
-class _UnusedExecutor:
-    async def execute(self, call: OhfIntentCall) -> ExecutionResult:  # pragma: no cover
-        raise AssertionError(f"benchmark planning unexpectedly executed {call.intent_name}")
 
 
 def _setup_by_entity(request: BenchmarkRequest) -> dict[str, Operation]:
@@ -458,7 +429,7 @@ def _step_operations(
             )
         return (_state_operation(entity_ids, _state_for_activation(intent, domain)),)
 
-    if intent in {"HassGetState", "HassClimateGetTemperature"}:
+    if intent in {"HassGetState", "HassClimateGetTemperature", "HassGetMeasurement"}:
         return (Operation(kind="query", entity_ids=entity_ids),)
 
     attribute_intents = {
@@ -545,86 +516,3 @@ def _step_operations(
             ),
         )
     return ()
-
-
-class ProductionBenchmarkMatcher:
-    """Run only production planners and translate their observable effects."""
-
-    def __init__(self) -> None:
-        quiet_logger = logging.Logger("intent-benchmark-grammar", level=logging.ERROR)
-        grammar = load_intent_grammar(
-            language="en",
-            custom_sentences_path=Path("benchmark/.no-custom-sentences"),
-            logger=quiet_logger,
-        )
-        self._recognizer = HassilIntentRecognizer(grammar)
-        self._preferred = SupplementalIntentPlanner()
-        self._fallback = NaturalLanguageIntentPlanner()
-
-    def _plan(
-        self,
-        text: str,
-        catalog: CatalogSnapshot,
-        context: Mapping[str, object],
-    ) -> IntentPlan:
-        engine = DeterministicIntentEngine(
-            self._recognizer,
-            _CatalogProvider(catalog),
-            _UnusedExecutor(),
-            preferred_planner=self._preferred,
-            fallback_planner=self._fallback,
-        )
-        try:
-            return engine.plan(
-                VoiceRequest(
-                    text=text,
-                    conversation_key="benchmark",
-                    origin_context=dict(context),
-                )
-            )
-        except RouteDeclined:
-            return IntentPlan()
-
-    def plan(
-        self,
-        text: str,
-        catalog: CatalogSnapshot,
-        origin_context: Mapping[str, object] | None = None,
-    ) -> IntentPlan:
-        """IntentPlanner-compatible composite used by the dialogue session."""
-
-        return self._plan(text, catalog, origin_context or {})
-
-    async def match(self, request: BenchmarkRequest) -> BenchmarkResult:
-        catalog = _catalog(request)
-        context = _planning_context(request)
-        session = PlanningSession(self)
-        final_plan = IntentPlan()
-        prior_turns: list[str] = []
-
-        for turn_index, turn in enumerate(request.turns):
-            plan = session.plan(turn, catalog, context)
-            if not plan.steps and prior_turns:
-                plan = session.plan(" ".join((*prior_turns, turn)), catalog, context)
-            if plan.steps:
-                context["last_entity_ids"] = tuple(
-                    dict.fromkeys(entity_id for step in plan.steps for entity_id in step.entity_ids)
-                )
-            prior_turns.append(turn)
-            if turn_index == len(request.turns) - 1:
-                final_plan = plan
-
-        operations = _dedupe(
-            [
-                operation
-                for step in final_plan.steps
-                for operation in _step_operations(step, request.home, request.setup)
-            ]
-        )
-        return BenchmarkResult(
-            operations=operations,
-            response=final_plan.response or "",
-        )
-
-
-__all__ = ["ProductionBenchmarkMatcher"]

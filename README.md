@@ -94,6 +94,37 @@ the `INTENT_BRIDGE_` prefix; there are intentionally no legacy aliases while the
 project remains alpha. Environment parsing and validation are isolated in
 `config/environment.py`, and consumers use typed fields from `BridgeSettings`.
 
+`INTENT_BRIDGE_LLM_AMBIGUOUS_TARGET_FALLBACK_ENABLED` defaults to `true`.
+When enabled, a deterministic target ambiguity is offered to the LLM route
+before asking the user to clarify. If the LLM route is disabled or fails, the
+original deterministic clarification is returned. Set it to `false` to ask for
+clarification immediately without attempting the LLM.
+
+`INTENT_BRIDGE_VOICE_FAILURE_RESPONSE` configures the final non-action response
+used when every safe planning route declines or is unavailable. The default is
+`Sorry, I couldn't handle that request.` This keeps ordinary no-match failures
+inside the OpenAI-compatible response contract for HA Assist; failures after an
+action may have started still return an HTTP error rather than claiming safety.
+
+Assistant feedback is configured through the transport-neutral
+`INTENT_BRIDGE_ASSISTANT_*` namespace. LED feedback uses
+`ASSISTANT_LED_ENABLED`, `ASSISTANT_LED_DOMAINS`, `ASSISTANT_LED_COLOR`,
+`ASSISTANT_LED_EFFECT`, `ASSISTANT_LED_SOFTWARE_PULSE_ENABLED`, and
+`ASSISTANT_LED_PULSE_INTERVAL_SECONDS`. Any adapter can use the shared async
+feedback lifecycle with LED feedback, sound feedback, or both; Music Assistant
+currently uses LED feedback while waiting for asynchronous playback.
+
+Optional assistant sounds replace spoken response text with short status tones
+on a `media_player` associated with the calling Assist satellite. Set
+`INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED=true` and configure
+`INTENT_BRIDGE_BASE_URL` to the externally reachable HTTP(S) root of this
+server (for example, `http://intent-bridge.local:8000`). The bridge serves and
+sends fully qualified URLs for `processing.mp3`, `success.mp3`, and `error.mp3`
+from `/assistant/sounds/`. Sounds default to `false`. When enabled, only the
+configured `INTENT_BRIDGE_VOICE_ACTION_CONFIRMATION` is replaced by the success
+sound and empty assistant text. Informational answers, clarification questions,
+and other custom responses remain text for Home Assistant to speak.
+
 ### Custom deterministic wording
 
 The deterministic engine loads the pinned `home-assistant-intents` grammar
@@ -150,6 +181,20 @@ Mutable connections and agents belong in the shared `RuntimeState`. The
 application lifecycle owns writes to it; adapters consume it. This avoids stale
 copies and makes integration replacement explicit in tests.
 
+### Custom MCP tools
+
+Copy `mcp.json.example` to `mcp.json` to expose additional MCP tools directly
+to the LLM fallback. The file is optional and `mcp.json` is gitignored because
+server headers or environment values may contain credentials. Its path can be
+changed with `INTENT_BRIDGE_MCP_CONFIG_PATH`.
+
+Each entry under `mcpServers` accepts `name`, `description`, and `isActive`.
+Supported transports are `streamableHttp` and `sse` with `baseUrl` and optional
+`headers`, plus `stdio` with `command`, optional `args`, `env`, and `cwd`.
+Restart Intent Bridge after changing the file. Active servers are connected at
+startup; failed custom servers are logged and omitted without disabling the
+fallback agent.
+
 ## TDD workflow
 
 1. Add a characterization test for legacy behavior being changed.
@@ -164,17 +209,18 @@ Home Assistant instance, Music Assistant server, or language model.
 ## Acceptance benchmark
 
 The exhaustive corpus now lives in `benchmark/datasets/` and is collected
-dynamically. Run all 14,243 sentence/dialogue examples with:
+dynamically. Run all 17,815 sentence/dialogue examples with:
 
 ```powershell
 uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
-The runner loads `.env` and automatically exercises the production voice/LLM/tool
-pipeline when the LLM is enabled and its base URL and model are configured.
+The runner always exercises the production voice pipeline. When the LLM is
+enabled and configured, the normal fallback route is available after the
+deterministic route exactly as it is in the application.
 Runs are exhaustive unless `BENCHMARK_LIMIT` is explicitly set; see
 [`benchmark/README.md`](benchmark/README.md) for filtering, limiting, and
-force-LLM controls.
+LLM configuration.
 
 To run only one benchmark home:
 

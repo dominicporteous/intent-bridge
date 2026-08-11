@@ -7,10 +7,12 @@ from pathlib import Path
 @dataclass(slots=True)
 class ApiSettings:
     version: str = "6.9.0"
+    base_url: str = ""
     model_name: str = "home-intent"
     timezone: str = "Europe/London"
     spoken_response_max_chars: int = 180
-    action_confirmation: str = "Done."
+    action_confirmation: str = ""
+    voice_failure_response: str = "Sorry, I couldn't handle that request."
     log_level: str = "INFO"
 
 
@@ -28,6 +30,7 @@ class DeterministicSettings:
 @dataclass(slots=True)
 class LlmSettings:
     enabled: bool = True
+    ambiguous_target_fallback_enabled: bool = True
     base_url: str = "http://192.168.0.159:13305/v1"
     api_key: str = field(default="not-used", repr=False)
     model: str = ""
@@ -35,6 +38,13 @@ class LlmSettings:
     timeout_seconds: float = 120.0
     data_recovery_enabled: bool = True
     data_recovery_max_chars: int = 16000
+
+
+@dataclass(slots=True)
+class McpSettings:
+    config_path: Path = Path("mcp.json")
+    connect_timeout_seconds: float = 30.0
+    cleanup_timeout_seconds: float = 10.0
 
 
 @dataclass(slots=True)
@@ -139,13 +149,16 @@ class MusicAssistantSettings:
 
 
 @dataclass(slots=True)
-class IndicatorSettings:
-    music_playback_enabled: bool = True
-    domains: tuple[str, ...] = ("light", "switch")
-    color: str = "green"
-    effect: str = "pulse"
-    software_pulse_enabled: bool = True
-    pulse_interval_seconds: float = 0.7
+class AssistantSettings:
+    """Transport-neutral visual and audible assistant feedback settings."""
+
+    led_enabled: bool = True
+    led_domains: tuple[str, ...] = ("light", "switch")
+    led_color: str = "green"
+    led_effect: str = "pulse"
+    led_software_pulse_enabled: bool = True
+    led_pulse_interval_seconds: float = 0.7
+    sounds_enabled: bool = False
 
 
 @dataclass(slots=True)
@@ -161,23 +174,25 @@ class BridgeSettings:
     api: ApiSettings = field(default_factory=ApiSettings)
     deterministic: DeterministicSettings = field(default_factory=DeterministicSettings)
     llm: LlmSettings = field(default_factory=LlmSettings)
+    mcp: McpSettings = field(default_factory=McpSettings)
     voice_origin: VoiceOriginSettings = field(default_factory=VoiceOriginSettings)
     home_assistant: HomeAssistantSettings = field(default_factory=HomeAssistantSettings)
     music_assistant: MusicAssistantSettings = field(default_factory=MusicAssistantSettings)
-    indicators: IndicatorSettings = field(default_factory=IndicatorSettings)
+    assistant: AssistantSettings = field(default_factory=AssistantSettings)
     conversation: ConversationSettings = field(default_factory=ConversationSettings)
 
 
 __all__ = [
     "ApiSettings",
+    "AssistantSettings",
     "BridgeSettings",
     "ConversationSettings",
     "DeterministicSettings",
     "HomeAssistantAdvancedSettings",
     "HomeAssistantSettings",
     "HomeAssistantWebSocketSettings",
-    "IndicatorSettings",
     "LlmSettings",
+    "McpSettings",
     "MusicAssistantSettings",
     "VoiceOriginSettings",
 ]

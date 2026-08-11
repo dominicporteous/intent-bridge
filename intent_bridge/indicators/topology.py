@@ -125,6 +125,33 @@ def indicator_score(catalog: IndicatorCatalog, entity_id: str) -> tuple[float, l
     return score, reasons
 
 
+def is_indicator_control(catalog: IndicatorCatalog, entity_id: str) -> bool:
+    """Identify a visual status control without relying on one integration's IDs."""
+
+    domain = entity_id.split(".", 1)[0].casefold()
+    if domain not in {"light", "switch"}:
+        return False
+    identity = indicator_identity_text(catalog, entity_id)
+    tokens = set(identity.split())
+    phrases = (
+        "led ring",
+        "ring led",
+        "indicator light",
+        "indicator led",
+        "status light",
+        "status led",
+        "notification light",
+        "notification led",
+        "notification ring",
+        "backlight",
+    )
+    return (
+        any(phrase in identity for phrase in phrases)
+        or "indicator" in tokens
+        or ("voice" in tokens and "led" in tokens)
+    )
+
+
 __all__ = [
     "IndicatorCatalog",
     "connected_satellite_device_scope",
@@ -132,4 +159,5 @@ __all__ = [
     "indicator_identity_text",
     "indicator_relation_bonus",
     "indicator_score",
+    "is_indicator_control",
 ]

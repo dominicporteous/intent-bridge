@@ -3,6 +3,7 @@
 from agents import (
     Agent,
 )
+from agents.mcp import MCPServer
 
 from intent_bridge.agents.contracts import AgentToolPlugin
 from intent_bridge.agents.plugins import (
@@ -296,6 +297,10 @@ when appropriate, one narrow service-discovery attempt fail to provide a normal
 route. If the user is explicitly asking for historical/configuration/admin data,
 ha_advanced may be appropriate before giving up.
 
+GENERIC REQUESTS
+
+For generic requests (e.g. movie/film trivia), you should use your available knowledge and web
+tool calls to provide a direct answer to the users question where possible.
 
 SPOKEN RESPONSE STYLE
 
@@ -368,6 +373,8 @@ def make_fallback_agent(
     music_enabled: bool = False,
     *,
     plugins: tuple[AgentToolPlugin, ...] | None = None,
+    mcp_servers: tuple[MCPServer, ...] = (),
+    mcp_instructions: str = "",
 ) -> Agent:
     active_plugins = plugins or default_agent_plugins(music_enabled)
     tools = [tool for plugin in active_plugins for tool in plugin.tools]
@@ -378,12 +385,15 @@ def make_fallback_agent(
     ]
     if additions:
         instructions = instructions + "\n\n" + "\n\n".join(additions)
+    if mcp_instructions.strip():
+        instructions = instructions + "\n\n" + mcp_instructions.strip()
 
     return Agent(
         name="Home Assistant + Music Assistant fast voice fallback",
         model=_make_lemonade_model(),
         instructions=instructions,
         tools=tools,
+        mcp_servers=list(mcp_servers),
         tool_use_behavior=fast_tool_result_handler,
     )
 

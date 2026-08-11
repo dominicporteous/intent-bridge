@@ -11,12 +11,15 @@ from intent_bridge.agents import factory as agent
 from intent_bridge.agents.contracts import AgentToolPlugin
 from intent_bridge.core.voice import (
     FunctionVoiceRoute,
+    RouteDeclinedWithFallback,
     RouteExecutionError,
     VoiceActionPipeline,
     VoicePipelineError,
     VoiceRequest,
     VoiceResult,
 )
+from intent_bridge.intent_engine.models import CatalogSnapshot, IntentPlan
+from intent_bridge.intent_engine.route import ConversationalDeterministicVoiceRoute
 from intent_bridge.runtime.execution import _reset_voice_tool_run_state, voice_tool_run_state
 
 
@@ -70,17 +73,126 @@ async def test_pipeline_falls_back_and_reports_attempts():
 
 
 @pytest.mark.asyncio
-async def test_pipeline_rejects_empty_results_and_reports_total_failure():
+async def test_pipeline_prefers_later_route_over_deferred_clarification():
+    completed = []
+
+    async def ambiguous(_request):
+        raise RouteDeclinedWithFallback(
+            "Which light?",
+            on_alternative_success=lambda: completed.append(True),
+        )
+
+    async def fallback(_request):
+        return "I resolved the office light."
+
+    result = await VoiceActionPipeline(
+        (
+            FunctionVoiceRoute("deterministic", ambiguous),
+            FunctionVoiceRoute("llm", fallback),
+        )
+    ).handle(request())
+
+    assert result.route == "llm"
+    assert result.speech == "I resolved the office light."
+    assert completed == [True]
+
+
+@pytest.mark.asyncio
+async def test_pipeline_uses_deferred_clarification_when_fallback_is_unavailable():
+    completed = []
+
+    async def ambiguous(_request):
+        raise RouteDeclinedWithFallback(
+            "Which light?",
+            on_alternative_success=lambda: completed.append(True),
+        )
+
+    async def unavailable(_request):
+        raise RuntimeError("LLM disabled")
+
+    result = await VoiceActionPipeline(
+        (
+            FunctionVoiceRoute("deterministic", ambiguous),
+            FunctionVoiceRoute("llm", unavailable),
+        )
+    ).handle(request())
+
+    assert result.route == "deterministic"
+    assert result.speech == "Which light?"
+    assert [failure.route for failure in result.failures] == ["deterministic", "llm"]
+    assert completed == []
+
+
+@pytest.mark.asyncio
+async def test_deterministic_route_ambiguity_escalation_is_configurable():
+    class AmbiguousEngine:
+        def catalog_snapshot(self):
+            return CatalogSnapshot()
+
+        def plan(self, _request):
+            return IntentPlan(
+                response="I found more than one possible target. Please be more specific."
+            )
+
+        async def execute_plan(self, _request, plan):
+            return plan.response
+
+    immediate = ConversationalDeterministicVoiceRoute(
+        AmbiguousEngine(),
+        ambiguous_target_fallback_enabled=False,
+    )
+    escalating = ConversationalDeterministicVoiceRoute(
+        AmbiguousEngine(),
+        ambiguous_target_fallback_enabled=True,
+    )
+
+    assert await immediate.handle(request()) == (
+        "I found more than one possible target. Please be more specific."
+    )
+    with pytest.raises(RouteDeclinedWithFallback):
+        await escalating.handle(request())
+
+
+@pytest.mark.asyncio
+async def test_pipeline_accepts_empty_speech_but_rejects_missing_results():
     async def empty(_request):
         return "  "
 
     pipeline = VoiceActionPipeline((FunctionVoiceRoute("empty", empty),))
-    with pytest.raises(VoicePipelineError, match="empty response") as captured:
-        await pipeline.handle(request())
-    assert captured.value.failures[0].route == "empty"
+    result = await pipeline.handle(request())
+    assert result.speech == ""
+    assert result.route == "empty"
+
+    async def missing(_request):
+        return None
+
+    with pytest.raises(VoicePipelineError, match="no response") as captured:
+        await VoiceActionPipeline((FunctionVoiceRoute("missing", missing),)).handle(request())
+    assert captured.value.failures[0].route == "missing"
 
     with pytest.raises(VoicePipelineError, match="No voice routes"):
         await VoiceActionPipeline(()).handle(request())
+
+
+@pytest.mark.asyncio
+async def test_pipeline_returns_configured_voice_response_after_safe_route_exhaustion():
+    async def unsupported(_request):
+        raise RuntimeError("not understood")
+
+    async def disabled(_request):
+        raise RuntimeError("LLM fallback is disabled")
+
+    result = await VoiceActionPipeline(
+        (
+            FunctionVoiceRoute("deterministic", unsupported),
+            FunctionVoiceRoute("llm", disabled),
+        ),
+        failure_response="Sorry, I couldn't handle that request.",
+    ).handle(request())
+
+    assert result.route == "voice-error-response"
+    assert result.speech == "Sorry, I couldn't handle that request."
+    assert [failure.route for failure in result.failures] == ["deterministic", "llm"]
 
 
 @pytest.mark.asyncio
@@ -99,7 +211,8 @@ async def test_pipeline_does_not_fall_through_after_execution_failure():
         (
             FunctionVoiceRoute("deterministic", failed_after_execution),
             FunctionVoiceRoute("llm", fallback),
-        )
+        ),
+        failure_response="This must not mask an uncertain action.",
     )
 
     with pytest.raises(VoicePipelineError, match="may already have completed"):
@@ -153,6 +266,33 @@ def test_application_factory_accepts_a_replacement_pipeline():
             replacement,
             dependencies=application.ApplicationDependencies(replacement),
         )
+
+
+def test_api_returns_normal_completion_for_configured_pipeline_failure_response():
+    async def unsupported(_request):
+        raise RuntimeError("No deterministic intent matched the request")
+
+    async def disabled(_request):
+        raise RuntimeError("LLM fallback is disabled")
+
+    pipeline = VoiceActionPipeline(
+        (
+            FunctionVoiceRoute("ohf-hassil", unsupported),
+            FunctionVoiceRoute("llm-ha-ws", disabled),
+        ),
+        failure_response="Sorry, I couldn't handle that request.",
+    )
+
+    response = TestClient(application.create_app(pipeline)).post(
+        "/v1/chat/completions",
+        json={"messages": [{"role": "user", "content": "unsupported request"}]},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["choices"][0]["message"]["content"] == (
+        "Sorry, I couldn't handle that request."
+    )
+    assert response.json()["home_intent_proxy"]["route"] == "voice-error-response"
 
 
 def test_main_exposes_only_the_legacy_asgi_contract():

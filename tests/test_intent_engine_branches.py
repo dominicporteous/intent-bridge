@@ -23,6 +23,7 @@ from intent_bridge.intent_engine.models import (
     PlannedIntent,
     SlotValue,
 )
+from intent_bridge.intent_engine.outcomes import AmbiguousTarget, IncompleteCompound
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 
 
@@ -168,6 +169,16 @@ class _Planner:
         return self.result
 
 
+@dataclass
+class _OutcomePlanner:
+    outcome: object
+    calls: int = 0
+
+    def resolve(self, text, catalog, origin_context=None):
+        self.calls += 1
+        return self.outcome
+
+
 def _single_step_plan() -> IntentPlan:
     return IntentPlan(
         steps=(
@@ -213,6 +224,37 @@ def test_engine_preferred_planner_precedes_recognition_and_decline_continues_to_
     assert continuing_engine.plan(request).steps[0].entity_ids == ("light.kitchen",)
     assert decline.calls == 1
     assert official.calls == 1
+
+
+def test_engine_routes_incomplete_structure_onward_but_stops_for_target_ambiguity():
+    fallback = _Planner(_single_step_plan())
+    incomplete = _OutcomePlanner(IncompleteCompound(("set mystery",)))
+    engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(_catalog()),
+        _Executor(),
+        preferred_planner=incomplete,
+        fallback_planner=fallback,
+    )
+
+    assert engine.plan(VoiceRequest("compound", "typed-failure")) == fallback.result
+    assert fallback.calls == 1
+
+    fallback.calls = 0
+    ambiguous = _OutcomePlanner(
+        AmbiguousTarget(("light.kitchen", "light.counter"), "device name")
+    )
+    ambiguous_engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(_catalog()),
+        _Executor(),
+        preferred_planner=ambiguous,
+        fallback_planner=fallback,
+    )
+
+    plan = ambiguous_engine.plan(VoiceRequest("the light", "typed-ambiguity"))
+    assert "specific" in (plan.response or "").casefold()
+    assert fallback.calls == 0
 
 
 def test_engine_filters_unresolved_entity_candidates_and_uses_fallback_for_ambiguity():
@@ -647,3 +689,32 @@ def test_resolution_infers_domains_from_coherent_official_intent_families():
     )
     assert explicit_context.entity_ids == frozenset({"light.office"})
     assert explicit_slot.entity_ids == frozenset({"climate.office"})
+
+
+def test_area_light_resolution_excludes_indicators_but_explicit_names_retain_them():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.office", "Office Light", (), "light", "office"),
+            CatalogEntity(
+                "light.voice_ring",
+                "Voice LED Ring",
+                (),
+                "light",
+                "office",
+                is_indicator=True,
+            ),
+        ),
+        areas=(CatalogArea("office", "Office"),),
+    )
+
+    area = resolution_module.resolve_candidate(
+        _match("HassTurnOff", area=_slot("Office"), domain=_slot("light")),
+        catalog,
+    )
+    named = resolution_module.resolve_candidate(
+        _match("HassTurnOn", name=_slot("Voice LED Ring")),
+        catalog,
+    )
+
+    assert area.entity_ids == frozenset({"light.office"})
+    assert named.entity_ids == frozenset({"light.voice_ring"})

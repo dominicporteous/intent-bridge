@@ -182,11 +182,12 @@ async def test_action_done_does_not_speak_stale_websocket_state(monkeypatch):
         )
 
     monkeypatch.setattr(runtime, "ha_ws", FakeHaWs())
+    monkeypatch.setattr(settings.api, "action_confirmation", "")
     async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
         executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
         result = await executor.execute(OhfIntentCall("HassVacuumStart", {}))
 
-    assert result.speech == settings.api.action_confirmation
+    assert result.speech == ""
 
 
 @pytest.mark.asyncio
@@ -217,6 +218,7 @@ async def test_duplicate_name_match_failure_retries_exact_entity_over_websocket(
         )
 
     monkeypatch.setattr(runtime, "ha_ws", FakeHaWs())
+    monkeypatch.setattr(settings.api, "action_confirmation", "")
     async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
         executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
         result = await executor.execute(
@@ -229,7 +231,7 @@ async def test_duplicate_name_match_failure_retries_exact_entity_over_websocket(
             )
         )
 
-    assert result.speech == settings.api.action_confirmation
+    assert result.speech == ""
     assert seen[0][0] == {
         "type": "call_service",
         "domain": "light",

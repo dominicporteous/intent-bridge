@@ -7,10 +7,17 @@ suite in `tests/`.
 The checked-in corpus currently contains:
 
 - 5 independent Home Assistant home topologies
-- 731 scenario YAML files
-- 1,979 scenarios
-- 14,243 independently executed sentence or dialogue examples
-- 15,907 total conversation turns
+- 908 scenario YAML files
+- 2,470 scenarios
+- 17,815 independently executed sentence or dialogue examples
+- 19,943 total conversation turns
+
+The `2_floor_2_bed` corpus models a two-storey British home with two bedrooms,
+a study, utility cupboard, garden and shed. In addition to the standard
+device, area, query, clarification, persistence, automation, list and
+multi-intent coverage, it includes an end-to-end UK household routine suite
+covering central heating, commuting, damp-weather ventilation, off-peak
+washing, cooking, bins, shopping, evening security and bedtime.
 
 Every example must pass. The benchmark has no skip, xfail, sampling, or
 allow-list mechanism, so a successful run means 100% corpus coverage.
@@ -38,7 +45,7 @@ To filter the benchmark to a single home or scenario path, set one or both of:
 Example:
 
 ```shell
-BENCHMARK_HOME=family_home_uk uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+BENCHMARK_HOME=2_floor_2_bed uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
 Or, to select a specific scenario file:
@@ -126,20 +133,21 @@ setup state, and origin context. Fixture paths, scenario names, and expected
 operations are deliberately excluded from matcher input, preventing an
 implementation from passing by looking up fixture answers.
 
-## Full production and LLM pipeline benchmark
+## Production pipeline benchmark
 
-The same pytest runner automatically uses the production voice pipeline and
-configured LLM/tool fallback when these application options are all set:
+The pytest runner always uses the production voice pipeline constructed by
+`intent_bridge.application.build_voice_pipeline`. LLM configuration never
+selects a different benchmark matcher or planner stack. The configured LLM/tool
+fallback becomes available when these application options are all set:
 
 - `INTENT_BRIDGE_LLM_ENABLED=true`
 - `INTENT_BRIDGE_LLM_BASE_URL`
 - `INTENT_BRIDGE_LLM_MODEL`
 
 The runner loads the repository `.env` before importing application settings.
-When those options are complete, every turn is passed directly to the pipeline
-constructed by `intent_bridge.application.build_voice_pipeline`. This preserves
-production route order: deterministic planning runs first and `llm-ha-ws` runs only when
-the deterministic route declines. Each corpus home is presented to the normal
+Every turn is passed directly to that pipeline. This preserves production route
+order: deterministic planning runs first and `llm-ha-ws` runs only when the
+deterministic route declines. Each corpus home is presented to the normal
 LLM HA tools as an isolated in-memory HA cache; service calls are recorded and
 compared with the fixture's expected operations. It never controls the HA
 instance configured in `.env`.
@@ -152,20 +160,10 @@ $env:BENCHMARK_LIMIT = "25"
 uv run pytest benchmark/test_benchmark.py -o addopts="" -q
 ```
 
-To measure the LLM/tool route for every selected example, including examples
-the deterministic route normally handles:
-
-```powershell
-$env:BENCHMARK_FORCE_LLM = "true"
-$env:BENCHMARK_LIMIT = "10"
-uv run pytest benchmark/test_benchmark.py -o addopts="" -q
-```
-
 Supported controls are `BENCHMARK_HOME`, `BENCHMARK_SOURCE`,
-`BENCHMARK_LIMIT`, and `BENCHMARK_FORCE_LLM`. Runs remain exhaustive by
-default, including when LLM-backed; set `BENCHMARK_LIMIT` explicitly to control
-model usage and cost. Execution is sequential because the agent-facing HA
-transport is process-global.
+and `BENCHMARK_LIMIT`. Runs remain exhaustive by default, including when
+LLM-backed; set `BENCHMARK_LIMIT` explicitly to control model usage and cost.
+Execution is sequential because the agent-facing HA transport is process-global.
 
 The normal fallback agent and its `ha_search`, `ha_get_state`,
 `ha_list_services`, and `ha_call_service` tools are exercised. The advanced

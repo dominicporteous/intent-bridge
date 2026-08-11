@@ -193,6 +193,38 @@ def test_catalog_snapshot_extracts_domain_neutral_measurements():
     assert entities["sensor.unavailable_power"].measurements == ()
 
 
+def test_catalog_classifies_voice_satellite_led_without_hiding_normal_lights():
+    client = SimpleNamespace(
+        states={
+            "light.home_assistant_voice_0aaa03_led_ring": {
+                "state": "off",
+                "attributes": {"friendly_name": "Home Assistant Voice LED Ring"},
+            },
+            "light.office_light": {
+                "state": "on",
+                "attributes": {"friendly_name": "Office Light"},
+            },
+        },
+        entity_registry={
+            "light.home_assistant_voice_0aaa03_led_ring": {
+                "di": "voice-ring",
+                "ai": "office",
+            },
+            "light.office_light": {"di": "office-light", "ai": "office"},
+        },
+        devices={
+            "voice-ring": {"name": "Home Assistant Voice LED Ring"},
+            "office-light": {"name": "Office Ceiling Light"},
+        },
+        areas={"office": {"name": "Office"}},
+    )
+
+    entities = {entity.entity_id: entity for entity in snapshot_from_client(client).entities}
+
+    assert entities["light.home_assistant_voice_0aaa03_led_ring"].is_indicator is True
+    assert entities["light.office_light"].is_indicator is False
+
+
 def test_catalog_provider_returns_empty_or_fresh_snapshot():
     unavailable = HomeAssistantCatalogProvider(lambda: None)
     assert unavailable.snapshot() == CatalogSnapshot()

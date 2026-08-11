@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from intent_bridge.core.voice import RouteDeclined, RouteExecutionError, VoiceRequest
@@ -17,9 +17,11 @@ from intent_bridge.intent_engine.models import (
     semantic_effect_for_call,
 )
 from intent_bridge.intent_engine.natural_language import (
+    normalize_lexical_operator,
     singular_generic_target,
     split_compound_request,
 )
+from intent_bridge.intent_engine.outcomes import AmbiguousTarget, Resolved
 from intent_bridge.intent_engine.ports import (
     CatalogProvider,
     IntentExecutor,
@@ -30,6 +32,8 @@ from intent_bridge.intent_engine.resolution import ResolvedCandidate, resolve_ca
 from intent_bridge.runtime.dependencies import runtime
 
 LOGGER = logging.getLogger(__name__)
+
+_AUTOMATION_REQUEST_RE = re.compile(r"\b(?:automation|automate|routine|rule)\b", re.IGNORECASE)
 
 _CONTEXT_RELATIVE_INTENTS = frozenset(
     {
@@ -113,6 +117,18 @@ def _call_for_match(
     return OhfIntentCall(intent_name=match.intent_name, data=data)
 
 
+def _exact_call_for_entity(match: IntentMatch, entity_id: str, name: str) -> OhfIntentCall:
+    """Materialize a topology-filtered generic target as an exact HA target."""
+
+    data = {
+        slot_name: slot.value
+        for slot_name, slot in match.slots.items()
+        if slot_name not in _EXPLICIT_TARGET_SLOTS and slot_name != "domain"
+    }
+    data.update({"name": name, "entity_id": entity_id})
+    return OhfIntentCall(intent_name=match.intent_name, data=data)
+
+
 class DeterministicIntentEngine:
     """Coordinate pure recognition/resolution before invoking one side-effect boundary."""
 
@@ -124,7 +140,8 @@ class DeterministicIntentEngine:
         *,
         preferred_planner: IntentPlanner | None = None,
         fallback_planner: IntentPlanner | None = None,
-        default_response: str = "Done.",
+        step_observer: Callable[[PlannedIntent], None] | None = None,
+        default_response: str = "",
         ambiguity_response: str = (
             "I found more than one possible target. Please be more specific."
         ),
@@ -134,6 +151,7 @@ class DeterministicIntentEngine:
         self._executor = executor
         self._preferred_planner = preferred_planner
         self._fallback_planner = fallback_planner
+        self._step_observer = step_observer
         self._default_response = default_response
         self._ambiguity_response = ambiguity_response
 
@@ -141,7 +159,19 @@ class DeterministicIntentEngine:
         """Recognize and resolve a request without executing any operations."""
 
         catalog = self._catalog_provider.snapshot()
-        clauses = split_compound_request(request.text)
+        structural_automation = bool(_AUTOMATION_REQUEST_RE.search(request.text))
+        clauses = (request.text,) if structural_automation else split_compound_request(request.text)
+        LOGGER.info(
+            "INTENT PLAN start text=%r conversation=%r clauses=%r catalog_entities=%d "
+            "catalog_areas=%d catalog_floors=%d origin=%r",
+            request.text,
+            request.conversation_key,
+            clauses,
+            len(catalog.entities),
+            len(catalog.areas),
+            len(catalog.floors),
+            request.origin_context,
+        )
         if len(clauses) > 1:
             steps: list[PlannedIntent] = []
             context = dict(request.origin_context or {})
@@ -171,6 +201,11 @@ class DeterministicIntentEngine:
 
         return self._plan_single(request, catalog)
 
+    def catalog_snapshot(self) -> CatalogSnapshot:
+        """Return the same production catalog used for request planning."""
+
+        return self._catalog_provider.snapshot()
+
     def _plan_single(
         self,
         request: VoiceRequest,
@@ -182,6 +217,8 @@ class DeterministicIntentEngine:
         # broad power grammar can consume words such as ``on`` or ``off``.
         # This is capability-level precedence, independent of device type.
         normalized_text = request.text.casefold()
+        structural_automation = bool(_AUTOMATION_REQUEST_RE.search(request.text))
+        lexical_operator = normalize_lexical_operator(request.text)
         property_semantics = bool(
             re.search(r"\b(?:audio|mute|sound)\b", normalized_text)
             or (
@@ -196,9 +233,16 @@ class DeterministicIntentEngine:
                 )
             )
         )
-        if property_semantics and (
+        if not structural_automation and (lexical_operator is not None or property_semantics) and (
             semantic := self._try_planner(self._fallback_planner, request, catalog)
         ):
+            LOGGER.info(
+                "INTENT PLAN selected semantic-first planner text=%r operator=%r "
+                "property_semantics=%s",
+                request.text,
+                lexical_operator,
+                property_semantics,
+            )
             return self._validate_target_cardinality(request.text, semantic, catalog)
 
         preferred = self._try_planner(self._preferred_planner, request, catalog)
@@ -209,6 +253,21 @@ class DeterministicIntentEngine:
             request.text,
             catalog,
             request.origin_context,
+        )
+        LOGGER.info(
+            "INTENT PLAN recognizer text=%r candidates=%s",
+            request.text,
+            tuple(
+                {
+                    "intent": match.intent_name,
+                    "slots": {
+                        name: {"value": slot.value, "metadata": dict(slot.metadata)}
+                        for name, slot in match.slots.items()
+                    },
+                    "response": match.response_key,
+                }
+                for match in matches
+            ),
         )
         if not matches:
             if fallback := self._try_planner(self._fallback_planner, request, catalog):
@@ -222,6 +281,19 @@ class DeterministicIntentEngine:
         resolved = [
             resolve_candidate(candidate, catalog, request.origin_context) for candidate in matches
         ]
+        LOGGER.info(
+            "INTENT PLAN resolved_candidates text=%r candidates=%s",
+            request.text,
+            tuple(
+                {
+                    "intent": candidate.match.intent_name,
+                    "entity_ids": tuple(sorted(candidate.entity_ids)),
+                    "semantic_key": candidate.semantic_key,
+                    "specificity": candidate.specificity,
+                }
+                for candidate in resolved
+            ),
+        )
         resolved = [
             candidate
             for candidate in resolved
@@ -239,20 +311,78 @@ class DeterministicIntentEngine:
         if len(by_semantics) != 1:
             if fallback := self._try_planner(self._fallback_planner, request, catalog):
                 return self._validate_target_cardinality(request.text, fallback, catalog)
+            LOGGER.info(
+                "INTENT PLAN ambiguous reason=distinct_semantics text=%r alternatives=%s",
+                request.text,
+                tuple(by_semantics),
+            )
             return IntentPlan(response=self._ambiguity_response)
 
         equivalent_candidates = next(iter(by_semantics.values()))
         selected = max(equivalent_candidates, key=lambda candidate: candidate.specificity)
-        call = _call_for_match(selected.match, request.origin_context)
-        return self._validate_target_cardinality(request.text, IntentPlan(
-            steps=(
+        LOGGER.info(
+            "INTENT PLAN selected recognizer_candidate text=%r intent=%s entity_ids=%s "
+            "specificity=%d",
+            request.text,
+            selected.match.intent_name,
+            tuple(sorted(selected.entity_ids)),
+            selected.specificity,
+        )
+        selected_ids = tuple(sorted(selected.entity_ids))
+        by_id = {entity.entity_id: entity for entity in catalog.entities}
+        selected_domains = {
+            by_id[entity_id].domain for entity_id in selected_ids if entity_id in by_id
+        }
+        # HA's area/domain intent would independently expand the target again
+        # and re-include status LEDs which the catalog deliberately filtered.
+        # Materialize the safe set as exact entity calls whenever that can
+        # happen. Explicitly named indicator requests remain available.
+        materialize_exact = bool(
+            "name" not in selected.match.slots
+            and selected_domains == {"light"}
+            and any(entity.domain == "light" and entity.is_indicator for entity in catalog.entities)
+        )
+        if materialize_exact:
+            steps = tuple(
                 PlannedIntent(
-                    call=call,
-                    entity_ids=tuple(sorted(selected.entity_ids)),
+                    call=(
+                        call := _exact_call_for_entity(
+                            selected.match,
+                            entity_id,
+                            by_id[entity_id].name,
+                        )
+                    ),
+                    entity_ids=(entity_id,),
                     effect=semantic_effect_for_call(call),
-                ),
+                )
+                for entity_id in selected_ids
+                if entity_id in by_id
             )
-        ), catalog)
+            LOGGER.info(
+                "INTENT PLAN materialized filtered light group text=%r entity_ids=%s",
+                request.text,
+                selected_ids,
+            )
+            return self._validate_target_cardinality(
+                request.text,
+                IntentPlan(steps=steps),
+                catalog,
+            )
+
+        call = _call_for_match(selected.match, request.origin_context)
+        return self._validate_target_cardinality(
+            request.text,
+            IntentPlan(
+                steps=(
+                    PlannedIntent(
+                        call=call,
+                        entity_ids=selected_ids,
+                        effect=semantic_effect_for_call(call),
+                    ),
+                )
+            ),
+            catalog,
+        )
 
     def _validate_target_cardinality(
         self,
@@ -272,27 +402,71 @@ class DeterministicIntentEngine:
             by_id[entity_id].domain for entity_id in step.entity_ids if entity_id in by_id
         }
         if len(domains) == 1 and singular_generic_target(text, next(iter(domains))):
+            LOGGER.info(
+                "INTENT PLAN ambiguous reason=singular_generic_cardinality text=%r "
+                "domain=%s entity_ids=%s",
+                text,
+                next(iter(domains)),
+                step.entity_ids,
+            )
             return IntentPlan(response=self._ambiguity_response)
         return plan
 
-    @staticmethod
     def _try_planner(
+        self,
         planner: IntentPlanner | None,
         request: VoiceRequest,
         catalog: CatalogSnapshot,
     ) -> IntentPlan | None:
         if planner is None:
             return None
+        planner_name = type(planner).__name__
+        resolver = getattr(planner, "resolve", None)
+        if callable(resolver):
+            outcome = resolver(request.text, catalog, request.origin_context)
+            LOGGER.info(
+                "INTENT PLAN planner_outcome planner=%s text=%r outcome=%s detail=%r",
+                planner_name,
+                request.text,
+                type(outcome).__name__,
+                outcome,
+            )
+            if isinstance(outcome, Resolved):
+                return outcome.plan
+            if isinstance(outcome, AmbiguousTarget):
+                return IntentPlan(
+                    response=self._ambiguity_response
+                )
+            # Unsupported/incomplete/capability/no-target outcomes are declines
+            # here, allowing the next recognizer or the external voice fallback.
+            return None
         try:
             plan = planner.plan(request.text, catalog, request.origin_context)
-        except RouteDeclined:
+        except RouteDeclined as exc:
+            LOGGER.info(
+                "INTENT PLAN planner_declined planner=%s text=%r reason=%s",
+                planner_name,
+                request.text,
+                exc,
+            )
             return None
+        LOGGER.info(
+            "INTENT PLAN planner_result planner=%s text=%r steps=%d response=%r",
+            planner_name,
+            request.text,
+            len(plan.steps),
+            plan.response,
+        )
         return plan if plan.steps or plan.response is not None else None
 
     async def handle(self, request: VoiceRequest) -> str:
         """Plan a request, then execute each planned operation in order."""
 
-        plan = self.plan(request)
+        return await self.execute_plan(request, self.plan(request))
+
+    async def execute_plan(self, request: VoiceRequest, plan: IntentPlan) -> str:
+        """Execute a previously produced plan through the production boundary."""
+
         if plan.response is not None:
             return plan.response
 
@@ -311,6 +485,8 @@ class DeterministicIntentEngine:
                     reading.measurement.unit,
                     speech,
                 )
+                if self._step_observer is not None:
+                    self._step_observer(step)
                 responses.append(speech)
                 continue
             try:
@@ -375,6 +551,8 @@ class DeterministicIntentEngine:
                 raise RouteExecutionError(f"Deterministic intent execution failed: {exc}") from exc
             if speech := result.speech.strip():
                 responses.append(speech)
+            if self._step_observer is not None:
+                self._step_observer(step)
 
         return " ".join(responses) or self._default_response
 

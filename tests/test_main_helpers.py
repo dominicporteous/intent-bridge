@@ -205,12 +205,12 @@ def test_music_failure_and_write_detection():
     ],
 )
 def test_indicator_colour_parsing(monkeypatch, value, expected):
-    monkeypatch.setattr(settings.indicators, "color", value)
+    monkeypatch.setattr(settings.assistant, "led_color", value)
     assert indicators._configured_indicator_rgb() == expected
 
 
 def test_indicator_effect_and_light_helpers(monkeypatch):
-    monkeypatch.setattr(settings.indicators, "effect", "pulse")
+    monkeypatch.setattr(settings.assistant, "led_effect", "pulse")
     attrs = {"effect_list": ["None", "Slow Pulse"], "supported_color_modes": ["rgb"]}
     assert indicators._find_configured_native_effect(attrs) == "Slow Pulse"
     assert indicators._configured_effect_wants_software_pulse()
@@ -220,7 +220,7 @@ def test_indicator_effect_and_light_helpers(monkeypatch):
 
 
 def test_snapshot_restore_light_data_clamps_and_preserves_visual_state():
-    snapshot = indicators.SatelliteIndicatorSnapshot(
+    snapshot = indicators.AssistantLedSnapshot(
         entity_id="light.status",
         domain="light",
         state="on",

@@ -11,8 +11,6 @@ from typing import Any
 
 from benchmark.models import BenchmarkCorpus, BenchmarkExample, BenchmarkMatcher, Operation
 
-_TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
-
 
 @dataclass(frozen=True, slots=True)
 class BenchmarkOptions:
@@ -21,35 +19,19 @@ class BenchmarkOptions:
     homes: tuple[str, ...] = ()
     sources: tuple[str, ...] = ()
     limit: int | None = None
-    force_llm: bool = False
-    use_full_pipeline: bool = False
 
     @classmethod
     def from_environment(
         cls,
         environ: Mapping[str, str] | None = None,
-        *,
-        llm_settings: Any | None = None,
     ) -> BenchmarkOptions:
         environ = os.environ if environ is None else environ
-        if llm_settings is None:
-            # Imported lazily so an executable can load .env before application
-            # settings are constructed.
-            from intent_bridge.config import settings
-
-            llm_settings = settings.llm
-
         homes = _csv(environ.get("BENCHMARK_HOME", ""))
         sources = _csv(environ.get("BENCHMARK_SOURCE", ""))
-        force_llm = environ.get("BENCHMARK_FORCE_LLM", "").strip().casefold() in _TRUE_VALUES
-        configured = bool(
-            llm_settings.enabled and llm_settings.base_url and llm_settings.model
-        )
-        use_full_pipeline = configured or force_llm
 
         raw_limit = environ.get("BENCHMARK_LIMIT")
         limit = max(1, int(raw_limit)) if raw_limit else None
-        return cls(homes, sources, limit, force_llm, use_full_pipeline)
+        return cls(homes, sources, limit)
 
 
 def _csv(value: str) -> tuple[str, ...]:
@@ -75,16 +57,11 @@ def select_examples(
 
 
 def make_benchmark_matcher(options: BenchmarkOptions) -> BenchmarkMatcher:
-    """Choose the production pipeline adapter when configured, otherwise deterministic."""
+    """Always exercise the application production pipeline."""
+    del options
+    from benchmark.full_pipeline import FullPipelineBenchmarkMatcher
 
-    if options.use_full_pipeline:
-        from benchmark.full_pipeline import FullPipelineBenchmarkMatcher
-
-        return FullPipelineBenchmarkMatcher(force_llm=options.force_llm)
-
-    from benchmark.production import ProductionBenchmarkMatcher
-
-    return ProductionBenchmarkMatcher()
+    return FullPipelineBenchmarkMatcher()
 
 
 def _keys(operations: tuple[Operation, ...]) -> Counter[tuple[Any, ...]]:

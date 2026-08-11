@@ -12,11 +12,11 @@ try:
 except Exception:  # pragma: no cover - deployment dependency guard
     QueueOption = None
 
-from intent_bridge.config import log, settings
-from intent_bridge.indicators.controller import (
-    SatelliteIndicatorHandle,
-    voice_activity_indicators,
+from intent_bridge.assistant import (
+    AssistantFeedbackHandle,
+    assistant_feedback,
 )
+from intent_bridge.config import log, settings
 from intent_bridge.music_assistant.client import (
     MusicPlayDispatchResult,
     NativeMusicAssistant,
@@ -112,15 +112,22 @@ async def _ma_dispatch_play_media(
     except TimeoutError:
 
         async def _background_lifecycle() -> None:
-            indicator_handle: SatelliteIndicatorHandle | None = None
+            feedback_handle: AssistantFeedbackHandle | None = None
             try:
                 # LED resolution/control happens only after the voice ACK window
                 # and never delays the optimistic spoken response.
-                indicator_handle = await voice_activity_indicators.begin(origin_context)
+                feedback_handle = await assistant_feedback.begin(
+                    origin_context,
+                    led=True,
+                    sounds=False,
+                )
                 await task
             finally:
                 manager.clear_inflight_playback(queue_id, fingerprint, task)
-                await voice_activity_indicators.end(indicator_handle)
+                await assistant_feedback.complete(
+                    feedback_handle,
+                    success=task.done() and not task.cancelled() and task.exception() is None,
+                )
 
         lifecycle = asyncio.create_task(
             _background_lifecycle(),
@@ -478,14 +485,18 @@ async def _ma_dispatch_fast_artist_radio(
         manager.track_background_task(cleanup, label=f"{label}:seed_play")
 
     async def _radio_lifecycle() -> None:
-        indicator_handle: SatelliteIndicatorHandle | None = None
+        feedback_handle: AssistantFeedbackHandle | None = None
         first_audio = immediate_audio
         first_audio_seconds = immediate_audio_seconds
         try:
             if not first_audio:
                 # Indicator represents waiting for audible playback, not waiting
                 # for MA's recommendation engine or play_media response to end.
-                indicator_handle = await voice_activity_indicators.begin(origin_context)
+                feedback_handle = await assistant_feedback.begin(
+                    origin_context,
+                    led=True,
+                    sounds=False,
+                )
                 try:
                     ux_remaining = max(
                         0.05,
@@ -505,8 +516,8 @@ async def _ma_dispatch_fast_artist_radio(
                         seed_uri,
                         settings.music_assistant.first_audio_timeout_seconds,
                     )
-                    await voice_activity_indicators.end(indicator_handle)
-                    indicator_handle = None
+                    await assistant_feedback.complete(feedback_handle, success=False)
+                    feedback_handle = None
                     # Continue waiting without holding the LED indefinitely.
                     first_audio, first_audio_seconds, marker = await audio_task
                 if first_audio:
@@ -546,7 +557,7 @@ async def _ma_dispatch_fast_artist_radio(
                 generation,
             )
         finally:
-            await voice_activity_indicators.end(indicator_handle)
+            await assistant_feedback.complete(feedback_handle, success=bool(first_audio))
             manager.clear_inflight_playback(queue_id, fingerprint, dedupe_task)
             dedupe_release.set()
 

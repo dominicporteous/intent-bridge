@@ -28,8 +28,18 @@ from intent_bridge.intent_engine.models import (
     IntentPlan,
     OhfIntentCall,
     PlannedIntent,
+    SemanticEffect,
     SlotValue,
     semantic_effect_for_call,
+)
+from intent_bridge.intent_engine.outcomes import (
+    AmbiguousTarget,
+    CapabilityMismatch,
+    IncompleteCompound,
+    NoTarget,
+    PlanningOutcome,
+    Resolved,
+    UnsupportedOperation,
 )
 
 _DOMAIN_ALIASES: tuple[tuple[str, str], ...] = (
@@ -236,12 +246,46 @@ class _Operation:
     intent_name: str
     slots: Mapping[str, Any]
     domain: str | None = None
+    requested_effect: SemanticEffect | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class NormalizedOperator:
+    """A domain-neutral predicate selected before target resolution.
+
+    ``property`` and ``value`` describe what the speaker requested; ``intent_name``
+    is only the OHF transport chosen for that predicate.  Keeping this boundary
+    explicit prevents lexical verbs such as ``switch`` and nouns such as ``sound``
+    from being mistaken for target domains.
+    """
+
+    property: str
+    operator: str
+    value: Any
+    intent_name: str
+    domain: str | None
+    slots: Mapping[str, Any]
+
+    def as_operation(self) -> _Operation:
+        return _Operation(
+            self.intent_name,
+            self.slots,
+            self.domain,
+            SemanticEffect(
+                "command",
+                self.property,
+                self.operator,
+                self.value,
+                explicit_power_transition=self.property == "power",
+            ),
+        )
 
 
 @dataclass(frozen=True, slots=True)
 class _Target:
     slots: Mapping[str, Any]
     entity_ids: tuple[str, ...]
+    excluded_entity_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -260,6 +304,10 @@ class _TargetSet:
 
 
 class _AmbiguousTarget(Exception):
+    pass
+
+
+class _CapabilityMismatch(Exception):
     pass
 
 
@@ -549,12 +597,12 @@ def _explicit_domain(text: str) -> str | None:
         (r"\b(?:lights?|lamps?|lighting|illumination)\b", "light"),
         (r"\b(?:switches?)\b", "switch"),
     ):
-        if domain == "switch" and imperative_switch:
+        if domain == "switch" and imperative_switch and not re.search(r"\bswitches\b", text):
             continue
         if re.search(pattern, text):
             return domain
     for phrase, domain in _DOMAIN_ALIASES:
-        if domain == "switch" and imperative_switch:
+        if domain == "switch" and imperative_switch and not re.search(r"\bswitches\b", text):
             continue
         if _contains_phrase(text, phrase):
             return domain
@@ -619,8 +667,110 @@ def _desired_query_state(text: str) -> str | None:
     return None
 
 
+def normalize_lexical_operator(
+    text: str,
+    contextual_domain: str | None = None,
+) -> NormalizedOperator | None:
+    """Normalize imperative surface wording without resolving a target.
+
+    The patterns here intentionally require imperative syntax.  For example,
+    ``is the sound off`` remains a query, while ``turn off the sound`` becomes a
+    mute operation.  Applicability is subsequently enforced by resolving only
+    entities compatible with ``domain``.
+    """
+
+    text = _clean_clause(_normal(text))
+    explicit_domain = _explicit_domain(text)
+    domain = _semantic_domain(text) or explicit_domain or contextual_domain
+
+    if re.match(r"^(?:flip|flick|push|move|pull|roll)\b", text) and re.search(
+        r"\b(?:blinds?|curtains?|shades?|shutters?|covers?|windows?)\b.*\bdown\b",
+        text,
+    ):
+        return NormalizedOperator(
+            "position", "set", "closed", "HassTurnOff", "cover", {}
+        )
+    if re.match(r"^(?:flip|flick|push|move|pull|roll)\b", text) and re.search(
+        r"\b(?:blinds?|curtains?|shades?|shutters?|covers?|windows?)\b.*\bup\b",
+        text,
+    ):
+        return NormalizedOperator(
+            "position", "set", "open", "HassTurnOn", "cover", {}
+        )
+
+    if re.match(
+        r"^(?:turn|switch)\s+off\s+(?:the\s+)?(?:sound|audio|volume)\b|"
+        r"^(?:silence|mute)\b",
+        text,
+    ):
+        return NormalizedOperator(
+            "muted", "set", True, "HassMediaPlayerMute", "media_player", {}
+        )
+    if re.match(
+        r"^(?:restore|enable)\s+(?:the\s+)?(?:sound|audio)\b|^unmute\b",
+        text,
+    ):
+        return NormalizedOperator(
+            "muted", "set", False, "HassMediaPlayerUnmute", "media_player", {}
+        )
+
+    if (
+        re.match(r"^(?:resume|unpause|continue)\b", text)
+        and (domain == "media_player" or re.search(r"\bplayback\b", text))
+    ) or (
+        re.match(r"^restart\b", text)
+        and (domain == "media_player" or re.search(r"\bplayback\b", text))
+    ):
+        return NormalizedOperator(
+            "playback", "set", "playing", "HassMediaUnpause", "media_player", {}
+        )
+
+    # At the start of an imperative, "switch" is a verb.  Preserve a domain
+    # supplied by the target phrase (for coordinated groups such as
+    # ``bathroom and kitchen lights``), while never inferring the switch domain
+    # merely from the verb itself.  Power remains polymorphic for explicitly
+    # named heterogeneous members.
+    switch_power = re.match(r"^switch\s+(?P<state>on|off)\b", text)
+    if switch_power:
+        is_on = switch_power.group("state") == "on"
+        return NormalizedOperator(
+            "power",
+            "set",
+            is_on,
+            "HassTurnOn" if is_on else "HassTurnOff",
+            domain,
+            {},
+        )
+
+    # Bare ``X to 27`` setters inherit the single conventional numeric property
+    # exposed by X's domain (or by the prior discourse property's domain).
+    numeric_value = _number_after_relation(text)
+    if numeric_value is not None and 0 <= numeric_value <= 100:
+        numeric_operators = {
+            "light": ("brightness", "HassLightSet", "brightness"),
+            "cover": ("position", "HassSetPosition", "position"),
+            "fan": ("percentage", "HassFanSetSpeed", "percentage"),
+            "climate": ("temperature", "HassClimateSetTemperature", "temperature"),
+            "media_player": ("volume_level", "HassSetVolume", "volume_level"),
+        }
+        if domain in numeric_operators:
+            property_name, intent_name, slot = numeric_operators[domain]
+            return NormalizedOperator(
+                property_name,
+                "set",
+                numeric_value,
+                intent_name,
+                domain,
+                {slot: numeric_value},
+            )
+    return None
+
+
 def _classify(text: str, contextual_domain: str | None = None) -> _Operation | None:
     domain = _semantic_domain(text) or _explicit_domain(text) or contextual_domain
+    normalized_operator = normalize_lexical_operator(text, contextual_domain)
+    if normalized_operator is not None:
+        return normalized_operator.as_operation()
     paired_state_query = bool(
         re.search(
             r"\b(?:on\s+or\s+off|off\s+or\s+on|open\s+or\s+closed|"
@@ -1290,8 +1440,18 @@ def _group_target(
         area_ids = {item.area_id for item in catalog.areas if item.floor_id == floor.floor_id}
         entities = [entity for entity in entities if entity.area_id in area_ids]
         slots["floor"] = floor.name
+    excluded_entities: list[CatalogEntity] = []
+    if domain == "light":
+        excluded_entities = [entity for entity in entities if entity.is_indicator]
+        entities = [entity for entity in entities if not entity.is_indicator]
     return (
-        _Target(slots, tuple(sorted(entity.entity_id for entity in entities))) if entities else None
+        _Target(
+            slots,
+            tuple(sorted(entity.entity_id for entity in entities)),
+            tuple(sorted(entity.entity_id for entity in excluded_entities)),
+        )
+        if entities
+        else None
     )
 
 
@@ -1339,7 +1499,9 @@ def _resolve_target_member(
         # A shared property setter is valid only when every target exposes the
         # capability represented by the operation's domain.
         if mentioned_domain != operation.domain:
-            return ()
+            raise _CapabilityMismatch(
+                f"{mentioned_domain} does not support {operation.intent_name}"
+            )
     domain = (
         mentioned_domain
         if polymorphic and mentioned_domain is not None
@@ -1505,10 +1667,19 @@ def _resolve_targets(
         unambiguous_entities = tuple(entity for entity, ambiguous in entity_hits if not ambiguous)
         ambiguous_entities = tuple(entity for entity, ambiguous in entity_hits if ambiguous)
 
-        if ambiguous_entities:
-            # For now, if there are ambiguous entities, we'll raise an exception.
-            # In the future, we can add logic here to try and disambiguate or
-            # return a clarification request.
+        if ambiguous_entities and not (areas and domain):
+            # Partial-name ambiguity is genuine only when topology cannot
+            # resolve the phrase as an explicit area/floor group.  For example,
+            # ``kitchen switches`` may partially overlap the alias ``switch
+            # coffee maker`` while still denoting the one complete switch group
+            # in that area.
+            LOGGER.info(
+                "TARGET RESOLUTION ambiguous reason=shared_name_without_topology "
+                "text=%r domain=%r candidates=%s",
+                text,
+                domain,
+                tuple(_describe_entity(entity) for entity in ambiguous_entities),
+            )
             raise _AmbiguousTarget
 
         if unambiguous_entities:
@@ -1573,6 +1744,10 @@ def _resolve_targets(
     if domain is None:
         # This case is for when no entities are found and no domain is explicitly mentioned.
         # This is still an ambiguous situation, so we raise _AmbiguousTarget.
+        LOGGER.info(
+            "TARGET RESOLUTION ambiguous reason=no_domain_or_named_entity text=%r",
+            text,
+        )
         raise _AmbiguousTarget
     if areas:
         targets = tuple(
@@ -1691,6 +1866,8 @@ class NaturalLanguageIntentPlanner:
         text: str,
         catalog: CatalogSnapshot,
         origin_context: Mapping[str, object] | None = None,
+        *,
+        _typed: bool = False,
     ) -> IntentPlan:
         try:
             measurement_plan = self._measurement_planner.plan(
@@ -1726,11 +1903,15 @@ class NaturalLanguageIntentPlanner:
                 ),
             )
             if operation is None:
-                operation = _elliptical_query(
-                    clause,
-                    catalog,
-                    self._ignored_entity_domains,
-                )
+                # An imperative predicate that is unsupported for its named
+                # target is not an elliptical request to read that target.
+                # Declining allows another strategy/fallback to handle it.
+                if not re.match(r"^restart\b", clause):
+                    operation = _elliptical_query(
+                        clause,
+                        catalog,
+                        self._ignored_entity_domains,
+                    )
             if operation is None:
                 raise RouteDeclined(f"No deterministic operation matched: {clause}")
             try:
@@ -1743,11 +1924,63 @@ class NaturalLanguageIntentPlanner:
                     self._ignored_entity_domains,
                 )
             except _AmbiguousTarget:
+                LOGGER.info(
+                    "NATURAL PLAN ambiguous clause=%r intent=%s domain=%r",
+                    clause,
+                    operation.intent_name,
+                    operation.domain,
+                )
+                return IntentPlan(response=self._ambiguity_response)
+            except _CapabilityMismatch as exc:
+                if _typed:
+                    raise RouteDeclined(f"Capability mismatch: {exc}") from exc
                 return IntentPlan(response=self._ambiguity_response)
             if not targets:
+                LOGGER.info(
+                    "NATURAL PLAN no_target clause=%r intent=%s domain=%r typed=%s",
+                    clause,
+                    operation.intent_name,
+                    operation.domain,
+                    _typed,
+                )
+                if _typed:
+                    raise RouteDeclined(
+                        f"No target resolved for deterministic operation: {clause}"
+                    )
                 return IntentPlan(response=self._ambiguity_response)
 
             for target in targets:
+                if target.excluded_entity_ids:
+                    by_id = {entity.entity_id: entity for entity in catalog.entities}
+                    LOGGER.info(
+                        "NATURAL PLAN materialized filtered light group clause=%r "
+                        "entity_ids=%s excluded=%s",
+                        clause,
+                        target.entity_ids,
+                        target.excluded_entity_ids,
+                    )
+                    for entity_id in target.entity_ids:
+                        entity = by_id[entity_id]
+                        data = {
+                            "name": entity.name,
+                            "entity_id": entity.entity_id,
+                            **operation.slots,
+                        }
+                        if operation.intent_name in {
+                            "HassGetState",
+                            "HassClimateGetTemperature",
+                        }:
+                            data.pop("entity_id", None)
+                        call = OhfIntentCall(operation.intent_name, data)
+                        steps.append(
+                            PlannedIntent(
+                                call=call,
+                                entity_ids=(entity_id,),
+                                effect=operation.requested_effect
+                                or semantic_effect_for_call(call),
+                            )
+                        )
+                    continue
                 data = {**target.slots, **operation.slots}
                 # HA's query intents resolve by their supported name/domain
                 # slots; entity_id is useful for exact action targets but is
@@ -1759,11 +1992,42 @@ class NaturalLanguageIntentPlanner:
                     PlannedIntent(
                         call=call,
                         entity_ids=target.entity_ids,
-                        effect=semantic_effect_for_call(call),
+                        effect=operation.requested_effect or semantic_effect_for_call(call),
                     )
                 )
             previous_targets = targets
         return IntentPlan(steps=tuple(steps))
+
+    def resolve(
+        self,
+        text: str,
+        catalog: CatalogSnapshot,
+        origin_context: Mapping[str, object] | None = None,
+    ) -> PlanningOutcome:
+        """Return a typed result while keeping :meth:`plan` backward compatible."""
+
+        try:
+            plan = self.plan(text, catalog, origin_context, _typed=True)
+        except RouteDeclined as exc:
+            reason = str(exc)
+            if reason.startswith("Capability mismatch:"):
+                return CapabilityMismatch(reason.removeprefix("Capability mismatch:").strip())
+            if reason.startswith("No target resolved"):
+                return NoTarget()
+            if reason.startswith("No deterministic operation matched:"):
+                uncovered = reason.partition(":")[2].strip()
+                clauses = split_compound_request(text)
+                return (
+                    IncompleteCompound((uncovered,))
+                    if len(clauses) > 1
+                    else UnsupportedOperation(reason)
+                )
+            return UnsupportedOperation(reason)
+        if plan.response == self._ambiguity_response:
+            return AmbiguousTarget()
+        if plan.steps:
+            return Resolved(plan)
+        return UnsupportedOperation("Planner produced no executable result")
 
 
 class NaturalLanguageIntentRecognizer:
@@ -1802,6 +2066,8 @@ class NaturalLanguageIntentRecognizer:
 __all__ = [
     "NaturalLanguageIntentPlanner",
     "NaturalLanguageIntentRecognizer",
+    "NormalizedOperator",
+    "normalize_lexical_operator",
     "singular_generic_target",
     "split_compound_request",
 ]

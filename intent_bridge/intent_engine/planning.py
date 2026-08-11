@@ -2,11 +2,20 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Mapping, Sequence
 
 from intent_bridge.core.voice import RouteDeclined
 from intent_bridge.intent_engine.models import CatalogSnapshot, IntentPlan
+from intent_bridge.intent_engine.outcomes import (
+    AmbiguousTarget,
+    PlanningOutcome,
+    Resolved,
+    UnsupportedOperation,
+)
 from intent_bridge.intent_engine.ports import IntentPlanner
+
+LOGGER = logging.getLogger(__name__)
 
 
 class IntentPlannerChain:
@@ -27,17 +36,63 @@ class IntentPlannerChain:
         catalog: CatalogSnapshot,
         origin_context: Mapping[str, object] | None = None,
     ) -> IntentPlan:
-        declines: list[RouteDeclined] = []
+        outcome = self.resolve(text, catalog, origin_context)
+        if isinstance(outcome, Resolved):
+            return outcome.plan
+        if isinstance(outcome, AmbiguousTarget):
+            return IntentPlan(response="I found more than one possible target. Please be more specific.")
+        reason = getattr(outcome, "reason", None)
+        raise RouteDeclined(str(reason or outcome))
+
+    def resolve(
+        self,
+        text: str,
+        catalog: CatalogSnapshot,
+        origin_context: Mapping[str, object] | None = None,
+    ) -> PlanningOutcome:
+        """Try planners while stopping only for a resolved or genuinely ambiguous result."""
+
+        failures: list[PlanningOutcome] = []
         for planner in self._planners:
+            planner_name = type(planner).__name__
+            resolver = getattr(planner, "resolve", None)
+            if callable(resolver):
+                outcome = resolver(text, catalog, origin_context)
+                LOGGER.info(
+                    "PLANNER CHAIN decision planner=%s outcome=%s detail=%r",
+                    planner_name,
+                    type(outcome).__name__,
+                    outcome,
+                )
+                if isinstance(outcome, (Resolved, AmbiguousTarget)):
+                    return outcome
+                failures.append(outcome)
+                continue
             try:
                 result = planner.plan(text, catalog, origin_context)
             except RouteDeclined as exc:
-                declines.append(exc)
+                LOGGER.info(
+                    "PLANNER CHAIN declined planner=%s reason=%s",
+                    planner_name,
+                    exc,
+                )
+                failures.append(UnsupportedOperation(str(exc)))
                 continue
             if result.steps or result.response is not None:
-                return result
-        detail = "; ".join(str(exc) for exc in declines if str(exc))
-        raise RouteDeclined(detail or "No deterministic planner matched the request")
+                LOGGER.info(
+                    "PLANNER CHAIN selected planner=%s steps=%d response=%r",
+                    planner_name,
+                    len(result.steps),
+                    result.response,
+                )
+                return Resolved(result)
+            LOGGER.info("PLANNER CHAIN empty planner=%s", planner_name)
+        detail = "; ".join(
+            failure.reason
+            for failure in failures
+            if isinstance(failure, UnsupportedOperation) and failure.reason
+        )
+        return UnsupportedOperation(detail or "No deterministic planner matched the request")
 
 
 __all__ = ["IntentPlannerChain"]

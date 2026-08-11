@@ -10,30 +10,43 @@ def test_canonical_environment_maps_to_typed_domains():
     settings = load_settings(
         {
             "INTENT_BRIDGE_API_MODEL_NAME": "voice-actions",
+            "INTENT_BRIDGE_BASE_URL": "https://bridge.example/proxy/",
             "INTENT_BRIDGE_TIMEZONE": "UTC",
+            "INTENT_BRIDGE_VOICE_FAILURE_RESPONSE": "Please try another request.",
             "INTENT_BRIDGE_DETERMINISTIC_LANGUAGE": "en-GB",
             "INTENT_BRIDGE_DETERMINISTIC_CUSTOM_SENTENCES_PATH": "config/sentences/en",
             "INTENT_BRIDGE_DETERMINISTIC_ERROR_PHRASES": "not found; Try Again ",
             "INTENT_BRIDGE_LLM_ENABLED": "off",
+            "INTENT_BRIDGE_LLM_AMBIGUOUS_TARGET_FALLBACK_ENABLED": "off",
             "INTENT_BRIDGE_LLM_API_KEY": "secret",
+            "INTENT_BRIDGE_MCP_CONFIG_PATH": "config/mcp.json",
+            "INTENT_BRIDGE_MCP_CONNECT_TIMEOUT_SECONDS": "12",
             "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "4",
             "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "9",
             "INTENT_BRIDGE_HA_ADVANCED_ARGS": "-m tool --flag 'two words'",
             "INTENT_BRIDGE_HA_ADVANCED_PINNED_TOOLS": "one,two",
             "INTENT_BRIDGE_HA_STATE_CHANGING_SERVICES": "turn_on,custom_action",
             "INTENT_BRIDGE_MA_RADIO_SEED_STRATEGY": "FIRST",
-            "INTENT_BRIDGE_INDICATOR_DOMAINS": "Light, SWITCH",
+            "INTENT_BRIDGE_ASSISTANT_LED_DOMAINS": "Light, SWITCH",
+            "INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED": "true",
             "INTENT_BRIDGE_CONVERSATION_TTL_SECONDS": "45",
         }
     )
 
     assert settings.api.model_name == "voice-actions"
+    assert settings.api.base_url == "https://bridge.example/proxy"
+    assert settings.assistant.sounds_enabled is True
+    assert settings.assistant.led_domains == ("light", "switch")
     assert settings.api.timezone == "UTC"
+    assert settings.api.voice_failure_response == "Please try another request."
     assert settings.deterministic.language == "en-GB"
     assert settings.deterministic.custom_sentences_path == Path("config/sentences/en")
     assert settings.deterministic.error_phrases == ("not found", "try again")
     assert settings.llm.enabled is False
+    assert settings.llm.ambiguous_target_fallback_enabled is False
     assert settings.llm.api_key == "secret"
+    assert settings.mcp.config_path == Path("config/mcp.json")
+    assert settings.mcp.connect_timeout_seconds == 12
     assert settings.home_assistant.search_default_limit == 4
     assert settings.home_assistant.search_max_limit == 9
     assert settings.home_assistant.advanced.args[-1] == "two words"
@@ -61,6 +74,7 @@ def test_deterministic_sentence_settings_have_safe_defaults():
     assert settings.deterministic.language == "en"
     assert settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
     assert blank_path_settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
+    assert settings.llm.ambiguous_target_fallback_enabled is True
 
 def test_env_example_contains_only_canonical_valid_configuration():
     environment = {
@@ -101,6 +115,14 @@ def test_env_example_contains_only_canonical_valid_configuration():
         (
             {"INTENT_BRIDGE_MA_RADIO_SEED_STRATEGY": "unknown"},
             "MA_RADIO_SEED_STRATEGY",
+        ),
+        (
+            {"INTENT_BRIDGE_BASE_URL": "bridge.local"},
+            "BASE_URL",
+        ),
+        (
+            {"INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED": "true"},
+            "BASE_URL is required",
         ),
     ],
 )

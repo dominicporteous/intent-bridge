@@ -130,6 +130,40 @@ async def test_name_and_area_candidates_with_same_effective_target_execute_once(
 
 
 @pytest.mark.asyncio
+async def test_singular_area_light_ignores_voice_indicator_control():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.office", "Office Light", (), "light", "office"),
+            CatalogEntity(
+                "light.voice_led_ring",
+                "Home Assistant Voice LED Ring",
+                (),
+                "light",
+                "office",
+                is_indicator=True,
+            ),
+        ),
+        areas=(CatalogArea("office", "Office"),),
+    )
+    candidate = match(
+        "HassTurnOff",
+        area=("Office", {"area_id": "office"}),
+        domain="light",
+    )
+    executor = RecordingExecutor()
+    engine = DeterministicIntentEngine(
+        StaticRecognizer((candidate,)), StaticCatalog(catalog), executor
+    )
+
+    assert await engine.handle(request("turn the office light off")) == "Done."
+    assert len(executor.calls) == 1
+    assert executor.calls[0].data == {
+        "name": "Office Light",
+        "entity_id": "light.office",
+    }
+
+
+@pytest.mark.asyncio
 async def test_incompatible_effective_targets_are_clarified_without_execution():
     candidates = (
         match(

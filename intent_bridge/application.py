@@ -2,11 +2,14 @@
 
 import time
 import uuid
+from collections.abc import Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from pathlib import Path
 
 from agents.mcp import MCPServerManager
 from fastapi import APIRouter, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse
 
 try:
     from music_assistant_client import MusicAssistantClient
@@ -29,6 +32,7 @@ from intent_bridge.api.conversation import (
     remember_conversation_turn,
     seed_conversation_history,
 )
+from intent_bridge.assistant import assistant_feedback
 from intent_bridge.config import log, settings
 from intent_bridge.core.voice import (
     FunctionVoiceRoute,
@@ -44,21 +48,25 @@ from intent_bridge.home_assistant.advanced import (
 from intent_bridge.home_assistant.client import HomeAssistantWebSocket
 from intent_bridge.home_assistant.intent_catalog import HomeAssistantCatalogProvider
 from intent_bridge.home_assistant.intent_executor import HomeAssistantIntentExecutor
-from intent_bridge.indicators.controller import (
-    voice_activity_indicators,
-)
 from intent_bridge.intent_engine.engine import DeterministicIntentEngine
 from intent_bridge.intent_engine.grammar import load_intent_grammar
 from intent_bridge.intent_engine.measurement import MeasurementIntentPlanner
+from intent_bridge.intent_engine.models import PlannedIntent
 from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
 from intent_bridge.intent_engine.planning import IntentPlannerChain
+from intent_bridge.intent_engine.ports import IntentExecutor, IntentRecognizer
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
-from intent_bridge.intent_engine.route import DeterministicVoiceRoute
+from intent_bridge.intent_engine.route import ConversationalDeterministicVoiceRoute
 from intent_bridge.intent_engine.supplemental import SupplementalIntentPlanner
 from intent_bridge.llm import (
     process_llm_fallback,
     validate_fallback_config,
     validate_music_assistant_config,
+)
+from intent_bridge.mcp_config import (
+    ConfiguredMcpServer,
+    load_mcp_servers,
+    mcp_agent_instructions,
 )
 from intent_bridge.music_assistant.client import (
     NativeMusicAssistant,
@@ -71,6 +79,7 @@ from intent_bridge.runtime.stores import (
 from intent_bridge.runtime.stores import (
     pending_requests as pending,
 )
+from intent_bridge.sounds.controller import SOUND_NAMES
 
 # ---------------------------------------------------------------------------
 # Application lifecycle
@@ -132,25 +141,66 @@ async def lifespan(app: FastAPI):
                 bool(music_area_player_map()),
             )
 
-    # HA advanced specialist remains the only MCP subprocess in v6.8.2.
+    # One lifecycle manager owns both the HA specialist and user-configured MCP
+    # transports. Only custom servers are exposed directly to the fallback agent.
     manager_context = None
+    configured_mcp: tuple[ConfiguredMcpServer, ...] = ()
+    active_custom_mcp: tuple[ConfiguredMcpServer, ...] = ()
+    ha_mcp_server = None
+    mcp_servers = []
+    if settings.llm.enabled and not missing:
+        try:
+            configured_mcp = load_mcp_servers(settings.mcp.config_path)
+            mcp_servers.extend(item.server for item in configured_mcp)
+            if configured_mcp:
+                log.info(
+                    "Loaded custom MCP configuration path=%s active_servers=%s",
+                    settings.mcp.config_path,
+                    [item.key for item in configured_mcp],
+                )
+        except Exception:
+            configured_mcp = ()
+            log.exception("Failed to load custom MCP configuration path=%s", settings.mcp.config_path)
+
     if settings.llm.enabled and not missing and settings.home_assistant.advanced.enabled:
         try:
             ha_mcp_server = make_ha_mcp_server()
+            mcp_servers.append(ha_mcp_server)
             log.info(
                 "Starting advanced HA MCP command=%r args=%r",
                 settings.home_assistant.advanced.command,
                 settings.home_assistant.advanced.args,
             )
+        except Exception:
+            ha_mcp_server = None
+            log.exception("Failed to configure advanced ha-mcp server")
+
+    if mcp_servers:
+        try:
             runtime.mcp_manager = MCPServerManager(
-                [ha_mcp_server],
-                connect_timeout_seconds=settings.home_assistant.advanced.connect_timeout_seconds,
-                cleanup_timeout_seconds=settings.home_assistant.advanced.cleanup_timeout_seconds,
+                mcp_servers,
+                connect_timeout_seconds=max(
+                    settings.mcp.connect_timeout_seconds,
+                    settings.home_assistant.advanced.connect_timeout_seconds
+                    if ha_mcp_server is not None
+                    else 0,
+                ),
+                cleanup_timeout_seconds=max(
+                    settings.mcp.cleanup_timeout_seconds,
+                    settings.home_assistant.advanced.cleanup_timeout_seconds
+                    if ha_mcp_server is not None
+                    else 0,
+                ),
                 strict=False,
                 drop_failed_servers=True,
+                connect_in_parallel=True,
             )
             manager_context = runtime.mcp_manager
             await manager_context.__aenter__()
+            active_names = {server.name for server in runtime.mcp_manager.active_servers}
+            active_custom_mcp = tuple(
+                item for item in configured_mcp if item.server.name in active_names
+            )
             active_ha = next(
                 (
                     server
@@ -162,14 +212,20 @@ async def lifespan(app: FastAPI):
             if active_ha is not None:
                 runtime.advanced_agent = make_advanced_agent([active_ha])
                 log.info("Advanced ha-mcp specialist ready")
-            else:
-                runtime.advanced_agent = None
+            elif ha_mcp_server is not None:
                 log.warning(
                     "Advanced ha-mcp unavailable; MCP errors=%s", runtime.mcp_manager.errors
                 )
+            if configured_mcp and len(active_custom_mcp) != len(configured_mcp):
+                log.warning(
+                    "Some custom MCP servers are unavailable; active=%s errors=%s",
+                    [item.key for item in active_custom_mcp],
+                    runtime.mcp_manager.errors,
+                )
         except Exception:
             runtime.advanced_agent = None
-            log.exception("Failed to initialise advanced ha-mcp server")
+            active_custom_mcp = ()
+            log.exception("Failed to initialise MCP servers")
 
     if settings.llm.enabled:
         if missing:
@@ -180,14 +236,20 @@ async def lifespan(app: FastAPI):
         else:
             try:
                 music_tools_enabled = runtime.music_assistant is not None
-                runtime.fallback_agent = make_fallback_agent(music_tools_enabled)
+                runtime.fallback_agent = make_fallback_agent(
+                    music_tools_enabled,
+                    mcp_servers=tuple(item.server for item in active_custom_mcp),
+                    mcp_instructions=mcp_agent_instructions(active_custom_mcp),
+                )
                 log.info(
                     "LLM fallback ready model=%s direct_ws=%s advanced=%s "
-                    "music_assistant=%s music_transport=native_websocket native_ready=%s",
+                    "music_assistant=%s custom_mcp=%s music_transport=native_websocket "
+                    "native_ready=%s",
                     settings.llm.model,
                     bool(runtime.ha_ws),
                     runtime.advanced_agent is not None,
                     music_tools_enabled,
+                    [item.key for item in active_custom_mcp],
                     bool(runtime.music_assistant and runtime.music_assistant.connected),
                 )
             except Exception:
@@ -218,9 +280,9 @@ async def lifespan(app: FastAPI):
             runtime.music_assistant = None
 
         try:
-            await voice_activity_indicators.stop_all()
+            await assistant_feedback.stop_all()
         except Exception:
-            log.exception("Error restoring voice activity indicators")
+            log.exception("Error stopping assistant feedback")
 
         if runtime.ha_ws is not None:
             try:
@@ -246,26 +308,37 @@ async def _llm_voice_route(request: VoiceRequest) -> str:
     )
 
 
-def build_voice_pipeline() -> VoiceActionPipeline:
+def build_voice_pipeline(
+    *,
+    intent_executor: IntentExecutor | None = None,
+    intent_recognizer: IntentRecognizer | None = None,
+    fallback_handler: Callable[[VoiceRequest], Awaitable[str]] | None = None,
+    step_observer: Callable[[PlannedIntent], None] | None = None,
+    include_deterministic: bool = True,
+) -> VoiceActionPipeline:
     """Compose routes in business priority order.
 
     New deterministic engines or fallback providers can be inserted here, or a
     completely different pipeline can be supplied through ``app.state``.
     """
-    grammar = load_intent_grammar(
-        language=settings.deterministic.language,
-        custom_sentences_path=settings.deterministic.custom_sentences_path,
-    )
-    log.info(
-        "OHF/HassIL deterministic grammar ready language=%s custom_files=%d custom_sentences=%d",
-        grammar.language,
-        len(grammar.custom_files),
-        grammar.custom_sentence_count,
-    )
+    if intent_recognizer is None:
+        grammar = load_intent_grammar(
+            language=settings.deterministic.language,
+            custom_sentences_path=settings.deterministic.custom_sentences_path,
+        )
+        log.info(
+            "OHF/HassIL deterministic grammar ready language=%s custom_files=%d "
+            "custom_sentences=%d",
+            grammar.language,
+            len(grammar.custom_files),
+            grammar.custom_sentence_count,
+        )
+        intent_recognizer = HassilIntentRecognizer(grammar)
     deterministic_engine = DeterministicIntentEngine(
-        HassilIntentRecognizer(grammar),
+        intent_recognizer,
         HomeAssistantCatalogProvider(lambda: runtime.ha_ws),
-        HomeAssistantIntentExecutor(
+        intent_executor
+        or HomeAssistantIntentExecutor(
             settings.home_assistant.base_url,
             settings.home_assistant.access_token,
             timeout=settings.home_assistant.websocket.command_timeout_seconds,
@@ -274,13 +347,23 @@ def build_voice_pipeline() -> VoiceActionPipeline:
             (MeasurementIntentPlanner(), SupplementalIntentPlanner())
         ),
         fallback_planner=NaturalLanguageIntentPlanner(),
+        step_observer=step_observer,
         default_response=settings.api.action_confirmation,
     )
-    return VoiceActionPipeline(
-        (
-            DeterministicVoiceRoute(deterministic_engine),
-            FunctionVoiceRoute("llm-ha-ws", _llm_voice_route),
+    routes = []
+    if include_deterministic:
+        routes.append(
+            ConversationalDeterministicVoiceRoute(
+                deterministic_engine,
+                ambiguous_target_fallback_enabled=(
+                    settings.llm.ambiguous_target_fallback_enabled
+                ),
+            )
         )
+    routes.append(FunctionVoiceRoute("llm-ha-ws", fallback_handler or _llm_voice_route))
+    return VoiceActionPipeline(
+        routes,
+        failure_response=settings.api.voice_failure_response,
     )
 
 
@@ -289,6 +372,7 @@ def build_voice_pipeline() -> VoiceActionPipeline:
 # ---------------------------------------------------------------------------
 
 api_router = APIRouter()
+SOUNDS_DIRECTORY = Path(__file__).resolve().parent / "sounds"
 
 
 @dataclass(frozen=True, slots=True)
@@ -328,6 +412,11 @@ def extract_user_message(body: dict) -> str:
     return ""
 
 
+def _is_default_action_response(speech: str) -> bool:
+    """Whether a response may be replaced by the configured success sound."""
+    return speech.strip() == settings.api.action_confirmation.strip()
+
+
 @api_router.post("/v1/chat/completions")
 async def chat_completions(request: Request):
     body = await request.json()
@@ -341,6 +430,11 @@ async def chat_completions(request: Request):
     conversation_key = get_conversation_key(request, body)
     client_history = extract_client_history(body)
     origin_context = await extract_voice_origin_context(request, body)
+    feedback_handle = await assistant_feedback.begin(
+        origin_context,
+        led=False,
+        sounds=True,
+    )
 
     if body.get("reset_conversation"):
         await clear_conversation_history(conversation_key)
@@ -363,17 +457,36 @@ async def chat_completions(request: Request):
         )
         result = await active_pipeline.handle(voice_request)
     except VoicePipelineError as exc:
+        await assistant_feedback.complete(feedback_handle, success=False)
         log.exception("All voice action routes failed")
         raise HTTPException(
             status_code=502,
             detail=f"All voice action routes failed. {exc}",
         ) from exc
+    except Exception:
+        await assistant_feedback.complete(feedback_handle, success=False)
+        raise
+
+    is_error_response = result.route == "voice-error-response"
+    use_success_sound = (
+        settings.assistant.sounds_enabled
+        and not is_error_response
+        and _is_default_action_response(result.speech)
+    )
+    use_error_sound = settings.assistant.sounds_enabled and is_error_response
+    use_terminal_sound = use_success_sound or use_error_sound
+    await assistant_feedback.complete(
+        feedback_handle,
+        success=not is_error_response,
+        play_terminal_sound=use_terminal_sound,
+    )
 
     for failure in result.failures:
         log.warning(
             "VOICE ROUTE FALLBACK route=%s text=%r reason=%s", failure.route, text, failure.error
         )
     speech = result.speech
+    response_speech = "" if use_terminal_sound else speech
     route = result.route
     log.info("ROUTE COMPLETE route=%s text=%r response=%r", route, text, speech)
 
@@ -390,7 +503,7 @@ async def chat_completions(request: Request):
         "choices": [
             {
                 "index": 0,
-                "message": {"role": "assistant", "content": speech},
+                "message": {"role": "assistant", "content": response_speech},
                 "finish_reason": "stop",
             }
         ],
@@ -411,6 +524,18 @@ async def chat_completions(request: Request):
             },
         },
     }
+
+
+@api_router.get("/assistant/sounds/{sound_name}.mp3", name="assistant_sound")
+async def assistant_sound(sound_name: str):
+    """Serve the fixed bundled sound set for Home Assistant media players."""
+    if sound_name not in SOUND_NAMES:
+        raise HTTPException(status_code=404, detail="Unknown assistant sound")
+    return FileResponse(
+        SOUNDS_DIRECTORY / f"{sound_name}.mp3",
+        media_type="audio/mpeg",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @api_router.get("/v1/models")
@@ -446,6 +571,23 @@ async def health():
         "deterministic_default_response": settings.deterministic.default_response,
         "deterministic_error_phrases": list(settings.deterministic.error_phrases),
         "llm_enabled": settings.llm.enabled,
+        "llm_ambiguous_target_fallback_enabled": (
+            settings.llm.ambiguous_target_fallback_enabled
+        ),
+        "voice_failure_response": settings.api.voice_failure_response,
+        "base_url": settings.api.base_url or None,
+        "assistant_led_enabled": settings.assistant.led_enabled,
+        "assistant_led_active": assistant_feedback.leds.active_count,
+        "assistant_led_color": settings.assistant.led_color,
+        "assistant_led_effect": settings.assistant.led_effect,
+        "assistant_led_software_pulse": settings.assistant.led_software_pulse_enabled,
+        "assistant_led_pulse_interval_seconds": settings.assistant.led_pulse_interval_seconds,
+        "assistant_led_domains": list(settings.assistant.led_domains),
+        "assistant_led_last_target": assistant_feedback.leds.last_target,
+        "assistant_led_last_error": assistant_feedback.leds.last_error,
+        "assistant_sounds_enabled": settings.assistant.sounds_enabled,
+        "assistant_sounds_last_target": assistant_feedback.sounds.last_target,
+        "assistant_sounds_last_error": assistant_feedback.sounds.last_error,
         "llm_fallback_ready": runtime.fallback_agent is not None,
         "llm_model": settings.llm.model or None,
         "music_assistant_enabled": settings.music_assistant.enabled,
@@ -489,15 +631,6 @@ async def health():
         "music_assistant_inflight_playbacks": (
             ma_manager.inflight_playback_count if ma_manager is not None else 0
         ),
-        "music_assistant_activity_indicator_enabled": settings.indicators.music_playback_enabled,
-        "music_assistant_activity_indicator_active": voice_activity_indicators.active_count,
-        "music_assistant_activity_indicator_color": settings.indicators.color,
-        "music_assistant_activity_indicator_effect": settings.indicators.effect,
-        "music_assistant_activity_indicator_software_pulse": settings.indicators.software_pulse_enabled,
-        "music_assistant_activity_indicator_pulse_interval_seconds": settings.indicators.pulse_interval_seconds,
-        "music_assistant_activity_indicator_domains": list(settings.indicators.domains),
-        "music_assistant_activity_indicator_last_target": voice_activity_indicators.last_target,
-        "music_assistant_activity_indicator_last_error": voice_activity_indicators.last_error,
         "music_assistant_post_action_settle_seconds": settings.music_assistant.post_action_settle_seconds,
         "llm_base_url": settings.llm.base_url if settings.llm.enabled else None,
         "ha_ws_enabled": settings.home_assistant.websocket.enabled,

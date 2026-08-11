@@ -4,17 +4,19 @@ import os
 import shlex
 from collections.abc import Mapping
 from pathlib import Path
+from urllib.parse import urlparse
 
 from intent_bridge.config.models import (
     ApiSettings,
+    AssistantSettings,
     BridgeSettings,
     ConversationSettings,
     DeterministicSettings,
     HomeAssistantAdvancedSettings,
     HomeAssistantSettings,
     HomeAssistantWebSocketSettings,
-    IndicatorSettings,
     LlmSettings,
+    McpSettings,
     MusicAssistantSettings,
     VoiceOriginSettings,
 )
@@ -108,6 +110,20 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
     """Load and validate settings from canonical ``INTENT_BRIDGE_*`` names."""
     environ = os.environ if environ is None else environ
 
+    base_url = _text(environ, "BASE_URL", "").rstrip("/")
+    sounds_enabled = _boolean(environ, "ASSISTANT_SOUNDS_ENABLED", False)
+    if base_url:
+        parsed_base_url = urlparse(base_url)
+        if parsed_base_url.scheme not in {"http", "https"} or not parsed_base_url.netloc:
+            raise ConfigurationError(
+                "INTENT_BRIDGE_BASE_URL must be an absolute http:// or https:// URL"
+            )
+    if sounds_enabled and not base_url:
+        raise ConfigurationError(
+            "INTENT_BRIDGE_BASE_URL is required when "
+            "INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED is true"
+        )
+
     ha_search_default = _integer(environ, "HA_SEARCH_DEFAULT_LIMIT", 8, minimum=1)
     ha_search_max = _integer(environ, "HA_SEARCH_MAX_LIMIT", 20, minimum=1)
     if ha_search_max < ha_search_default:
@@ -142,10 +158,18 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
 
     return BridgeSettings(
         api=ApiSettings(
+            base_url=base_url,
             model_name=_text(environ, "API_MODEL_NAME", "home-intent"),
-            timezone=_text(environ, "TIMEZONE", "Europe/London") or "Europe/London",
+            timezone=_text(environ, "TIMEZONE", "Europe/London"),
             spoken_response_max_chars=_integer(environ, "VOICE_RESPONSE_MAX_CHARS", 180, minimum=1),
-            action_confirmation=_text(environ, "VOICE_ACTION_CONFIRMATION", "Done.") or "Done.",
+            action_confirmation=_text(environ, "VOICE_ACTION_CONFIRMATION", ""),
+            voice_failure_response=(
+                _text(
+                    environ,
+                    "VOICE_FAILURE_RESPONSE",
+                    "Sorry, I couldn't handle that request.",
+                )
+            ),
             log_level=_text(environ, "LOG_LEVEL", "INFO").upper(),
         ),
         deterministic=DeterministicSettings(
@@ -169,6 +193,11 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
         ),
         llm=LlmSettings(
             enabled=_boolean(environ, "LLM_ENABLED", True),
+            ambiguous_target_fallback_enabled=_boolean(
+                environ,
+                "LLM_AMBIGUOUS_TARGET_FALLBACK_ENABLED",
+                True,
+            ),
             base_url=_text(environ, "LLM_BASE_URL", "http://192.168.0.159:13305/v1").rstrip("/"),
             api_key=_text(environ, "LLM_API_KEY", "not-used"),
             model=_text(environ, "LLM_MODEL", ""),
@@ -177,6 +206,15 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             data_recovery_enabled=_boolean(environ, "LLM_DATA_RECOVERY_ENABLED", True),
             data_recovery_max_chars=_integer(
                 environ, "LLM_DATA_RECOVERY_MAX_CHARS", 16000, minimum=1000
+            ),
+        ),
+        mcp=McpSettings(
+            config_path=_path(environ, "MCP_CONFIG_PATH", Path("mcp.json")),
+            connect_timeout_seconds=_number(
+                environ, "MCP_CONNECT_TIMEOUT_SECONDS", 30.0, minimum=0.1
+            ),
+            cleanup_timeout_seconds=_number(
+                environ, "MCP_CLEANUP_TIMEOUT_SECONDS", 10.0, minimum=0.1
             ),
         ),
         voice_origin=VoiceOriginSettings(
@@ -284,17 +322,21 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             terminal_actions_enabled=_boolean(environ, "MA_TERMINAL_ACTIONS_ENABLED", True),
             replay_guard_seconds=_number(environ, "MA_REPLAY_GUARD_SECONDS", 4.0, minimum=0.0),
         ),
-        indicators=IndicatorSettings(
-            music_playback_enabled=_boolean(environ, "INDICATOR_MUSIC_PLAYBACK_ENABLED", True),
-            domains=tuple(
-                item.casefold() for item in _csv(environ, "INDICATOR_DOMAINS", "light,switch")
+        assistant=AssistantSettings(
+            led_enabled=_boolean(environ, "ASSISTANT_LED_ENABLED", True),
+            led_domains=tuple(
+                item.casefold()
+                for item in _csv(environ, "ASSISTANT_LED_DOMAINS", "light,switch")
             ),
-            color=_text(environ, "INDICATOR_COLOR", "green"),
-            effect=_text(environ, "INDICATOR_EFFECT", "pulse"),
-            software_pulse_enabled=_boolean(environ, "INDICATOR_SOFTWARE_PULSE_ENABLED", True),
-            pulse_interval_seconds=_number(
-                environ, "INDICATOR_PULSE_INTERVAL_SECONDS", 0.7, minimum=0.2
+            led_color=_text(environ, "ASSISTANT_LED_COLOR", "green"),
+            led_effect=_text(environ, "ASSISTANT_LED_EFFECT", "pulse"),
+            led_software_pulse_enabled=_boolean(
+                environ, "ASSISTANT_LED_SOFTWARE_PULSE_ENABLED", True
             ),
+            led_pulse_interval_seconds=_number(
+                environ, "ASSISTANT_LED_PULSE_INTERVAL_SECONDS", 0.7, minimum=0.2
+            ),
+            sounds_enabled=sounds_enabled,
         ),
         conversation=ConversationSettings(
             enabled=_boolean(environ, "CONVERSATION_ENABLED", True),

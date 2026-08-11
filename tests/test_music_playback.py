@@ -75,9 +75,9 @@ async def test_dispatch_play_immediate_duplicate_timeout_and_error(monkeypatch):
     queues.play_media = AsyncMock(side_effect=slow_play)
     monkeypatch.setattr(settings.music_assistant, "play_ack_timeout_seconds", 0.001)
     monkeypatch.setattr(
-        music_playback.voice_activity_indicators, "begin", AsyncMock(return_value=None)
+        music_playback.assistant_feedback, "begin", AsyncMock(return_value=None)
     )
-    monkeypatch.setattr(music_playback.voice_activity_indicators, "end", AsyncMock())
+    monkeypatch.setattr(music_playback.assistant_feedback, "complete", AsyncMock())
     processing = await music_playback._ma_dispatch_play_media(
         manager,
         client,

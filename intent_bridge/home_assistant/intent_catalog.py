@@ -6,6 +6,7 @@ from typing import Any, Protocol
 
 from intent_bridge.core.text import normalize_search_text
 from intent_bridge.home_assistant.catalog import entity_context
+from intent_bridge.indicators.topology import is_indicator_control
 from intent_bridge.intent_engine.models import (
     CatalogArea,
     CatalogEntity,
@@ -192,6 +193,7 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                 entity_category=(
                     str(registry["ec"]) if registry.get("ec") not in (None, "") else None
                 ),
+                is_indicator=is_indicator_control(client, entity_id),
             )
         )
 

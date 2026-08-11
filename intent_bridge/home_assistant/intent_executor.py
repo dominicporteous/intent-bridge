@@ -321,8 +321,11 @@ class HomeAssistantIntentExecutor:
         }
         payload = {"name": call.intent_name, "data": dict(call.data)}
 
-        log.info(f"Executing Home Assistant intent {call.intent_name}")
-        print({"data": call.data})
+        log.info(
+            "Executing Home Assistant intent intent=%s data=%s",
+            call.intent_name,
+            dict(call.data),
+        )
 
         if self._client is not None:
             response = await self._client.post(
@@ -347,13 +350,18 @@ class HomeAssistantIntentExecutor:
 
         try:
             body = response.json()
-            print("Home Assistant intent response:", body)
+            log.info(
+                "Home Assistant intent response intent=%s body=%s",
+                call.intent_name,
+                body,
+            )
         except ValueError as exc:
             raise RuntimeError("Home Assistant returned a non-JSON intent response") from exc
         if not isinstance(body, Mapping):
             raise RuntimeError("Home Assistant returned an invalid intent response")
 
         speech = _speech_from_response(body)
+        action_succeeded = False
         if speech and _contains_internal_match_failure(speech):
             entity_id = call.data.get("entity_id")
             entity_id = entity_id.strip() if isinstance(entity_id, str) else ""
@@ -381,6 +389,11 @@ class HomeAssistantIntentExecutor:
                     timeout=settings.home_assistant.websocket.command_timeout_seconds,
                 )
                 if reply.get("success") is True:
+                    log.info(
+                        "Exact-target WebSocket retry succeeded entity=%s",
+                        entity_id,
+                    )
+                    action_succeeded = True
                     speech = settings.api.action_confirmation
                 else:
                     log.warning(
@@ -399,8 +412,9 @@ class HomeAssistantIntentExecutor:
                 if isinstance(succeeded, list) and succeeded and not failed:
                     # State updates arrive asynchronously after HA acknowledges
                     # an action. Do not summarize the pre-action cache here.
+                    action_succeeded = True
                     speech = settings.api.action_confirmation
-        if not speech:
+        if not speech and not action_succeeded:
             entity_ids = _entity_ids_from_intent_response(body)
             user_text = voice_tool_run_state.request_text or call.intent_name
             cached_entity_found = False

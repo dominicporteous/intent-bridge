@@ -204,6 +204,8 @@ def resolve_candidate(
 
         if domain:
             entities = [entity for entity in entities if _normal(entity.domain) == domain]
+            if domain == "light":
+                entities = [entity for entity in entities if not entity.is_indicator]
         if device_class:
             entities = [
                 entity for entity in entities if _matches_device_class(entity, device_class)

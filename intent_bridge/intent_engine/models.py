@@ -63,6 +63,7 @@ class CatalogEntity:
     state: str | None = None
     measurements: tuple[CatalogMeasurement, ...] = ()
     entity_category: str | None = None
+    is_indicator: bool = False
 
 
 @dataclass(frozen=True, slots=True)

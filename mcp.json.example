@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "web_search": {
+      "name": "Web Search MCP",
+      "type": "streamableHttp",
+      "description": "Multi-engine web search with article fetching",
+      "isActive": true,
+      "baseUrl": "http://localhost:3000/mcp"
+    }
+  }
+}

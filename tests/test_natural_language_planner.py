@@ -18,6 +18,14 @@ from intent_bridge.intent_engine.natural_language import (
     NaturalLanguageIntentRecognizer,
     split_compound_request,
 )
+from intent_bridge.intent_engine.outcomes import (
+    AmbiguousTarget,
+    CapabilityMismatch,
+    IncompleteCompound,
+    NoTarget,
+    Resolved,
+    UnsupportedOperation,
+)
 
 
 def _entity(
@@ -743,3 +751,47 @@ def test_engine_can_use_natural_planner_as_opt_in_fallback(catalog):
 
     assert plan.steps[0].operation == "HassTurnOn"
     assert plan.steps[0].entity_ids == ("cover.living_blinds",)
+
+
+def test_natural_planner_exposes_typed_resolution_outcomes(catalog):
+    planner = NaturalLanguageIntentPlanner()
+
+    assert isinstance(planner.resolve("turn the living room tv on", catalog), Resolved)
+    assert isinstance(planner.resolve("turn the kitchen light off", catalog), AmbiguousTarget)
+    assert isinstance(planner.resolve("perform a barrel roll", catalog), UnsupportedOperation)
+    assert isinstance(
+        planner.resolve("turn the living room tv on and then set mystery", catalog),
+        IncompleteCompound,
+    )
+    assert isinstance(
+        planner.resolve(
+            "set the bedside lamp and living room tv brightness to 20 percent", catalog
+        ),
+        CapabilityMismatch,
+    )
+    assert isinstance(planner.resolve("turn the office lights on", catalog), NoTarget)
+
+
+def test_natural_area_light_excludes_indicator_but_explicit_ring_remains_targetable():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.office", "Office Light", (), "light", "office"),
+            CatalogEntity(
+                "light.voice_ring",
+                "Voice LED Ring",
+                (),
+                "light",
+                "office",
+                is_indicator=True,
+            ),
+        ),
+        areas=(CatalogArea("office", "Office"),),
+    )
+    planner = NaturalLanguageIntentPlanner()
+
+    room = planner.plan("turn the office light off", catalog)
+    ring = planner.plan("turn the voice led ring on", catalog)
+
+    assert room.steps[0].entity_ids == ("light.office",)
+    assert room.steps[0].call.data == {"name": "Office Light"}
+    assert ring.steps[0].entity_ids == ("light.voice_ring",)

@@ -1,4 +1,4 @@
-"""The exhaustive intent benchmark, with optional production-pipeline execution."""
+"""The exhaustive benchmark executed through the production voice pipeline."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ from benchmark.runner import (
     make_benchmark_matcher,
     select_examples,
 )
-from benchmark.validation import assert_valid_corpus, inventory
 
 CORPUS = load_corpus()
 OPTIONS = BenchmarkOptions.from_environment()

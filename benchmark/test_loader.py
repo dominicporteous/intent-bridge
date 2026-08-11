@@ -15,12 +15,12 @@ def test_complete_corpus_inventory_and_consistency():
     assert inventory(corpus) == (
         inventory(corpus).__class__(
             homes=5,
-            scenario_files=731,
-            scenarios=1_979,
-            examples=14_243,
-            single_turn_examples=12_573,
-            dialogue_examples=1_670,
-            turns=15_907,
+            scenario_files=908,
+            scenarios=2_470,
+            examples=17_815,
+            single_turn_examples=15_687,
+            dialogue_examples=2_128,
+            turns=19_943,
         )
     )
     assert_valid_corpus(corpus)

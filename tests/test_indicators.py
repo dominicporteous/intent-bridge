@@ -84,6 +84,8 @@ def test_identity_topology_score_and_relations(client):
     assert indicator_topology.indicator_relation_bonus(5, "unknown") == 0
     score, reasons = indicator_topology.indicator_score(client, "light.ring")
     assert score > 200 and "led" in reasons and "light_domain" in reasons
+    assert indicator_topology.is_indicator_control(client, "light.ring") is True
+    assert indicator_topology.is_indicator_control(client, "switch.unrelated") is False
     switch_score, switch_reasons = indicator_topology.indicator_score(client, "switch.unrelated")
     assert switch_score >= 4 and "switch_domain" in switch_reasons
 
@@ -111,7 +113,7 @@ async def test_resolve_indicator_by_device_and_area(client, monkeypatch):
     target = await indicators._resolve_satellite_indicator({"area_name": "Office"})
     assert target.entity_id == "light.ring"
     assert target.match_reason.startswith("sole_assist_satellite_in_origin_area")
-    monkeypatch.setattr(settings.indicators, "music_playback_enabled", False)
+    monkeypatch.setattr(settings.assistant, "led_enabled", False)
     assert await indicators._resolve_satellite_indicator({"area_name": "Office"}) is None
     assert await indicators._resolve_satellite_indicator(None) is None
 
@@ -136,7 +138,7 @@ async def test_resolve_indicator_ambiguity_missing_device_and_tie(client, monkey
 
 @pytest.mark.asyncio
 async def test_indicator_manager_lifecycle_light(client, monkeypatch):
-    target = indicators.SatelliteIndicatorTarget(
+    target = indicators.AssistantLedTarget(
         entity_id="light.ring",
         domain="light",
         satellite_entity_id="assist_satellite.office",
@@ -150,13 +152,13 @@ async def test_indicator_manager_lifecycle_light(client, monkeypatch):
     monkeypatch.setattr(indicators, "_require_ha_ws", AsyncMock(return_value=client))
     service = AsyncMock()
     monkeypatch.setattr(indicators, "_ha_internal_service_call", service)
-    monkeypatch.setattr(settings.indicators, "color", "green")
-    monkeypatch.setattr(settings.indicators, "effect", "pulse")
-    monkeypatch.setattr(settings.indicators, "software_pulse_enabled", False)
-    manager = indicators.VoiceSatelliteActivityIndicators()
+    monkeypatch.setattr(settings.assistant, "led_color", "green")
+    monkeypatch.setattr(settings.assistant, "led_effect", "pulse")
+    monkeypatch.setattr(settings.assistant, "led_software_pulse_enabled", False)
+    manager = indicators.AssistantLeds()
     first = await manager.begin({"device_id": "sat"})
     second = await manager.begin({"device_id": "sat"})
-    assert first == second == indicators.SatelliteIndicatorHandle("light.ring")
+    assert first == second == indicators.AssistantLedHandle("light.ring")
     assert manager.active_count == 1
     assert manager.last_target["native_effect"] == "Pulse"
     await manager.end(first)
@@ -170,7 +172,7 @@ async def test_indicator_manager_lifecycle_light(client, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_indicator_manager_switch_restore_stop_and_failure(client, monkeypatch):
-    target = indicators.SatelliteIndicatorTarget(
+    target = indicators.AssistantLedTarget(
         "switch.unrelated",
         "switch",
         "assist_satellite.office",
@@ -182,10 +184,10 @@ async def test_indicator_manager_switch_restore_stop_and_failure(client, monkeyp
     )
     monkeypatch.setattr(indicators, "_resolve_satellite_indicator", AsyncMock(return_value=target))
     monkeypatch.setattr(indicators, "_require_ha_ws", AsyncMock(return_value=client))
-    monkeypatch.setattr(settings.indicators, "software_pulse_enabled", False)
+    monkeypatch.setattr(settings.assistant, "led_software_pulse_enabled", False)
     service = AsyncMock()
     monkeypatch.setattr(indicators, "_ha_internal_service_call", service)
-    manager = indicators.VoiceSatelliteActivityIndicators()
+    manager = indicators.AssistantLeds()
     handle = await manager.begin({"device_id": "sat"})
     assert handle.entity_id == "switch.unrelated"
     await manager.stop_all()
@@ -206,14 +208,14 @@ def test_snapshot_restore_variants():
         ("xy", "xy_color", [0.1, 0.2]),
         ("color_temp", "color_temp_kelvin", 3000),
     ]:
-        snapshot = indicators.SatelliteIndicatorSnapshot(
+        snapshot = indicators.AssistantLedSnapshot(
             "light.x", "light", "on", {"color_mode": mode, key: value}
         )
         assert indicators._snapshot_restore_light_data(snapshot)[key] == value
 
 
 def _session(domain="light", state="off", attributes=None, native_effect=None):
-    target = indicators.SatelliteIndicatorTarget(
+    target = indicators.AssistantLedTarget(
         f"{domain}.indicator",
         domain,
         "assist_satellite.office",
@@ -223,10 +225,10 @@ def _session(domain="light", state="off", attributes=None, native_effect=None):
         "Office",
         "test",
     )
-    snapshot = indicators.SatelliteIndicatorSnapshot(
+    snapshot = indicators.AssistantLedSnapshot(
         target.entity_id, domain, state, attributes or {}
     )
-    return indicators.SatelliteIndicatorSession(target, snapshot, native_effect=native_effect)
+    return indicators.AssistantLedSession(target, snapshot, native_effect=native_effect)
 
 
 @pytest.mark.asyncio
@@ -234,7 +236,7 @@ async def test_indicator_begin_missing_state_and_activation_failure(client, monk
     missing = _session().target
     monkeypatch.setattr(indicators, "_resolve_satellite_indicator", AsyncMock(return_value=missing))
     monkeypatch.setattr(indicators, "_require_ha_ws", AsyncMock(return_value=client))
-    manager = indicators.VoiceSatelliteActivityIndicators()
+    manager = indicators.AssistantLeds()
     assert await manager.begin({}) is None
 
     client.states[missing.entity_id] = {"state": "off", "attributes": None}
@@ -245,10 +247,10 @@ async def test_indicator_begin_missing_state_and_activation_failure(client, monk
 
 @pytest.mark.asyncio
 async def test_indicator_pulse_loops_and_restore_paths(monkeypatch):
-    monkeypatch.setattr(settings.indicators, "pulse_interval_seconds", 0)
+    monkeypatch.setattr(settings.assistant, "led_pulse_interval_seconds", 0)
     calls = AsyncMock(side_effect=[None, RuntimeError("pulse stopped")])
     monkeypatch.setattr(indicators, "_ha_internal_service_call", calls)
-    manager = indicators.VoiceSatelliteActivityIndicators()
+    manager = indicators.AssistantLeds()
     light = _session("light", attributes={"supported_color_modes": ["rgb"]})
     await manager._software_pulse_light(light)
     assert calls.await_count == 2

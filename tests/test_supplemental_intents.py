@@ -18,6 +18,7 @@ from intent_bridge.intent_engine.supplemental import (
     DialogueState,
     PendingClarification,
     PlanningSession,
+    ReferentCardinality,
     SupplementalIntentPlanner,
     _canonical_item,
     _context_items,
@@ -315,6 +316,92 @@ def test_dialogue_session_exposes_and_resolves_clarification(catalog):
         "HassTurnOn", {"name": "Ceiling Light"}
     )
     assert second.plan.steps[0].entity_ids == ("light.kitchen_ceiling",)
+
+
+def test_pending_clarification_retains_complete_property_operation(catalog):
+    session = PlanningSession(
+        _QueuedPlanner(
+            [IntentPlan(response="I found more than one possible target.")]
+        )
+    )
+
+    first = session.plan_turn("Set the kitchen light brightness to 27", catalog)
+
+    assert first.plan.steps == ()
+    pending = first.state.pending
+    assert pending is not None
+    assert pending.original_predicate == "HassLightSet"
+    assert pending.data == {"brightness": 27}
+    assert pending.property == "brightness"
+    assert pending.value == 27
+    assert pending.requested_effect is not None
+    assert pending.requested_effect.explicit_power_transition is False
+    assert pending.target_constraints == {"domain": "light", "area_id": "kitchen"}
+    assert pending.intended_cardinality == ReferentCardinality.SINGULAR
+    assert pending.required_constraint == "single target"
+    assert pending.source_clause == "Set the kitchen light brightness to 27"
+    assert first.state.unresolved is not None
+    assert first.state.unresolved.original_frame is pending.original_frame
+    assert first.state.unresolved.candidate_targets == pending.candidate_entity_ids
+
+
+def test_invalid_qualifier_keeps_transaction_then_valid_qualifier_executes_once(catalog):
+    session = PlanningSession(
+        _QueuedPlanner(
+            [IntentPlan(response="I found more than one possible target.")]
+        )
+    )
+    first = session.plan_turn("Set the kitchen light brightness to 27", catalog)
+
+    invalid = session.plan_turn("The kitchen one", catalog)
+    valid = session.plan_turn("The ceiling one", catalog)
+
+    assert invalid.plan.steps == ()
+    assert invalid.state is first.state
+    assert valid.plan.response is None
+    assert len(valid.plan.steps) == 1
+    step = valid.plan.steps[0]
+    assert step.operation == "HassLightSet"
+    assert step.call.data == {"brightness": 27, "name": "Ceiling Light"}
+    assert step.entity_ids == ("light.kitchen_ceiling",)
+    assert step.effect == first.state.pending.requested_effect
+    assert valid.state.pending is None
+    assert valid.state.unresolved is None
+
+
+def test_complete_command_replaces_stale_pending_clarification(catalog):
+    office_light = _entity("light.office", "Office Light", "office")
+    expanded_catalog = replace(
+        catalog,
+        entities=(*catalog.entities, office_light),
+        areas=(*catalog.areas, CatalogArea("office", "Office")),
+    )
+    replacement_call = OhfIntentCall("HassTurnOff", {"name": "Office Light"})
+    replacement = IntentPlan(
+        steps=(
+            PlannedIntent(
+                replacement_call,
+                ("light.office",),
+                effect=semantic_effect_for_call(replacement_call),
+            ),
+        )
+    )
+    session = PlanningSession(
+        _QueuedPlanner(
+            [
+                IntentPlan(response="I found more than one possible target."),
+                replacement,
+            ]
+        )
+    )
+
+    first = session.plan_turn("Turn on the kitchen light", expanded_catalog)
+    second = session.plan_turn("Can you turn the office light off", expanded_catalog)
+
+    assert first.state.pending is not None
+    assert second.plan == replacement
+    assert second.state.pending is None
+    assert second.state.unresolved is None
 
 
 def test_planning_session_accepts_explicit_state_and_can_reset(catalog):
@@ -645,3 +732,175 @@ def test_non_relative_reply_uses_delegate_and_preserves_state(catalog):
 
     assert result.plan is response
     assert result.state is state
+
+
+def test_multistep_dialogue_state_retains_clause_operations_without_union(catalog):
+    plan = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"name": "Ceiling Light"}),
+                ("light.kitchen_ceiling",),
+            ),
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"name": "Counter Light"}),
+                ("light.kitchen_counter",),
+            ),
+        )
+    )
+    turn = PlanningSession(_QueuedPlanner([plan])).plan_turn(
+        "Check the ceiling light and then the counter light", catalog
+    )
+
+    assert turn.state.focus is not None
+    assert turn.state.focus.entity_set == ("light.kitchen_counter",)
+    assert turn.state.focus.cardinality is ReferentCardinality.SINGULAR
+    assert turn.state.focus.selected_member == "light.kitchen_counter"
+    assert tuple(turn.state.prior_operations) == ("frame-1", "frame-2")
+    assert turn.state.prior_operations["frame-1"].resolved_targets == (
+        "light.kitchen_ceiling",
+    )
+    assert turn.state.prior_operations["frame-2"].resolved_targets == (
+        "light.kitchen_counter",
+    )
+
+
+def test_coordinated_multistep_query_focuses_complete_target_set(catalog):
+    plan = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"name": "Floor Lamp"}),
+                ("light.floor_lamp",),
+            ),
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"area": "Kitchen", "domain": "light"}),
+                ("light.kitchen_ceiling", "light.kitchen_counter"),
+            ),
+        )
+    )
+    session = PlanningSession(_QueuedPlanner([plan]))
+
+    first = session.plan_turn("Check the living and kitchen lights", catalog)
+    second = session.plan_turn("Turn them off", catalog)
+
+    assert first.state.focus is not None
+    assert first.state.focus.entity_set == (
+        "light.floor_lamp",
+        "light.kitchen_ceiling",
+        "light.kitchen_counter",
+    )
+    assert first.state.clause_referents["them"].frame_id is None
+    assert second.plan.steps[0].entity_ids == first.state.focus.entity_set
+
+
+def test_one_entity_with_plural_name_has_singular_cardinality(catalog):
+    plural_entity = _entity("light.ceiling_bank", "Ceiling Lights", "living")
+    plural_catalog = replace(catalog, entities=(*catalog.entities, plural_entity))
+    query = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"name": "Ceiling Lights"}),
+                (plural_entity.entity_id,),
+            ),
+        )
+    )
+    session = PlanningSession(_QueuedPlanner([query]))
+
+    first = session.plan_turn("What is the state of the ceiling lights?", plural_catalog)
+    second = session.plan_turn("Turn it on", plural_catalog)
+
+    assert first.state.focus is not None
+    assert first.state.focus.cardinality is ReferentCardinality.SINGULAR
+    assert first.state.focus.selected_member == plural_entity.entity_id
+    assert second.plan.steps[0].entity_ids == (plural_entity.entity_id,)
+
+
+def test_singular_property_pronoun_distributes_over_group_focus(catalog):
+    query = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"area": "Kitchen", "domain": "light"}),
+                ("light.kitchen_ceiling", "light.kitchen_counter"),
+            ),
+        )
+    )
+    session = PlanningSession(_QueuedPlanner([query]))
+    session.plan_turn("What is the brightness of the kitchen lights?", catalog)
+
+    followup = session.plan_turn("Set it to 27", catalog)
+
+    assert followup.plan.response is None
+    assert followup.plan.steps[0].operation == "HassLightSet"
+    assert followup.plan.steps[0].entity_ids == (
+        "light.kitchen_ceiling",
+        "light.kitchen_counter",
+    )
+
+
+def test_singular_pronoun_does_not_expand_group_focus(catalog):
+    query = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"area": "Kitchen", "domain": "light"}),
+                ("light.kitchen_ceiling", "light.kitchen_counter"),
+            ),
+        )
+    )
+    session = PlanningSession(_QueuedPlanner([query]))
+    first = session.plan_turn("What is the state of the kitchen lights?", catalog)
+    second = session.plan_turn("Turn it on", catalog)
+
+    assert first.state.focus is not None
+    assert first.state.focus.cardinality is ReferentCardinality.GROUP
+    assert second.plan.steps == ()
+    assert second.plan.response == "Which one did you mean?"
+    assert second.state.unresolved is not None
+    assert second.state.unresolved.candidate_targets == (
+        "light.kitchen_ceiling",
+        "light.kitchen_counter",
+    )
+    assert second.state.unresolved.original_frame.predicate == "HassTurnOn"
+    assert second.state.unresolved.required_constraint == "single target"
+
+
+def test_property_focus_and_clause_referents_are_typed(catalog):
+    query = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"area": "Kitchen", "domain": "light"}),
+                ("light.kitchen_ceiling", "light.kitchen_counter"),
+            ),
+        )
+    )
+    state = PlanningSession(_QueuedPlanner([query])).plan_turn(
+        "What is the brightness of the kitchen lights?", catalog
+    ).state
+
+    assert state.property_focus is not None
+    assert state.property_focus.property == "brightness"
+    assert state.property_focus.source_clause == "What is the brightness of the kitchen lights?"
+    assert state.clause_referents["them"].target_set == state.focus.entity_set
+    assert state.clause_referents["their"].frame_id == "frame-1"
+    assert "it" not in state.clause_referents
+
+
+def test_conditional_relative_command_retains_explicit_condition(catalog):
+    query = IntentPlan(
+        steps=(
+            PlannedIntent(
+                OhfIntentCall("HassGetState", {"name": "Floor Lamp"}),
+                ("light.floor_lamp",),
+            ),
+        )
+    )
+    session = PlanningSession(_QueuedPlanner([query]))
+    session.plan_turn("What is the floor lamp state?", catalog)
+    followup = session.plan_turn("If it's off, turn it on.", catalog)
+
+    assert followup.plan.steps[0].operation == "HassTurnOn"
+    operation = followup.state.prior_operations["frame-2"]
+    assert operation.condition is not None
+    assert operation.condition.property == "activation"
+    assert operation.condition.operator == "equals"
+    assert operation.condition.value is False
+    assert operation.condition.target_frame_id == "frame-1"
+    assert operation.resolved_targets == ("light.floor_lamp",)

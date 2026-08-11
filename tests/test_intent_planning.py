@@ -336,6 +336,33 @@ def test_mixed_compounds_are_fully_planned_per_structural_clause(text, expected)
     assert [(step.operation, step.entity_ids) for step in plan.steps] == expected
 
 
+def test_structural_automation_precedes_property_and_compound_fast_paths():
+    engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(_compound_catalog()),
+        _RecordingExecutor(),
+        preferred_planner=SupplementalIntentPlanner(),
+        fallback_planner=NaturalLanguageIntentPlanner(),
+    )
+
+    plan = engine.plan(
+        _request("Create an automation to dim the floor lamp to 20 percent at sunset")
+    )
+
+    assert len(plan.steps) == 1
+    assert plan.steps[0].operation == "IntentBridgeCreateAutomation"
+    assert plan.steps[0].call.data["definition"] == {
+        "trigger": {"platform": "sun", "event": "sunset"},
+        "actions": [
+            {
+                "action": "light.turn_on",
+                "entity_id": "light.floor_lamp",
+                "brightness_pct": 20,
+            }
+        ],
+    }
+
+
 def test_supplemental_and_recognizer_each_receive_only_their_timer_tv_clause():
     recognizer = _TvClauseRecognizer()
     engine = DeterministicIntentEngine(

@@ -42,6 +42,7 @@ class VoiceToolRunState:
     last_area_id: str | None = None
     last_service_call: dict[str, Any] | None = None
     last_successful_data: dict[str, Any] | None = None
+    last_successful_ha_action: dict[str, Any] | None = None
     last_successful_music_action: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:

@@ -78,7 +78,7 @@ async def process_llm_fallback(
             text,
             origin_context,
         )
-        if replay_response:
+        if replay_response is not None:
             log.warning(
                 "MUSIC ACTION REPLAY GUARD HIT text=%r response=%r",
                 text,
@@ -96,7 +96,12 @@ async def process_llm_fallback(
                 timeout=settings.llm.timeout_seconds,
             )
             llm_calls = len(getattr(result, "raw_responses", []) or [])
-            response = sanitise_spoken_response(str(result.final_output or "").strip())
+            final_output = result.final_output
+            response = (
+                None
+                if final_output is None
+                else sanitise_spoken_response(str(final_output).strip())
+            )
 
             if not response and voice_tool_run_state.last_successful_music_action:
                 response = str(
@@ -105,6 +110,14 @@ async def process_llm_fallback(
                 )
                 log.warning(
                     "Recovered empty final output from successful Music Assistant "
+                    "action response=%r",
+                    response,
+                )
+
+            if not response and voice_tool_run_state.last_successful_ha_action:
+                response = settings.api.action_confirmation
+                log.warning(
+                    "Recovered empty final output from successful Home Assistant "
                     "action response=%r",
                     response,
                 )
@@ -130,6 +143,13 @@ async def process_llm_fallback(
                     "action; returning confirmed action response=%r",
                     response,
                 )
+            elif voice_tool_run_state.last_successful_ha_action:
+                response = settings.api.action_confirmation
+                log.warning(
+                    "LLM max turns reached AFTER successful Home Assistant "
+                    "action; returning confirmed action response=%r",
+                    response,
+                )
             elif voice_tool_run_state.last_successful_data:
                 log.warning(
                     "LLM max turns reached AFTER successful HA data; "
@@ -152,6 +172,13 @@ async def process_llm_fallback(
                     "returning confirmed response=%r",
                     response,
                 )
+            elif voice_tool_run_state.last_successful_ha_action:
+                response = settings.api.action_confirmation
+                log.exception(
+                    "LLM runner failed after successful Home Assistant action; "
+                    "returning confirmed response=%r",
+                    response,
+                )
             elif voice_tool_run_state.last_successful_data:
                 log.exception(
                     "LLM runner failed after successful HA data; "
@@ -166,7 +193,11 @@ async def process_llm_fallback(
             else:
                 raise
 
-    if not response:
+    successful_silent_action = bool(
+        voice_tool_run_state.last_successful_ha_action
+        or voice_tool_run_state.last_successful_music_action
+    )
+    if response is None or (not response and not successful_silent_action):
         raise RuntimeError("LLM fallback returned no response")
 
     if voice_tool_run_state.last_successful_music_action:

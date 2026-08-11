@@ -1,6 +1,6 @@
 import asyncio
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -13,12 +13,12 @@ from intent_bridge.runtime.dependencies import RuntimeState, runtime
 async def test_lifespan_minimal_startup_shutdown(monkeypatch):
     monkeypatch.setattr(settings.llm, "enabled", False)
     monkeypatch.setattr(settings.music_assistant, "enabled", False)
-    monkeypatch.setattr(application.voice_activity_indicators, "stop_all", AsyncMock())
+    monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
 
     async with application.lifespan(application.app):
         pass
 
-    application.voice_activity_indicators.stop_all.assert_awaited_once()
+    application.assistant_feedback.stop_all.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -29,6 +29,7 @@ async def test_lifespan_full_integrations(monkeypatch):
     monkeypatch.setattr(settings.home_assistant, "access_token", "token")
     monkeypatch.setattr(settings.music_assistant, "enabled", True)
     monkeypatch.setattr(settings.home_assistant.advanced, "enabled", True)
+    monkeypatch.setattr(settings.mcp, "config_path", settings.mcp.config_path.parent / "missing.json")
     monkeypatch.setattr(application, "validate_fallback_config", lambda: [])
     monkeypatch.setattr(application, "validate_music_assistant_config", lambda: [])
     monkeypatch.setattr(application, "MusicAssistantClient", object())
@@ -64,8 +65,10 @@ async def test_lifespan_full_integrations(monkeypatch):
 
     monkeypatch.setattr(application, "MCPServerManager", Manager)
     monkeypatch.setattr(application, "make_advanced_agent", lambda servers: "advanced")
-    monkeypatch.setattr(application, "make_fallback_agent", lambda music_enabled: "fallback")
-    monkeypatch.setattr(application.voice_activity_indicators, "stop_all", AsyncMock())
+    monkeypatch.setattr(
+        application, "make_fallback_agent", lambda music_enabled, **kwargs: "fallback"
+    )
+    monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
     async with application.lifespan(application.app):
         assert runtime.ha_ws is ws
         assert runtime.music_assistant is native
@@ -84,12 +87,51 @@ async def test_lifespan_starts_ha_catalog_when_llm_is_disabled(monkeypatch):
     monkeypatch.setattr(settings.music_assistant, "enabled", False)
     ws = SimpleNamespace(start=AsyncMock(), stop=AsyncMock(), ready=asyncio.Event())
     monkeypatch.setattr(application, "HomeAssistantWebSocket", lambda *args: ws)
-    monkeypatch.setattr(application.voice_activity_indicators, "stop_all", AsyncMock())
+    monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
 
     async with application.lifespan(application.app):
         assert runtime.ha_ws is ws
         ws.start.assert_awaited_once()
     ws.stop.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_lifespan_exposes_active_custom_mcp_to_fallback(monkeypatch, tmp_path):
+    monkeypatch.setattr(settings.llm, "enabled", True)
+    monkeypatch.setattr(settings.home_assistant.websocket, "enabled", False)
+    monkeypatch.setattr(settings.home_assistant.advanced, "enabled", False)
+    monkeypatch.setattr(settings.music_assistant, "enabled", False)
+    monkeypatch.setattr(settings.mcp, "config_path", tmp_path / "mcp.json")
+    monkeypatch.setattr(application, "validate_fallback_config", lambda: [])
+    server = SimpleNamespace(name="Web Search MCP")
+    configured = application.ConfiguredMcpServer("web_search", "Search the web", server)
+    monkeypatch.setattr(application, "load_mcp_servers", lambda path: (configured,))
+
+    class Manager:
+        def __init__(self, servers, **kwargs):
+            self.active_servers = list(servers)
+            self.errors = []
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return None
+
+    captured = {}
+
+    def make_fallback(music_enabled, **kwargs):
+        captured.update(kwargs)
+        return "fallback"
+
+    monkeypatch.setattr(application, "MCPServerManager", Manager)
+    monkeypatch.setattr(application, "make_fallback_agent", make_fallback)
+    monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
+
+    async with application.lifespan(application.app):
+        assert runtime.fallback_agent == "fallback"
+        assert captured["mcp_servers"] == (server,)
+        assert "Web Search MCP: Search the web" in captured["mcp_instructions"]
 
 
 
@@ -99,7 +141,7 @@ async def test_lifespan_missing_fallback_config(monkeypatch):
     monkeypatch.setattr(application, "validate_fallback_config", lambda: ["TOKEN"])
     monkeypatch.setattr(settings.music_assistant, "enabled", True)
     monkeypatch.setattr(application, "validate_music_assistant_config", lambda: ["MA_TOKEN"])
-    monkeypatch.setattr(application.voice_activity_indicators, "stop_all", AsyncMock())
+    monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
     async with application.lifespan(application.app):
         assert runtime.fallback_agent is None
 

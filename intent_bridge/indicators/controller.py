@@ -30,7 +30,7 @@ from intent_bridge.runtime.execution import voice_tool_run_state
 
 
 @dataclass
-class SatelliteIndicatorTarget:
+class AssistantLedTarget:
     entity_id: str
     domain: str
     satellite_entity_id: str
@@ -42,7 +42,7 @@ class SatelliteIndicatorTarget:
 
 
 @dataclass
-class SatelliteIndicatorSnapshot:
+class AssistantLedSnapshot:
     entity_id: str
     domain: str
     state: str
@@ -50,16 +50,16 @@ class SatelliteIndicatorSnapshot:
 
 
 @dataclass
-class SatelliteIndicatorSession:
-    target: SatelliteIndicatorTarget
-    snapshot: SatelliteIndicatorSnapshot
+class AssistantLedSession:
+    target: AssistantLedTarget
+    snapshot: AssistantLedSnapshot
     refcount: int = 1
     pulse_task: asyncio.Task[Any] | None = None
     native_effect: str | None = None
 
 
 @dataclass(frozen=True)
-class SatelliteIndicatorHandle:
+class AssistantLedHandle:
     entity_id: str
 
 
@@ -99,15 +99,15 @@ async def _ha_internal_service_call(
 
 
 def _configured_indicator_rgb() -> list[int] | None:
-    return parse_indicator_rgb(settings.indicators.color)
+    return parse_indicator_rgb(settings.assistant.led_color)
 
 
 def _find_configured_native_effect(attributes: dict[str, Any]) -> str | None:
-    return find_native_effect(attributes, settings.indicators.effect)
+    return find_native_effect(attributes, settings.assistant.led_effect)
 
 
 def _configured_effect_wants_software_pulse() -> bool:
-    return effect_wants_software_pulse(settings.indicators.effect)
+    return effect_wants_software_pulse(settings.assistant.led_effect)
 
 
 def _find_neutral_native_effect(attributes: dict[str, Any]) -> str | None:
@@ -118,15 +118,15 @@ def _light_supports_colour(attributes: dict[str, Any]) -> bool:
     return light_supports_colour(attributes)
 
 
-def _snapshot_restore_light_data(snapshot: SatelliteIndicatorSnapshot) -> dict[str, Any]:
+def _snapshot_restore_light_data(snapshot: AssistantLedSnapshot) -> dict[str, Any]:
     return snapshot_restore_light_data(snapshot.attributes)
 
 
 async def _resolve_satellite_indicator(
     origin_context: dict[str, Any] | None,
-) -> SatelliteIndicatorTarget | None:
+) -> AssistantLedTarget | None:
     """Resolve an indicator only through a real assist_satellite device relation."""
-    if not settings.indicators.music_playback_enabled or not origin_context:
+    if not settings.assistant.led_enabled or not origin_context:
         return None
     client = await _require_ha_ws()
     await client.refresh_registries()
@@ -183,7 +183,7 @@ async def _resolve_satellite_indicator(
                 area_satellites.append(entity_id)
         if len(area_satellites) != 1:
             log.info(
-                "VOICE INDICATOR skipped: area satellite resolution ambiguous area=%r matches=%s",
+                "ASSISTANT LED skipped: area satellite resolution ambiguous area=%r matches=%s",
                 resolved_area_name or origin_area_name or origin_area_id,
                 area_satellites,
             )
@@ -194,7 +194,7 @@ async def _resolve_satellite_indicator(
 
     if not isinstance(candidate_device_id, str) or not candidate_device_id:
         log.info(
-            "VOICE INDICATOR skipped: assist_satellite has no registry device satellite=%s",
+            "ASSISTANT LED skipped: assist_satellite has no registry device satellite=%s",
             satellite_entity_id,
         )
         return None
@@ -216,7 +216,7 @@ async def _resolve_satellite_indicator(
                 scoped_name = scoped_device.get("name_by_user") or scoped_device.get("name")
             scope_log.append((scoped_name or scoped_device_id, relation, depth))
         log.info(
-            "VOICE INDICATOR connected-device scope satellite=%s anchor_device=%s devices=%s",
+            "ASSISTANT LED connected-device scope satellite=%s anchor_device=%s devices=%s",
             satellite_entity_id,
             candidate_device_id,
             scope_log,
@@ -226,7 +226,7 @@ async def _resolve_satellite_indicator(
     sibling_controls: list[tuple[float, str, list[str], str, str, int]] = []
     for entity_id, _state in client.states.items():
         domain = entity_id.split(".", 1)[0].casefold()
-        if domain not in settings.indicators.domains:
+        if domain not in settings.assistant.led_domains:
             continue
         registry = client.entity_registry.get(entity_id, {})
         owning_device_id = registry.get("di") if isinstance(registry, dict) else None
@@ -255,7 +255,7 @@ async def _resolve_satellite_indicator(
     if not sibling_controls:
         sole_controls: list[tuple[str, str, int, str]] = []
         for entity_id in client.states:
-            if entity_id.split(".", 1)[0].casefold() not in settings.indicators.domains:
+            if entity_id.split(".", 1)[0].casefold() not in settings.assistant.led_domains:
                 continue
             registry = client.entity_registry.get(entity_id, {})
             owning_device_id = registry.get("di") if isinstance(registry, dict) else None
@@ -278,7 +278,7 @@ async def _resolve_satellite_indicator(
 
     if not sibling_controls:
         log.info(
-            "VOICE INDICATOR skipped: no indicator control in connected satellite topology "
+            "ASSISTANT LED skipped: no indicator control in connected satellite topology "
             "satellite=%s device=%s",
             satellite_entity_id,
             candidate_device_id,
@@ -289,7 +289,7 @@ async def _resolve_satellite_indicator(
     top_score, entity_id, reasons, indicator_device_id, relation, depth = sibling_controls[0]
     if len(sibling_controls) > 1 and sibling_controls[1][0] == top_score:
         log.info(
-            "VOICE INDICATOR skipped: connected indicator tie satellite=%s candidates=%s",
+            "ASSISTANT LED skipped: connected indicator tie satellite=%s candidates=%s",
             satellite_entity_id,
             [
                 (item[1], item[0], item[4], item[3])
@@ -307,7 +307,7 @@ async def _resolve_satellite_indicator(
                 "name"
             )
         log.info(
-            "VOICE INDICATOR selected connected control satellite=%s "
+            "ASSISTANT LED selected connected control satellite=%s "
             "satellite_device=%s indicator_device=%s indicator_device_name=%r "
             "relation=%s depth=%d entity=%s score=%.1f",
             satellite_entity_id,
@@ -327,7 +327,7 @@ async def _resolve_satellite_indicator(
     if isinstance(indicator_device, dict):
         device_name = indicator_device.get("name_by_user") or indicator_device.get("name")
 
-    return SatelliteIndicatorTarget(
+    return AssistantLedTarget(
         entity_id=entity_id,
         domain=entity_id.split(".", 1)[0].casefold(),
         satellite_entity_id=satellite_entity_id,
@@ -339,12 +339,12 @@ async def _resolve_satellite_indicator(
     )
 
 
-class VoiceSatelliteActivityIndicators:
-    """Reference-counted optional LED feedback for optimistic MA playback."""
+class AssistantLeds:
+    """Reference-counted LED feedback for any asynchronous assistant adapter."""
 
     def __init__(self) -> None:
         self._lock = asyncio.Lock()
-        self._sessions: dict[str, SatelliteIndicatorSession] = {}
+        self._sessions: dict[str, AssistantLedSession] = {}
         self.last_error: str | None = None
         self.last_target: dict[str, Any] | None = None
 
@@ -352,7 +352,7 @@ class VoiceSatelliteActivityIndicators:
     def active_count(self) -> int:
         return len(self._sessions)
 
-    async def begin(self, origin_context: dict[str, Any] | None) -> SatelliteIndicatorHandle | None:
+    async def begin(self, origin_context: dict[str, Any] | None) -> AssistantLedHandle | None:
         try:
             target = await _resolve_satellite_indicator(origin_context)
             if target is None:
@@ -362,11 +362,11 @@ class VoiceSatelliteActivityIndicators:
                 if existing is not None:
                     existing.refcount += 1
                     log.info(
-                        "VOICE INDICATOR reuse entity=%s refcount=%d",
+                        "ASSISTANT LED reuse entity=%s refcount=%d",
                         target.entity_id,
                         existing.refcount,
                     )
-                    return SatelliteIndicatorHandle(target.entity_id)
+                    return AssistantLedHandle(target.entity_id)
 
                 client = await _require_ha_ws()
                 state = client.states.get(target.entity_id)
@@ -375,13 +375,13 @@ class VoiceSatelliteActivityIndicators:
                 attrs = state.get("attributes")
                 if not isinstance(attrs, dict):
                     attrs = {}
-                snapshot = SatelliteIndicatorSnapshot(
+                snapshot = AssistantLedSnapshot(
                     entity_id=target.entity_id,
                     domain=target.domain,
                     state=str(state.get("state") or "unknown"),
                     attributes=dict(attrs),
                 )
-                session = SatelliteIndicatorSession(target=target, snapshot=snapshot)
+                session = AssistantLedSession(target=target, snapshot=snapshot)
                 self._sessions[target.entity_id] = session
 
             try:
@@ -401,13 +401,13 @@ class VoiceSatelliteActivityIndicators:
                 "match_reason": target.match_reason,
                 "native_effect": session.native_effect,
             }
-            return SatelliteIndicatorHandle(target.entity_id)
+            return AssistantLedHandle(target.entity_id)
         except Exception as exc:
             self.last_error = f"{type(exc).__name__}: {exc}"
-            log.warning("VOICE INDICATOR start failed: %s", self.last_error)
+            log.warning("ASSISTANT LED start failed: %s", self.last_error)
             return None
 
-    async def _activate(self, session: SatelliteIndicatorSession) -> None:
+    async def _activate(self, session: AssistantLedSession) -> None:
         target = session.target
         attrs = session.snapshot.attributes
         if target.domain == "light":
@@ -424,40 +424,40 @@ class VoiceSatelliteActivityIndicators:
             await _ha_internal_service_call("light", "turn_on", target.entity_id, data)
             if (
                 not configured_effect
-                and settings.indicators.software_pulse_enabled
+                and settings.assistant.led_software_pulse_enabled
                 and _configured_effect_wants_software_pulse()
             ):
                 session.pulse_task = asyncio.create_task(
                     self._software_pulse_light(session),
-                    name=f"voice-indicator-pulse-{target.entity_id}",
+                    name=f"assistant-led-pulse-{target.entity_id}",
                 )
         elif target.domain == "switch":
             await _ha_internal_service_call("switch", "turn_on", target.entity_id)
             if (
-                settings.indicators.software_pulse_enabled
+                settings.assistant.led_software_pulse_enabled
                 and _configured_effect_wants_software_pulse()
             ):
                 session.pulse_task = asyncio.create_task(
                     self._software_pulse_switch(session),
-                    name=f"voice-indicator-pulse-{target.entity_id}",
+                    name=f"assistant-led-pulse-{target.entity_id}",
                 )
         log.info(
-            "VOICE INDICATOR active entity=%s satellite=%s device=%s area=%r "
+            "ASSISTANT LED active entity=%s satellite=%s device=%s area=%r "
             "color=%r effect_requested=%r native_effect=%r software_pulse=%s "
             "previous_state=%s previous_effect=%r",
             target.entity_id,
             target.satellite_entity_id,
             target.device_id,
             target.area_name,
-            settings.indicators.color,
-            settings.indicators.effect,
+            settings.assistant.led_color,
+            settings.assistant.led_effect,
             session.native_effect,
             session.pulse_task is not None,
             session.snapshot.state,
             session.snapshot.attributes.get("effect"),
         )
 
-    async def _software_pulse_light(self, session: SatelliteIndicatorSession) -> None:
+    async def _software_pulse_light(self, session: AssistantLedSession) -> None:
         entity_id = session.target.entity_id
         attrs = session.snapshot.attributes
         on_data: dict[str, Any] = {}
@@ -466,36 +466,36 @@ class VoiceSatelliteActivityIndicators:
             on_data["rgb_color"] = configured_rgb
         try:
             while True:
-                await asyncio.sleep(settings.indicators.pulse_interval_seconds)
+                await asyncio.sleep(settings.assistant.led_pulse_interval_seconds)
                 await _ha_internal_service_call("light", "turn_off", entity_id)
-                await asyncio.sleep(settings.indicators.pulse_interval_seconds)
+                await asyncio.sleep(settings.assistant.led_pulse_interval_seconds)
                 await _ha_internal_service_call("light", "turn_on", entity_id, on_data)
         except asyncio.CancelledError:
             raise
         except Exception as exc:
             log.warning(
-                "VOICE INDICATOR software light pulse stopped entity=%s error=%s", entity_id, exc
+                "ASSISTANT LED software light pulse stopped entity=%s error=%s", entity_id, exc
             )
 
-    async def _software_pulse_switch(self, session: SatelliteIndicatorSession) -> None:
+    async def _software_pulse_switch(self, session: AssistantLedSession) -> None:
         entity_id = session.target.entity_id
         try:
             while True:
-                await asyncio.sleep(settings.indicators.pulse_interval_seconds)
+                await asyncio.sleep(settings.assistant.led_pulse_interval_seconds)
                 await _ha_internal_service_call("switch", "turn_off", entity_id)
-                await asyncio.sleep(settings.indicators.pulse_interval_seconds)
+                await asyncio.sleep(settings.assistant.led_pulse_interval_seconds)
                 await _ha_internal_service_call("switch", "turn_on", entity_id)
         except asyncio.CancelledError:
             raise
         except Exception as exc:
             log.warning(
-                "VOICE INDICATOR software switch pulse stopped entity=%s error=%s", entity_id, exc
+                "ASSISTANT LED software switch pulse stopped entity=%s error=%s", entity_id, exc
             )
 
-    async def end(self, handle: SatelliteIndicatorHandle | None) -> None:
+    async def end(self, handle: AssistantLedHandle | None) -> None:
         if handle is None:
             return
-        session: SatelliteIndicatorSession | None = None
+        session: AssistantLedSession | None = None
         async with self._lock:
             current = self._sessions.get(handle.entity_id)
             if current is None:
@@ -503,7 +503,7 @@ class VoiceSatelliteActivityIndicators:
             current.refcount -= 1
             if current.refcount > 0:
                 log.info(
-                    "VOICE INDICATOR retain entity=%s refcount=%d",
+                    "ASSISTANT LED retain entity=%s refcount=%d",
                     handle.entity_id,
                     current.refcount,
                 )
@@ -512,7 +512,7 @@ class VoiceSatelliteActivityIndicators:
         if session is not None:
             await self._restore(session)
 
-    async def _restore(self, session: SatelliteIndicatorSession) -> None:
+    async def _restore(self, session: AssistantLedSession) -> None:
         pulse_task = session.pulse_task
         if pulse_task is not None and not pulse_task.done():
             pulse_task.cancel()
@@ -554,7 +554,7 @@ class VoiceSatelliteActivityIndicators:
                     snap.entity_id,
                 )
             log.info(
-                "VOICE INDICATOR restored entity=%s state=%s colour_mode=%r effect=%r",
+                "ASSISTANT LED restored entity=%s state=%s colour_mode=%r effect=%r",
                 snap.entity_id,
                 snap.state,
                 snap.attributes.get("color_mode"),
@@ -562,7 +562,7 @@ class VoiceSatelliteActivityIndicators:
             )
         except Exception as exc:
             self.last_error = f"{type(exc).__name__}: {exc}"
-            log.warning("VOICE INDICATOR restore failed entity=%s error=%s", snap.entity_id, exc)
+            log.warning("ASSISTANT LED restore failed entity=%s error=%s", snap.entity_id, exc)
 
     async def stop_all(self) -> None:
         async with self._lock:
@@ -573,4 +573,4 @@ class VoiceSatelliteActivityIndicators:
             await self._restore(session)
 
 
-voice_activity_indicators = VoiceSatelliteActivityIndicators()
+assistant_leds = AssistantLeds()

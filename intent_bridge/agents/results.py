@@ -341,6 +341,10 @@ def fast_tool_result_handler(
         len(service_results),
         settings.api.action_confirmation,
     )
+    voice_tool_run_state.last_successful_ha_action = {
+        "calls": len(service_results),
+        "spoken": settings.api.action_confirmation,
+    }
     return ToolsToFinalOutputResult(
         is_final_output=True,
         final_output=settings.api.action_confirmation,

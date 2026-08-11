@@ -14,17 +14,38 @@ from intent_bridge.intent_engine.natural_language import (
     NaturalLanguageIntentRecognizer,
     split_compound_request,
 )
+from intent_bridge.intent_engine.outcomes import (
+    AmbiguousTarget,
+    CapabilityMismatch,
+    IncompleteCompound,
+    NoTarget,
+    Resolved,
+    UnsupportedOperation,
+)
 from intent_bridge.intent_engine.planning import IntentPlannerChain
 from intent_bridge.intent_engine.supplemental import (
+    ClauseReferent,
     DialogueState,
+    DiscourseCondition,
+    DiscourseOperationFrame,
+    EntityFocus,
     PendingClarification,
     PlanningSession,
     PlanningTurn,
+    PropertyFocus,
+    ReferentCardinality,
     SupplementalIntentPlanner,
+    UnresolvedDiscourseFrame,
 )
 
 __all__ = [
+    "AmbiguousTarget",
+    "CapabilityMismatch",
+    "ClauseReferent",
     "DialogueState",
+    "DiscourseCondition",
+    "DiscourseOperationFrame",
+    "EntityFocus",
     "GrammarDependencyError",
     "GrammarLoadError",
     "IntentGrammarLoader",
@@ -33,11 +54,18 @@ __all__ = [
     "NaturalLanguageIntentRecognizer",
     "MeasurementIntentPlanner",
     "IntentPlannerChain",
+    "IncompleteCompound",
+    "NoTarget",
     "PendingClarification",
     "PlanningSession",
     "PlanningTurn",
+    "PropertyFocus",
+    "ReferentCardinality",
+    "Resolved",
     "SentenceProvenance",
     "SupplementalIntentPlanner",
+    "UnresolvedDiscourseFrame",
+    "UnsupportedOperation",
     "load_intent_grammar",
     "split_compound_request",
 ]

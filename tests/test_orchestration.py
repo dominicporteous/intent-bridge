@@ -79,6 +79,10 @@ def test_fast_result_handler_home_assistant_paths():
         None, [result("ha_call_service", {"success": True, "service": "turn_on"})]
     )
     assert action.is_final_output and action.final_output == settings.api.action_confirmation
+    assert voice_tool_run_state.last_successful_ha_action == {
+        "calls": 1,
+        "spoken": settings.api.action_confirmation,
+    }
     verified = tool_results.fast_tool_result_handler(
         None,
         [result("ha_call_service", {"success": True, "service": "custom", "verified_state": "on"})],
@@ -137,3 +141,20 @@ def test_agent_factory_tool_sets(monkeypatch):
     result = agent.make_fallback_agent(True)
     assert len(result["tools"]) == 16
     assert "MUSIC ASSISTANT AUTHORITY" in result["instructions"]
+
+
+def test_agent_factory_exposes_custom_mcp_servers(monkeypatch):
+    created = {}
+    monkeypatch.setattr(agent, "Agent", lambda **kwargs: created.update(kwargs) or kwargs)
+    monkeypatch.setattr(agent, "_make_lemonade_model", lambda: "model")
+    monkeypatch.setattr(runtime, "advanced_agent", None)
+    server = object()
+
+    agent.make_fallback_agent(
+        False,
+        mcp_servers=(server,),
+        mcp_instructions="CUSTOM MCP TOOLS\n\n- Web Search MCP",
+    )
+
+    assert created["mcp_servers"] == [server]
+    assert "Web Search MCP" in created["instructions"]

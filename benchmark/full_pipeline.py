@@ -18,6 +18,7 @@ from intent_bridge.agents.factory import make_fallback_agent
 from intent_bridge.application import build_voice_pipeline
 from intent_bridge.config import settings
 from intent_bridge.core.voice import VoiceRequest
+from intent_bridge.home_assistant.client import HomeAssistantWebSocket
 from intent_bridge.intent_engine.grammar import load_intent_grammar
 from intent_bridge.intent_engine.models import ExecutionResult, OhfIntentCall, PlannedIntent
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
@@ -26,7 +27,10 @@ from intent_bridge.runtime.dependencies import runtime
 FallbackHandler = Callable[[VoiceRequest], Awaitable[str]]
 
 
-def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
+def _service_definitions(
+    home: Home,
+    extra_domains: tuple[str, ...] = (),
+) -> dict[str, dict[str, dict[str, Any]]]:
     """Build fixture metadata in the shape exposed by Home Assistant."""
 
     def definition(domain: str, *fields: str, returns_data: bool = False) -> dict[str, Any]:
@@ -73,10 +77,16 @@ def _service_definitions(home: Home) -> dict[str, dict[str, dict[str, Any]]]:
         "scene": {"turn_on": definition("scene")},
         "script": {"turn_on": definition("script")},
         "weather": {"get_forecasts": definition("weather", "type", returns_data=True)},
+        "todo": {
+            "add_item": definition("todo", "item"),
+            "update_item": definition("todo", "item", "rename", "status"),
+            "remove_item": definition("todo", "item"),
+            "get_items": definition("todo", "status", returns_data=True),
+        },
     }
     return {
         domain: templates.get(domain, {})
-        for domain in {entity.domain for entity in home.entities}
+        for domain in {*extra_domains, *(entity.domain for entity in home.entities)}
     }
 
 
@@ -100,6 +110,55 @@ class BenchmarkHomeAssistant:
             }
             for entity in request.home.entities
         }
+        for operation in request.setup:
+            for entity_id in operation.entity_ids:
+                state = self.states.setdefault(
+                    entity_id,
+                    {
+                        "entity_id": entity_id,
+                        "state": operation.state or "unknown",
+                        "attributes": {
+                            "friendly_name": entity_id.split(".", 1)[-1]
+                            .replace("_", " ")
+                            .title()
+                        },
+                    },
+                )
+                if operation.state is not None:
+                    state["state"] = operation.state
+                state["attributes"].update(operation.payload)
+
+        shopping_items = [
+            str(operation.payload["shopping_list_item"])
+            for operation in request.setup
+            if operation.payload.get("shopping_list_item")
+        ]
+        todo_items: dict[str, list[str]] = {}
+        for operation in request.setup:
+            item = operation.payload.get("todo_item")
+            list_name = operation.payload.get("list_name")
+            if item and list_name:
+                todo_items.setdefault(str(list_name), []).append(str(item))
+        if shopping_items:
+            self.states["todo.shopping_list"] = {
+                "entity_id": "todo.shopping_list",
+                "state": str(len(shopping_items)),
+                "attributes": {
+                    "friendly_name": "Shopping List",
+                    "items": tuple(shopping_items),
+                },
+            }
+        for list_name, items in todo_items.items():
+            object_id = "_".join(
+                part for part in "".join(
+                    char.casefold() if char.isalnum() else " " for char in list_name
+                ).split() if part
+            )
+            self.states[f"todo.{object_id}"] = {
+                "entity_id": f"todo.{object_id}",
+                "state": str(len(items)),
+                "attributes": {"friendly_name": list_name, "items": tuple(items)},
+            }
         self.entity_registry = {
             entity.entity_id: {
                 "ai": entity.area_id,
@@ -108,6 +167,15 @@ class BenchmarkHomeAssistant:
             }
             for entity in request.home.entities
         }
+        for entity_id, state in self.states.items():
+            self.entity_registry.setdefault(
+                entity_id,
+                {
+                    "ai": None,
+                    "en": state["attributes"].get("friendly_name"),
+                    "aliases": [],
+                },
+            )
         self.devices: dict[str, dict[str, Any]] = {}
         self.areas = {
             area.area_id: {
@@ -125,7 +193,10 @@ class BenchmarkHomeAssistant:
             }
             for floor in request.home.floors
         }
-        self.services = _service_definitions(request.home)
+        self.services = _service_definitions(
+            request.home,
+            tuple(entity_id.split(".", 1)[0] for entity_id in self.states),
+        )
         self.operations: list[Operation] = []
         self.ready = asyncio.Event()
         self.ready.set()
@@ -135,6 +206,16 @@ class BenchmarkHomeAssistant:
 
     async def refresh_registries(self, *, force: bool = False) -> None:
         del force
+
+    # Reuse the production cache discovery implementation. The benchmark owns
+    # only the external I/O boundary; agent tools see the same search and area
+    # behavior as the application.
+    _entity_context = HomeAssistantWebSocket._entity_context
+    search_cached_states = HomeAssistantWebSocket.search_cached_states
+    resolve_area_reference = HomeAssistantWebSocket.resolve_area_reference
+    resolve_device_origin = HomeAssistantWebSocket.resolve_device_origin
+    area_mentioned_in_text = HomeAssistantWebSocket.area_mentioned_in_text
+    entities_in_area = HomeAssistantWebSocket.entities_in_area
 
     async def wait_for_expected_state(
         self,
@@ -242,26 +323,15 @@ class FullPipelineBenchmarkMatcher:
     def __init__(
         self,
         *,
-        force_llm: bool = False,
         fallback_handler: FallbackHandler | None = None,
     ) -> None:
-        self.force_llm = force_llm
         self.last_routes: tuple[str, ...] = ()
         self._fallback_handler = fallback_handler
         if fallback_handler is None:
-            missing = []
-            if not settings.llm.enabled:
-                missing.append("INTENT_BRIDGE_LLM_ENABLED=true")
-            if not settings.llm.base_url:
-                missing.append("INTENT_BRIDGE_LLM_BASE_URL")
-            if not settings.llm.model:
-                missing.append("INTENT_BRIDGE_LLM_MODEL")
-            if missing:
-                raise RuntimeError(
-                    "Full-pipeline LLM benchmark configuration is incomplete: "
-                    + ", ".join(missing)
-                )
-            self._fallback_agent = make_fallback_agent(False)
+            configured = bool(
+                settings.llm.enabled and settings.llm.base_url and settings.llm.model
+            )
+            self._fallback_agent = make_fallback_agent(False) if configured else None
         else:
             self._fallback_agent = None
         grammar = load_intent_grammar(
@@ -277,7 +347,6 @@ class FullPipelineBenchmarkMatcher:
             intent_recognizer=self._intent_recognizer,
             fallback_handler=self._fallback_handler,
             step_observer=fixture.record_step,
-            include_deterministic=not self.force_llm,
         )
 
         previous_ws = runtime.ha_ws

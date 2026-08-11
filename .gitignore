@@ -7,5 +7,7 @@ __pycache__/
 .uv-cache/
 *.egg-info/
 .env
+mcp.json
 .coverage
 dist/
+benchmark/datasets/2*
