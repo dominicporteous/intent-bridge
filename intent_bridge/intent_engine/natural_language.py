@@ -725,6 +725,13 @@ def normalize_lexical_operator(
             "playback", "set", "playing", "HassMediaUnpause", "media_player", {}
         )
 
+    # A bare ``play`` is playback control. Keep this exact so requests such as
+    # ``play Taylor Swift`` remain available to the media search route.
+    if text == "play":
+        return NormalizedOperator(
+            "playback", "set", "playing", "HassMediaUnpause", "media_player", {}
+        )
+
     # At the start of an imperative, "switch" is a verb.  Preserve a domain
     # supplied by the target phrase (for coordinated groups such as
     # ``bathroom and kitchen lights``), while never inferring the switch domain
@@ -1421,6 +1428,39 @@ def _target_for_entity(entity: CatalogEntity) -> _Target:
     return _Target(slots, (entity.entity_id,))
 
 
+def _default_area_media_target(
+    catalog: CatalogSnapshot,
+    area: CatalogArea,
+) -> _Target | None:
+    """Resolve an area's canonical player without guessing among devices."""
+
+    area_name = _normal(area.name)
+    players = tuple(
+        entity
+        for entity in catalog.entities
+        if entity.domain == "media_player" and entity.area_id == area.area_id
+    )
+    exact_area_matches = tuple(
+        entity
+        for entity in players
+        if area_name
+        in {
+            _normal(entity.name),
+            _normal(entity.entity_id.split(".", 1)[-1]),
+            *(_normal(alias) for alias in entity.aliases),
+        }
+    )
+    if len(exact_area_matches) == 1:
+        return _target_for_entity(exact_area_matches[0])
+    if len(exact_area_matches) > 1:
+        raise _AmbiguousTarget
+    if len(players) == 1:
+        return _target_for_entity(players[0])
+    if players:
+        raise _AmbiguousTarget
+    return None
+
+
 def _group_target(
     *,
     catalog: CatalogSnapshot,
@@ -1793,6 +1833,16 @@ def _resolve_targets(
         return targets
     origin_area = _origin_area(context, catalog)
     if origin_area is not None:
+        if text == "play" and operation.intent_name == "HassMediaUnpause":
+            target = _default_area_media_target(catalog, origin_area)
+            if target is not None:
+                LOGGER.info(
+                    "Bare playback command resolved to default area player: %s",
+                    _format_targets((target,)),
+                )
+                return (target,)
+            LOGGER.info("Origin area %s has no media player", origin_area.area_id)
+            return ()
         target = _group_target(
             catalog=catalog,
             domain=domain,

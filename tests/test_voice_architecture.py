@@ -18,7 +18,10 @@ from intent_bridge.core.voice import (
     VoiceRequest,
     VoiceResult,
 )
-from intent_bridge.intent_engine.models import CatalogSnapshot, IntentPlan
+from intent_bridge.intent_engine.models import (
+    CatalogSnapshot,
+    IntentPlan,
+)
 from intent_bridge.intent_engine.route import ConversationalDeterministicVoiceRoute
 from intent_bridge.runtime.execution import _reset_voice_tool_run_state, voice_tool_run_state
 
@@ -266,6 +269,24 @@ def test_application_factory_accepts_a_replacement_pipeline():
             replacement,
             dependencies=application.ApplicationDependencies(replacement),
         )
+
+
+def test_default_pipeline_places_informational_gate_before_household_fallback():
+    async def handler(_request):
+        return "Handled."
+
+    pipeline = application.build_voice_pipeline(
+        intent_executor=object(),
+        intent_recognizer=object(),
+        informational_handler=handler,
+        fallback_handler=handler,
+    )
+
+    assert pipeline.route_names == (
+        "ohf-hassil",
+        "informational-llm",
+        "llm-ha-ws",
+    )
 
 
 def test_api_returns_normal_completion_for_configured_pipeline_failure_response():

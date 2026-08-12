@@ -30,6 +30,7 @@ from intent_bridge.intent_engine.ports import (
 )
 from intent_bridge.intent_engine.resolution import ResolvedCandidate, resolve_candidate
 from intent_bridge.runtime.dependencies import runtime
+from intent_bridge.runtime.execution import _reset_voice_tool_run_state
 
 LOGGER = logging.getLogger(__name__)
 
@@ -467,6 +468,7 @@ class DeterministicIntentEngine:
     async def execute_plan(self, request: VoiceRequest, plan: IntentPlan) -> str:
         """Execute a previously produced plan through the production boundary."""
 
+        _reset_voice_tool_run_state(request.text, dict(request.origin_context or {}))
         if plan.response is not None:
             return plan.response
 

@@ -336,6 +336,44 @@ def test_mixed_compounds_are_fully_planned_per_structural_clause(text, expected)
     assert [(step.operation, step.entity_ids) for step in plan.steps] == expected
 
 
+def test_bare_play_falls_back_to_exact_default_player_in_origin_area():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("media_player.office", "Office", (), "media_player", "office"),
+            CatalogEntity(
+                "media_player.office_dot_speaker",
+                "Office Dot Speaker",
+                (),
+                "media_player",
+                "office",
+            ),
+        ),
+        areas=(CatalogArea("office", "Office"),),
+    )
+    engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(catalog),
+        _RecordingExecutor(),
+        fallback_planner=NaturalLanguageIntentPlanner(),
+    )
+
+    plan = engine.plan(
+        VoiceRequest(
+            text="play",
+            conversation_key="planning-test",
+            origin_context={"area_id": "office", "area_name": "Office"},
+        )
+    )
+
+    assert len(plan.steps) == 1
+    assert plan.steps[0].operation == "HassMediaUnpause"
+    assert plan.steps[0].entity_ids == ("media_player.office",)
+    assert plan.steps[0].call.data == {
+        "name": "Office",
+        "entity_id": "media_player.office",
+    }
+
+
 def test_structural_automation_precedes_property_and_compound_fast_paths():
     engine = DeterministicIntentEngine(
         _Recognizer(()),

@@ -100,6 +100,13 @@ before asking the user to clarify. If the LLM route is disabled or fails, the
 original deterministic clarification is returned. Set it to `false` to ask for
 clarification immediately without attempting the LLM.
 
+`INTENT_BRIDGE_MA_PREFER_NATIVE_PLAYBACK` defaults to `true`. When the native
+Music Assistant integration is configured, deterministic media search requests
+such as "play Lana Del Rey" execute directly through the native `ma_play_query`
+fast-start operation without an LLM turn or Home Assistant's media-search intent.
+Set it to `false` to retain Home Assistant intent handling for media searches.
+Playback controls such as pause and resume are unaffected.
+
 `INTENT_BRIDGE_VOICE_FAILURE_RESPONSE` configures the final non-action response
 used when every safe planning route declines or is unavailable. The default is
 `Sorry, I couldn't handle that request.` This keeps ordinary no-match failures
@@ -194,6 +201,23 @@ Supported transports are `streamableHttp` and `sse` with `baseUrl` and optional
 Restart Intent Bridge after changing the file. Active servers are connected at
 startup; failed custom servers are logged and omitted without disabling the
 fallback agent.
+
+After the deterministic Home Assistant route declines a request, a conservative
+informational gate sends clear general questions and conversation to a separate
+LLM agent. That agent has custom MCP tools but no Home Assistant or Music
+Assistant tools, and must search before answering potentially current facts.
+Requests containing household, device-control, or media intent continue to the
+existing HA/MA fallback agent.
+
+Set `INTENT_BRIDGE_LOCALE` and `INTENT_BRIDGE_LOCATION` to ground that agent in
+local language conventions and geography. `INTENT_BRIDGE_TIMEZONE` supplies a
+fresh local date and time on every request. Voice-origin areas are identified as
+household rooms and are never treated as geographic locations.
+
+When those values are not explicitly set, Intent Bridge bootstraps timezone,
+language/locale, country, units, and currency from Home Assistant's authenticated
+WebSocket `get_config` response. Explicit environment values take precedence.
+Home Assistant latitude and longitude are never included in LLM context.
 
 ## TDD workflow
 

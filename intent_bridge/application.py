@@ -21,6 +21,7 @@ except Exception as exc:  # pragma: no cover - deployment dependency guard
 
 from intent_bridge.agents.factory import (
     make_fallback_agent,
+    make_informational_agent,
 )
 from intent_bridge.api.conversation import (
     _message_text,
@@ -48,6 +49,7 @@ from intent_bridge.home_assistant.advanced import (
 from intent_bridge.home_assistant.client import HomeAssistantWebSocket
 from intent_bridge.home_assistant.intent_catalog import HomeAssistantCatalogProvider
 from intent_bridge.home_assistant.intent_executor import HomeAssistantIntentExecutor
+from intent_bridge.informational import InformationalVoiceRoute
 from intent_bridge.intent_engine.engine import DeterministicIntentEngine
 from intent_bridge.intent_engine.grammar import load_intent_grammar
 from intent_bridge.intent_engine.measurement import MeasurementIntentPlanner
@@ -59,6 +61,7 @@ from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 from intent_bridge.intent_engine.route import ConversationalDeterministicVoiceRoute
 from intent_bridge.intent_engine.supplemental import SupplementalIntentPlanner
 from intent_bridge.llm import (
+    process_informational_query,
     process_llm_fallback,
     validate_fallback_config,
     validate_music_assistant_config,
@@ -71,6 +74,7 @@ from intent_bridge.mcp_config import (
 from intent_bridge.music_assistant.client import (
     NativeMusicAssistant,
 )
+from intent_bridge.music_assistant.intent_executor import MusicAssistantIntentExecutor
 from intent_bridge.music_assistant.policy import music_area_player_map
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.stores import (
@@ -236,10 +240,16 @@ async def lifespan(app: FastAPI):
         else:
             try:
                 music_tools_enabled = runtime.music_assistant is not None
+                custom_mcp_servers = tuple(item.server for item in active_custom_mcp)
+                custom_mcp_instructions = mcp_agent_instructions(active_custom_mcp)
+                runtime.informational_agent = make_informational_agent(
+                    mcp_servers=custom_mcp_servers,
+                    mcp_instructions=custom_mcp_instructions,
+                )
                 runtime.fallback_agent = make_fallback_agent(
                     music_tools_enabled,
-                    mcp_servers=tuple(item.server for item in active_custom_mcp),
-                    mcp_instructions=mcp_agent_instructions(active_custom_mcp),
+                    mcp_servers=custom_mcp_servers,
+                    mcp_instructions=custom_mcp_instructions,
                 )
                 log.info(
                     "LLM fallback ready model=%s direct_ws=%s advanced=%s "
@@ -253,8 +263,9 @@ async def lifespan(app: FastAPI):
                     bool(runtime.music_assistant and runtime.music_assistant.connected),
                 )
             except Exception:
+                runtime.informational_agent = None
                 runtime.fallback_agent = None
-                log.exception("Failed to initialise LLM fallback agent")
+                log.exception("Failed to initialise LLM agents")
 
     try:
         yield
@@ -270,6 +281,7 @@ async def lifespan(app: FastAPI):
         pending.clear()
 
         runtime.fallback_agent = None
+        runtime.informational_agent = None
         runtime.advanced_agent = None
 
         if runtime.music_assistant is not None:
@@ -308,11 +320,21 @@ async def _llm_voice_route(request: VoiceRequest) -> str:
     )
 
 
+async def _informational_voice_route(request: VoiceRequest) -> str:
+    return await process_informational_query(
+        request.text,
+        conversation_key=request.conversation_key,
+        client_history=list(request.client_history),
+        origin_context=request.origin_context,
+    )
+
+
 def build_voice_pipeline(
     *,
     intent_executor: IntentExecutor | None = None,
     intent_recognizer: IntentRecognizer | None = None,
     fallback_handler: Callable[[VoiceRequest], Awaitable[str]] | None = None,
+    informational_handler: Callable[[VoiceRequest], Awaitable[str]] | None = None,
     step_observer: Callable[[PlannedIntent], None] | None = None,
     include_deterministic: bool = True,
 ) -> VoiceActionPipeline:
@@ -334,14 +356,20 @@ def build_voice_pipeline(
             grammar.custom_sentence_count,
         )
         intent_recognizer = HassilIntentRecognizer(grammar)
+    home_assistant_intent_executor = intent_executor or HomeAssistantIntentExecutor(
+        settings.home_assistant.base_url,
+        settings.home_assistant.access_token,
+        timeout=settings.home_assistant.websocket.command_timeout_seconds,
+    )
     deterministic_engine = DeterministicIntentEngine(
         intent_recognizer,
         HomeAssistantCatalogProvider(lambda: runtime.ha_ws),
-        intent_executor
-        or HomeAssistantIntentExecutor(
-            settings.home_assistant.base_url,
-            settings.home_assistant.access_token,
-            timeout=settings.home_assistant.websocket.command_timeout_seconds,
+        MusicAssistantIntentExecutor(
+            home_assistant_intent_executor,
+            native_playback_available=lambda: bool(
+                settings.music_assistant.prefer_native_playback
+                and runtime.music_assistant is not None
+            ),
         ),
         preferred_planner=IntentPlannerChain(
             (MeasurementIntentPlanner(), SupplementalIntentPlanner())
@@ -360,6 +388,12 @@ def build_voice_pipeline(
                 ),
             )
         )
+    routes.append(
+        InformationalVoiceRoute(
+            "informational-llm",
+            informational_handler or _informational_voice_route,
+        )
+    )
     routes.append(FunctionVoiceRoute("llm-ha-ws", fallback_handler or _llm_voice_route))
     return VoiceActionPipeline(
         routes,
@@ -556,6 +590,7 @@ async def models():
 @api_router.get("/health")
 async def health():
     ws_ready = bool(runtime.ha_ws and runtime.ha_ws.ready.is_set())
+    ha_instance_config = getattr(runtime.ha_ws, "config", {}) or {}
 
     ma_manager = runtime.music_assistant
     ma_client = ma_manager.client if ma_manager is not None else None
@@ -589,8 +624,12 @@ async def health():
         "assistant_sounds_last_target": assistant_feedback.sounds.last_target,
         "assistant_sounds_last_error": assistant_feedback.sounds.last_error,
         "llm_fallback_ready": runtime.fallback_agent is not None,
+        "informational_llm_ready": runtime.informational_agent is not None,
         "llm_model": settings.llm.model or None,
         "music_assistant_enabled": settings.music_assistant.enabled,
+        "music_assistant_prefer_native_playback": (
+            settings.music_assistant.prefer_native_playback
+        ),
         "music_assistant_transport": "native_websocket",
         "music_assistant_client_package_available": MusicAssistantClient is not None,
         "music_assistant_client_import_error": MUSIC_ASSISTANT_CLIENT_IMPORT_ERROR,
@@ -647,6 +686,10 @@ async def health():
         if runtime.ha_ws is not None
         else 0,
         "ha_ws_area_registry_cached": len(runtime.ha_ws.areas) if runtime.ha_ws is not None else 0,
+        "ha_instance_config_ready": bool(ha_instance_config),
+        "ha_instance_time_zone": ha_instance_config.get("time_zone"),
+        "ha_instance_language": ha_instance_config.get("language"),
+        "ha_instance_country": ha_instance_config.get("country"),
         "voice_origin_context_enabled": settings.voice_origin.enabled,
         "voice_origin_area_bias": settings.voice_origin.area_bias_enabled,
         "voice_origin_soft_area_ranking": settings.voice_origin.soft_ranking_enabled,
@@ -694,6 +737,11 @@ async def health():
         "conversation_history_active_sessions": len(conversation_memories),
         "conversation_history_max_sessions": settings.conversation.max_sessions,
         "local_timezone": settings.api.timezone,
+        "locale": settings.api.locale,
+        "location": settings.api.location or None,
+        "timezone_override_configured": settings.api.timezone_explicit,
+        "locale_override_configured": settings.api.locale_explicit,
+        "location_override_configured": settings.api.location_explicit,
     }
 
 

@@ -12,6 +12,8 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_API_MODEL_NAME": "voice-actions",
             "INTENT_BRIDGE_BASE_URL": "https://bridge.example/proxy/",
             "INTENT_BRIDGE_TIMEZONE": "UTC",
+            "INTENT_BRIDGE_LOCALE": "en-US",
+            "INTENT_BRIDGE_LOCATION": "New York, United States",
             "INTENT_BRIDGE_VOICE_FAILURE_RESPONSE": "Please try another request.",
             "INTENT_BRIDGE_DETERMINISTIC_LANGUAGE": "en-GB",
             "INTENT_BRIDGE_DETERMINISTIC_CUSTOM_SENTENCES_PATH": "config/sentences/en",
@@ -27,6 +29,7 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_HA_ADVANCED_PINNED_TOOLS": "one,two",
             "INTENT_BRIDGE_HA_STATE_CHANGING_SERVICES": "turn_on,custom_action",
             "INTENT_BRIDGE_MA_RADIO_SEED_STRATEGY": "FIRST",
+            "INTENT_BRIDGE_MA_PREFER_NATIVE_PLAYBACK": "off",
             "INTENT_BRIDGE_ASSISTANT_LED_DOMAINS": "Light, SWITCH",
             "INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED": "true",
             "INTENT_BRIDGE_CONVERSATION_TTL_SECONDS": "45",
@@ -38,6 +41,11 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.assistant.sounds_enabled is True
     assert settings.assistant.led_domains == ("light", "switch")
     assert settings.api.timezone == "UTC"
+    assert settings.api.locale == "en-US"
+    assert settings.api.location == "New York, United States"
+    assert settings.api.timezone_explicit is True
+    assert settings.api.locale_explicit is True
+    assert settings.api.location_explicit is True
     assert settings.api.voice_failure_response == "Please try another request."
     assert settings.deterministic.language == "en-GB"
     assert settings.deterministic.custom_sentences_path == Path("config/sentences/en")
@@ -55,6 +63,7 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.home_assistant.state_changing_services == frozenset(
         {"turn_on", "custom_action"}
     )
+    assert settings.music_assistant.prefer_native_playback is False
 
 
 def test_home_assistant_ignored_entity_domains_can_be_configured_by_env():
@@ -75,6 +84,10 @@ def test_deterministic_sentence_settings_have_safe_defaults():
     assert settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
     assert blank_path_settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
     assert settings.llm.ambiguous_target_fallback_enabled is True
+    assert settings.music_assistant.prefer_native_playback is True
+    assert settings.api.timezone_explicit is False
+    assert settings.api.locale_explicit is False
+    assert settings.api.location_explicit is False
 
 def test_env_example_contains_only_canonical_valid_configuration():
     environment = {

@@ -65,6 +65,7 @@ async def test_lifespan_full_integrations(monkeypatch):
 
     monkeypatch.setattr(application, "MCPServerManager", Manager)
     monkeypatch.setattr(application, "make_advanced_agent", lambda servers: "advanced")
+    monkeypatch.setattr(application, "make_informational_agent", lambda **kwargs: "information")
     monkeypatch.setattr(
         application, "make_fallback_agent", lambda music_enabled, **kwargs: "fallback"
     )
@@ -73,6 +74,7 @@ async def test_lifespan_full_integrations(monkeypatch):
         assert runtime.ha_ws is ws
         assert runtime.music_assistant is native
         assert runtime.advanced_agent == "advanced"
+        assert runtime.informational_agent == "information"
         assert runtime.fallback_agent == "fallback"
     ws.stop.assert_awaited_once()
     native.stop.assert_awaited_once()
@@ -125,12 +127,20 @@ async def test_lifespan_exposes_active_custom_mcp_to_fallback(monkeypatch, tmp_p
         return "fallback"
 
     monkeypatch.setattr(application, "MCPServerManager", Manager)
+    informational = {}
+    monkeypatch.setattr(
+        application,
+        "make_informational_agent",
+        lambda **kwargs: informational.update(kwargs) or "information",
+    )
     monkeypatch.setattr(application, "make_fallback_agent", make_fallback)
     monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
 
     async with application.lifespan(application.app):
         assert runtime.fallback_agent == "fallback"
+        assert runtime.informational_agent == "information"
         assert captured["mcp_servers"] == (server,)
+        assert informational["mcp_servers"] == (server,)
         assert "Web Search MCP: Search the web" in captured["mcp_instructions"]
 
 
@@ -144,6 +154,7 @@ async def test_lifespan_missing_fallback_config(monkeypatch):
     monkeypatch.setattr(application.assistant_feedback, "stop_all", AsyncMock())
     async with application.lifespan(application.app):
         assert runtime.fallback_agent is None
+        assert runtime.informational_agent is None
 
 
 def test_runtime_state_has_one_owner_for_integrations():
@@ -151,4 +162,5 @@ def test_runtime_state_has_one_owner_for_integrations():
     state.clear_integrations()
     assert state.ha_ws is None
     assert state.music_assistant is None
+    assert state.informational_agent is None
     assert state.fallback_agent is None

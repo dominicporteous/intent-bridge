@@ -158,3 +158,21 @@ def test_agent_factory_exposes_custom_mcp_servers(monkeypatch):
 
     assert created["mcp_servers"] == [server]
     assert "Web Search MCP" in created["instructions"]
+
+
+def test_informational_agent_has_mcp_but_no_household_tools(monkeypatch):
+    created = {}
+    monkeypatch.setattr(agent, "Agent", lambda **kwargs: created.update(kwargs) or kwargs)
+    monkeypatch.setattr(agent, "_make_lemonade_model", lambda: "model")
+    server = object()
+
+    agent.make_informational_agent(
+        mcp_servers=(server,),
+        mcp_instructions="CUSTOM MCP TOOLS\n\n- Web Search MCP",
+    )
+
+    assert created["tools"] == []
+    assert created["mcp_servers"] == [server]
+    assert "MUST use a relevant web search" in created["instructions"]
+    assert "application-supplied block as authoritative" in created["instructions"]
+    assert "Web Search MCP" in created["instructions"]

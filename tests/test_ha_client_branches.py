@@ -97,6 +97,7 @@ async def test_initial_cache_rejects_non_list_states(client):
 async def test_initial_cache_tolerates_optional_metadata_and_subscription_failures(client):
     client._send_current = AsyncMock(
         side_effect=[
+            {"success": True, "result": {}},
             {"success": True, "result": []},
             {"success": True, "result": []},
             {"success": True, "result": []},

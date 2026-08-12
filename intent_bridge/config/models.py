@@ -10,6 +10,11 @@ class ApiSettings:
     base_url: str = ""
     model_name: str = "home-intent"
     timezone: str = "Europe/London"
+    locale: str = "en-GB"
+    location: str = ""
+    timezone_explicit: bool = False
+    locale_explicit: bool = False
+    location_explicit: bool = False
     spoken_response_max_chars: int = 180
     action_confirmation: str = ""
     voice_failure_response: str = "Sorry, I couldn't handle that request."
@@ -129,6 +134,7 @@ class HomeAssistantSettings:
 @dataclass(slots=True)
 class MusicAssistantSettings:
     enabled: bool = True
+    prefer_native_playback: bool = True
     base_url: str = ""
     access_token: str = field(default="", repr=False)
     area_player_map: str = ""

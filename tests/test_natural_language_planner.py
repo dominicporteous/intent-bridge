@@ -409,6 +409,77 @@ def test_media_controls(catalog, text, operation, data):
     assert step.call.data == data
 
 
+def test_bare_play_uses_the_unique_origin_area_player(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "play",
+        catalog,
+        {"area_id": "living", "area_name": "Living Room"},
+    )
+
+    assert len(plan.steps) == 1
+    assert plan.steps[0].operation == "HassMediaUnpause"
+    assert plan.steps[0].entity_ids == ("media_player.living_tv",)
+    assert plan.steps[0].call.data == {"name": "TV"}
+    assert plan.steps[0].effect is not None
+    assert (
+        plan.steps[0].effect.property,
+        plan.steps[0].effect.value,
+    ) == ("playback", "playing")
+
+
+def test_bare_play_prefers_the_exact_area_player_and_does_not_expand_the_group():
+    local_catalog = CatalogSnapshot(
+        areas=(CatalogArea("office", "Office"),),
+        entities=(
+            _entity("media_player.office", "Office", "office"),
+            _entity("media_player.office_dot_speaker", "Office Dot Speaker", "office"),
+            _entity("media_player.office_speakerstick_2", "Office Speakerstick 2", "office"),
+        ),
+    )
+
+    plan = NaturalLanguageIntentPlanner().plan(
+        "play",
+        local_catalog,
+        {"area_id": "office", "area_name": "Office"},
+    )
+
+    assert len(plan.steps) == 1
+    assert plan.steps[0].entity_ids == ("media_player.office",)
+    assert plan.steps[0].call.data == {
+        "name": "Office",
+        "entity_id": "media_player.office",
+    }
+
+
+def test_bare_play_clarifies_when_origin_area_has_no_default_player():
+    local_catalog = CatalogSnapshot(
+        areas=(CatalogArea("office", "Office"),),
+        entities=(
+            _entity("media_player.office_dot", "Dot Speaker", "office"),
+            _entity("media_player.office_tv", "Television", "office"),
+        ),
+    )
+
+    plan = NaturalLanguageIntentPlanner().plan(
+        "play",
+        local_catalog,
+        {"area_id": "office", "area_name": "Office"},
+    )
+
+    assert plan.steps == ()
+    assert plan.response == "I found more than one possible target. Please be more specific."
+
+
+def test_bare_play_control_does_not_capture_media_search_requests(catalog):
+    outcome = NaturalLanguageIntentPlanner().resolve(
+        "play Taylor Swift",
+        catalog,
+        {"area_id": "living", "area_name": "Living Room"},
+    )
+
+    assert isinstance(outcome, UnsupportedOperation)
+
+
 def test_queries_preserve_target_and_requested_state(catalog):
     planner = NaturalLanguageIntentPlanner()
 

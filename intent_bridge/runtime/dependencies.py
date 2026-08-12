@@ -13,6 +13,7 @@ class RuntimeState:
     ha_ws: Any | None = None
     music_assistant: Any | None = None
     advanced_agent: Any | None = None
+    informational_agent: Any | None = None
     fallback_agent: Any | None = None
     mcp_manager: Any | None = None
     fallback_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
@@ -21,6 +22,7 @@ class RuntimeState:
         self.ha_ws = None
         self.music_assistant = None
         self.advanced_agent = None
+        self.informational_agent = None
         self.fallback_agent = None
         self.mcp_manager = None
 

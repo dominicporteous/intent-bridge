@@ -33,6 +33,7 @@ class HomeAssistantWebSocket:
         self._pending: dict[int, asyncio.Future[dict[str, Any]]] = {}
 
         self.states: dict[str, dict[str, Any]] = {}
+        self.config: dict[str, Any] = {}
         self.services: dict[str, Any] = {}
         self.entity_registry: dict[str, dict[str, Any]] = {}
         self.devices: dict[str, dict[str, Any]] = {}
@@ -266,6 +267,14 @@ class HomeAssistantWebSocket:
         raise RuntimeError(f"HA WebSocket {operation} failed: {error}")
 
     async def _initialise_connection_caches(self) -> None:
+        try:
+            config_reply = await self._send_current({"type": "get_config"})
+            config = self._require_success(config_reply, "get_config")
+            if isinstance(config, dict):
+                self.config = config
+        except Exception as exc:
+            log.debug("HA instance configuration unavailable: %s", exc)
+
         states_reply = await self._send_current({"type": "get_states"})
         states = self._require_success(states_reply, "get_states")
         if not isinstance(states, list):

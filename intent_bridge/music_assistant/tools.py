@@ -142,23 +142,17 @@ async def ma_browse(
         return _json_tool_result({"success": False, "error": str(exc)})
 
 
-@function_tool
-async def ma_play_query(
+async def play_query_native(
     query: str,
     area: str | None = None,
     player_id: str | None = None,
-    radio_mode: bool = False,
-) -> str:
-    """Search and optimistically start music on a room/player in one native call.
-
-    Prefer this for normal voice requests like "play Taylor Swift in the office".
-    The proxy resolves player/queue/media deterministically. Artist-radio requests
-    use v6.9 fast-start: one MA top-track seed is played first, then MA Don't Stop
-    Music Assistant owns radio continuation. Long preparation never holds the voice turn.
-    """
+    radio_mode: bool = True,
+    origin_context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Execute the provider-neutral native play-query operation."""
     query = str(query or "").strip()
     if not query:
-        return _json_tool_result({"success": False, "error": "query is required"})
+        return {"success": False, "error": "query is required"}
     try:
         selected_types = _ma_default_play_query_media_types()
         manager = _ma_native_manager()
@@ -166,10 +160,12 @@ async def ma_play_query(
         # artist name. Removing the trailing word improves deterministic search.
         search_query = query
         if radio_mode:
-            stripped = re.sub(r"\s+radio\s*$", "", query, flags=re.IGNORECASE).strip()
+            stripped = re.sub(r"\s+no radio\s*$", "", query, flags=re.IGNORECASE).strip()
+            stripped = re.sub(r"\s+radio\s*$", "", stripped, flags=re.IGNORECASE).strip()
             if stripped:
                 search_query = stripped
-        origin_context = _voice_origin_snapshot()
+        if origin_context is None:
+            origin_context = _voice_origin_snapshot()
         log.info(
             "MA NATIVE PLAY_QUERY search_types=%s query=%r search_query=%r area=%r player_id=%r radio_mode=%s",
             [_ma_media_type_label(item) for item in selected_types],
@@ -300,10 +296,34 @@ async def ma_play_query(
             }
 
         payload = await manager.run_serialized("ma_play_query", operation)
-        return _json_tool_result(payload)
+        return payload
     except Exception as exc:
         log.exception("MA NATIVE ma_play_query failed query=%r area=%r", query, area)
-        return _json_tool_result({"success": False, "error": str(exc)})
+        return {"success": False, "error": str(exc)}
+
+
+@function_tool
+async def ma_play_query(
+    query: str,
+    area: str | None = None,
+    player_id: str | None = None,
+    radio_mode: bool = True,
+) -> str:
+    """Search and optimistically start music on a room/player in one native call.
+
+    Prefer this for normal voice requests like "play Taylor Swift in the office".
+    The proxy resolves player/queue/media deterministically. Artist-radio requests
+    use v6.9 fast-start: one MA top-track seed is played first, then MA Don't Stop
+    Music Assistant owns radio continuation. Long preparation never holds the voice turn.
+    """
+    return _json_tool_result(
+        await play_query_native(
+            query=query,
+            area=area,
+            player_id=player_id,
+            radio_mode=radio_mode,
+        )
+    )
 
 
 @function_tool

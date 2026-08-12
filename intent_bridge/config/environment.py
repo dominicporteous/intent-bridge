@@ -161,6 +161,11 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             base_url=base_url,
             model_name=_text(environ, "API_MODEL_NAME", "home-intent"),
             timezone=_text(environ, "TIMEZONE", "Europe/London"),
+            locale=_text(environ, "LOCALE", "en-GB"),
+            location=_text(environ, "LOCATION", ""),
+            timezone_explicit=_optional_text(environ, "TIMEZONE") is not None,
+            locale_explicit=_optional_text(environ, "LOCALE") is not None,
+            location_explicit=_optional_text(environ, "LOCATION") is not None,
             spoken_response_max_chars=_integer(environ, "VOICE_RESPONSE_MAX_CHARS", 180, minimum=1),
             action_confirmation=_text(environ, "VOICE_ACTION_CONFIRMATION", ""),
             voice_failure_response=(
@@ -292,6 +297,7 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
         ),
         music_assistant=MusicAssistantSettings(
             enabled=_boolean(environ, "MA_ENABLED", True),
+            prefer_native_playback=_boolean(environ, "MA_PREFER_NATIVE_PLAYBACK", True),
             base_url=_text(environ, "MA_BASE_URL", ""),
             access_token=_text(environ, "MA_ACCESS_TOKEN", ""),
             area_player_map=_text(environ, "MA_AREA_PLAYER_MAP", ""),

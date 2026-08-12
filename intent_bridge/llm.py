@@ -18,11 +18,10 @@ from intent_bridge.api.conversation import (
     seed_conversation_history,
 )
 from intent_bridge.config import log, settings
-from intent_bridge.runtime.context import origin_runtime_context
+from intent_bridge.runtime.context import informational_runtime_context, origin_runtime_context
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.execution import (
     _reset_voice_tool_run_state,
-    is_home_intent_error_response,
     voice_tool_run_state,
 )
 
@@ -213,6 +212,83 @@ async def process_llm_fallback(
         text,
         response,
         llm_calls,
+    )
+    return response
+
+
+async def process_informational_query(
+    text: str,
+    conversation_key: str,
+    client_history: list[dict[str, str]] | None = None,
+    origin_context: dict[str, Any] | None = None,
+) -> str:
+    """Run a general query through the agent that has no household tools."""
+    if not settings.llm.enabled:
+        raise RuntimeError("LLM fallback is disabled")
+    if runtime.informational_agent is None:
+        raise RuntimeError("Informational LLM agent is unavailable")
+
+    if client_history:
+        await seed_conversation_history(conversation_key, client_history)
+        history = client_history[-(settings.conversation.history_turns * 2) :]
+        history_source = "client"
+    else:
+        history = await get_conversation_history(conversation_key)
+        history_source = "proxy" if history else "none"
+
+    agent_input: list[dict[str, str]] = [
+        *history,
+        {
+            "role": "user",
+            "content": (
+                f"{informational_runtime_context(
+                    settings.api.timezone,
+                    settings.api.locale,
+                    settings.api.location,
+                    origin_context,
+                    home_assistant_config=(
+                        getattr(runtime.ha_ws, "config", None)
+                        if runtime.ha_ws is not None
+                        else None
+                    ),
+                    timezone_explicit=settings.api.timezone_explicit,
+                    locale_explicit=settings.api.locale_explicit,
+                    location_explicit=settings.api.location_explicit,
+                )}\n\n"
+                f"Latest user request: {text.strip()}"
+            ),
+        },
+    ]
+    log.info(
+        "INFORMATIONAL LLM START text=%r history_source=%s history_messages=%d",
+        text,
+        history_source,
+        len(history),
+    )
+
+    async with runtime.fallback_lock:
+        result = await asyncio.wait_for(
+            Runner.run(
+                runtime.informational_agent,
+                agent_input,
+                max_turns=settings.llm.max_turns,
+            ),
+            timeout=settings.llm.timeout_seconds,
+        )
+
+    final_output = result.final_output
+    response = (
+        None
+        if final_output is None
+        else sanitise_spoken_response(str(final_output).strip())
+    )
+    if not response:
+        raise RuntimeError("Informational LLM agent returned no response")
+    log.info(
+        "INFORMATIONAL LLM COMPLETE text=%r response=%r calls=%d",
+        text,
+        response,
+        len(getattr(result, "raw_responses", []) or []),
     )
     return response
 

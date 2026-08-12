@@ -6,7 +6,10 @@ import logging
 from dataclasses import dataclass, replace
 from typing import Protocol
 
-from intent_bridge.core.voice import RouteDeclinedWithFallback, VoiceRequest
+from intent_bridge.core.voice import (
+    RouteDeclinedWithFallback,
+    VoiceRequest,
+)
 from intent_bridge.intent_engine.models import CatalogSnapshot, IntentPlan
 from intent_bridge.intent_engine.supplemental import PlanningSession
 

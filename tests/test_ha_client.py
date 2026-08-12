@@ -70,6 +70,7 @@ def test_initial_state_and_url():
     assert client.ws_url == "ws://ha.test/api/websocket"
     assert not client.ready.is_set()
     assert client.states == {}
+    assert client.config == {}
 
 
 def test_require_success():
@@ -226,6 +227,14 @@ async def test_refresh_services_and_registries(client, monkeypatch):
 @pytest.mark.asyncio
 async def test_initialise_connection_caches(client):
     replies = [
+        {
+            "success": True,
+            "result": {
+                "time_zone": "Europe/London",
+                "language": "en",
+                "country": "GB",
+            },
+        },
         {"success": True, "result": [{"entity_id": "light.one"}, {"bad": True}]},
         {"success": True, "result": {"light": {}}},
         {"success": True, "result": {"entities": []}},
@@ -236,8 +245,9 @@ async def test_initialise_connection_caches(client):
     client._send_current = AsyncMock(side_effect=replies)
     await client._initialise_connection_caches()
     assert list(client.states) == ["light.one"]
+    assert client.config["country"] == "GB"
     assert client.services == {"light": {}}
-    assert client._send_current.await_count == 11
+    assert client._send_current.await_count == 12
 
 
 def test_entity_context_and_area_resolution(client):
