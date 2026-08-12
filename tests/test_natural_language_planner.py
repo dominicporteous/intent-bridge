@@ -209,6 +209,25 @@ def test_polymorphic_predicate_does_not_inherit_fan_domain_into_named_switch(cat
     }
 
 
+def test_coordinated_target_uses_sibling_terms_to_resolve_an_elliptical_name(catalog):
+    local_catalog = CatalogSnapshot(
+        areas=(CatalogArea("kitchen", "Kitchen"), CatalogArea("bathroom", "Bathroom")),
+        entities=(
+            _entity("light.ceiling", "Ceiling Lights", "kitchen"),
+            _entity("fan.ceiling", "Ceiling Fan", "kitchen"),
+            _entity("fan.exhaust", "Exhaust Fan", "bathroom"),
+        ),
+    )
+    plan = NaturalLanguageIntentPlanner().plan(
+        "turn on the ceiling lights and fan", local_catalog
+    )
+
+    assert {step.entity_ids for step in plan.steps} == {
+        ("light.ceiling",),
+        ("fan.ceiling",),
+    }
+
+
 def test_generic_area_member_resolves_the_complete_area_group():
     local_catalog = CatalogSnapshot(
         areas=(CatalogArea("kitchen", "Kitchen"), CatalogArea("bathroom", "Bathroom")),

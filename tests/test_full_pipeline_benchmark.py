@@ -96,6 +96,32 @@ async def test_full_pipeline_matcher_reuses_compiled_intent_recognizer(monkeypat
     assert grammar_loads == 1
 
 
+async def test_full_pipeline_exposes_setup_state_to_planners(monkeypatch):
+    observed_contexts = []
+
+    class Pipeline:
+        async def handle(self, request):
+            observed_contexts.append(request.origin_context)
+            return SimpleNamespace(route="test", speech="ok")
+
+    monkeypatch.setattr(full_pipeline_module, "build_voice_pipeline", lambda **_kwargs: Pipeline())
+    matcher = FullPipelineBenchmarkMatcher()
+    request = BenchmarkRequest(
+        ("remove mop from chores",),
+        _home(),
+        setup=(
+            Operation(
+                kind="todo_list",
+                payload={"todo_item": "Mop", "list_name": "Chores"},
+            ),
+        ),
+    )
+
+    await matcher.match(request)
+
+    assert observed_contexts == [{"list_items": {"Chores": ("Mop",)}}]
+
+
 async def test_fixture_ha_expands_script_effects_and_updates_downstream_state():
     home = Home(
         home_id="script-test",

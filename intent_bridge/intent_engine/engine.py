@@ -34,7 +34,11 @@ from intent_bridge.runtime.execution import _reset_voice_tool_run_state
 
 LOGGER = logging.getLogger(__name__)
 
-_AUTOMATION_REQUEST_RE = re.compile(r"\b(?:automation|automate|routine|rule)\b", re.IGNORECASE)
+_AUTOMATION_REQUEST_RE = re.compile(
+    r"\b(?:automation|automate|routine|rule|automatically|"
+    r"(?:any|every)\s+time|whenever|set\s+(?:it|this)\s+up\s+so)\b",
+    re.IGNORECASE,
+)
 
 _CONTEXT_RELATIVE_INTENTS = frozenset(
     {

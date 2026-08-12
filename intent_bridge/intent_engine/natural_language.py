@@ -198,7 +198,7 @@ _ACTION_START = (
     r"illuminate|open|opening|close|closing|shut|"
     r"raise|raising|lower|lowering|lock|locking|unlock|unlocking|secure|securing|"
     r"activate|activating|deactivate|deactivating|run|running|start|starting|"
-    r"stop|stopping|launch|launching|pause|pausing|resume|resuming|continue|"
+    r"stop|stopping|launch|launching|pause|pausing|unpause|unpausing|resume|resuming|continue|"
     r"continuing|play|playing|mute|muting|unmute|unmuting|skip|skipping|"
     r"next|previous|check|checking|"
     r"tell|let|get|report|give|read|confirm|what|is|are|how"
@@ -447,6 +447,9 @@ def split_compound_request(text: str) -> tuple[str, ...]:
     """
 
     normalized = _normal(text)
+    # Keep an initial conversational lead-in from becoming a first clause when
+    # its following command contains a conjunction ("go ahead and stop ...").
+    normalized = re.sub(r"^(?:go\s+ahead|go\s+on)\s+and\s+", "", normalized)
     matches = tuple(_COMPOUND_RE.finditer(normalized))
     if not matches:
         clause = _clean_clause(normalized)
@@ -1635,14 +1638,26 @@ def _resolve_target_set(
     shared_floors = _mentioned_floors(full_text, catalog)
     targets: list[_Target] = []
     for member in target_set.members:
-        resolved = _resolve_target_member(
-            member,
-            operation,
-            catalog,
-            shared_areas,
-            shared_floors,
-            ignored_entity_domains,
-        )
+        try:
+            resolved = _resolve_target_member(
+                member,
+                operation,
+                catalog,
+                shared_areas,
+                shared_floors,
+                ignored_entity_domains,
+            )
+        except _AmbiguousTarget:
+            resolved = ()
+        if not resolved:
+            resolved = _resolve_elliptical_coordinated_member(
+                member,
+                operation,
+                catalog,
+                ignored_entity_domains,
+                full_text,
+                targets,
+            )
         if not resolved:
             raise _AmbiguousTarget
         targets.extend(resolved)
@@ -1653,6 +1668,93 @@ def _resolve_target_set(
             unique.append(target)
             seen.add(target.entity_ids)
     return tuple(unique)
+
+
+def _resolve_elliptical_coordinated_member(
+    member: _TargetMember,
+    operation: _Operation,
+    catalog: CatalogSnapshot,
+    ignored_entity_domains: frozenset[str],
+    full_text: str,
+    resolved_targets: Sequence[_Target],
+) -> tuple[_Target, ...]:
+    """Resolve an ambiguous abbreviated conjunct only with unique evidence.
+
+    A phrase such as ``ceiling lights and fan`` can make ``fan`` ambiguous on
+    its own.  We use terms from its sibling conjuncts (and an already resolved
+    sibling's area) only when they identify exactly one candidate.  Absence of
+    that evidence deliberately retains the normal clarification behaviour.
+    """
+
+    text = member.text
+    member_areas = _mentioned_areas(text, catalog)
+    mentioned_domain = _explicit_domain(text) or _semantic_domain(text)
+    polymorphic = operation.intent_name in _DOMAIN_POLYMORPHIC_INTENTS
+    domain = (
+        mentioned_domain
+        if polymorphic and mentioned_domain is not None
+        else operation.domain or mentioned_domain
+    )
+    name_domain = None if polymorphic and mentioned_domain is None else domain
+    named = _named_entities(
+        text,
+        catalog,
+        name_domain,
+        member_areas,
+        ignored_entity_domains,
+    )
+    candidates = tuple(entity for entity, ambiguous in named if ambiguous)
+    if not candidates and _is_generic_coordinated_member(text, domain):
+        candidates = tuple(
+            entity
+            for entity in catalog.entities
+            if entity.domain.casefold() not in ignored_entity_domains
+            and _domain_compatible(entity, domain)
+        )
+    if not candidates:
+        return ()
+
+    member_words = set(_normal(text).split())
+    sibling_words = set(_normal(full_text).split()) - member_words
+    by_id = {entity.entity_id: entity for entity in catalog.entities}
+    resolved_entities = tuple(
+        by_id[entity_id]
+        for target in resolved_targets
+        for entity_id in target.entity_ids
+        if entity_id in by_id
+    )
+    resolved_area_ids = {entity.area_id for entity in resolved_entities if entity.area_id}
+
+    scored: list[tuple[int, CatalogEntity]] = []
+    for entity in candidates:
+        score = 20 * len(_distinctive_tokens(entity, catalog) & sibling_words)
+        if len(resolved_area_ids) == 1 and entity.area_id in resolved_area_ids:
+            score += 10
+        if score:
+            scored.append((score, entity))
+    if not scored:
+        return ()
+    best_score = max(score for score, _ in scored)
+    winners = tuple(entity for score, entity in scored if score == best_score)
+    return (_target_for_entity(winners[0]),) if len(winners) == 1 else ()
+
+
+def _is_generic_coordinated_member(text: str, domain: str | None) -> bool:
+    """Return whether a conjunct is only a bare domain noun (for example, ``fan``)."""
+
+    if domain is None:
+        return False
+    forms = {
+        "cover": ("cover", "covers", "blind", "blinds", "curtain", "curtains"),
+        "fan": ("fan", "fans"),
+        "light": ("light", "lights", "lamp", "lamps"),
+        "lock": ("lock", "locks", "deadbolt", "deadbolts"),
+        "media_player": ("tv", "television", "speaker", "speakers"),
+        "switch": ("switch", "switches"),
+    }.get(domain, ())
+    return bool(forms) and bool(
+        re.fullmatch(rf"(?:the\s+)?(?:{'|'.join(map(re.escape, forms))})", text)
+    )
 
 
 def _resolve_targets(

@@ -256,6 +256,11 @@ def test_structural_split_preserves_target_coordination_and_orders_dependencies(
         "Please turn on the floor lamp while you're at it "
         "and get the state of the window blinds"
     ) == ("turn on the floor lamp", "get the state of the window blinds")
+    assert split_compound_request("Go ahead and stop the oven timer") == ("stop the oven timer",)
+    assert split_compound_request("turn off the kitchen light and unpause the TV") == (
+        "turn off the kitchen light",
+        "unpause the tv",
+    )
 
 
 @pytest.mark.parametrize(
@@ -399,6 +404,42 @@ def test_structural_automation_precedes_property_and_compound_fast_paths():
             }
         ],
     }
+
+
+def test_structural_automation_phrasing_precedes_temperature_fast_path():
+    class PreferredAutomationPlanner:
+        def __init__(self):
+            self.calls = []
+
+        def plan(self, text, catalog, origin_context=None):
+            self.calls.append(text)
+            return IntentPlan(
+                steps=(
+                    PlannedIntent(
+                        OhfIntentCall("IntentBridgeCreateAutomation", {"definition": {}}),
+                        (),
+                    ),
+                )
+            )
+
+    preferred = PreferredAutomationPlanner()
+    engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(_compound_catalog()),
+        _RecordingExecutor(),
+        preferred_planner=preferred,
+        fallback_planner=NaturalLanguageIntentPlanner(),
+    )
+
+    plan = engine.plan(
+        _request("Set it up so the floor lamp turns on any time the temperature exceeds 24 degrees")
+    )
+
+    assert len(plan.steps) == 1
+    assert plan.steps[0].operation == "IntentBridgeCreateAutomation"
+    assert preferred.calls == [
+        "Set it up so the floor lamp turns on any time the temperature exceeds 24 degrees"
+    ]
 
 
 def test_supplemental_and_recognizer_each_receive_only_their_timer_tv_clause():

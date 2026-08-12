@@ -13,7 +13,12 @@ from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
 
 from benchmark.models import BenchmarkRequest, BenchmarkResult, Home, Operation
-from benchmark.production import _service_effect, _step_operations, expand_static_invocation
+from benchmark.production import (
+    _planning_context,
+    _service_effect,
+    _step_operations,
+    expand_static_invocation,
+)
 from intent_bridge.agents.factory import make_fallback_agent
 from intent_bridge.application import build_voice_pipeline
 from intent_bridge.config import settings
@@ -342,6 +347,7 @@ class FullPipelineBenchmarkMatcher:
 
     async def match(self, request: BenchmarkRequest) -> BenchmarkResult:
         fixture = BenchmarkHomeAssistant(request)
+        planning_context = _planning_context(request)
         pipeline = build_voice_pipeline(
             intent_executor=_FixtureIntentExecutor(),
             intent_recognizer=self._intent_recognizer,
@@ -367,7 +373,7 @@ class FullPipelineBenchmarkMatcher:
                     text=turn,
                     conversation_key=conversation_id,
                     client_history=tuple(messages),
-                    origin_context=dict(request.origin_context),
+                    origin_context=dict(planning_context),
                 )
                 result = await pipeline.handle(voice_request)
                 response_text = result.speech
