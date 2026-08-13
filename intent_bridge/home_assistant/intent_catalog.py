@@ -16,6 +16,10 @@ from intent_bridge.intent_engine.models import (
 )
 
 _UNAVAILABLE_STATES = frozenset({"", "none", "unknown", "unavailable"})
+_TEMPERATURE_UNITS = frozenset(
+    {"c", "celsius", "f", "fahrenheit", "k", "kelvin"}
+)
+_TEMPERATURE_NAME_HINTS = frozenset({"temp", "temperature", "thermometer"})
 
 
 def _measurement_quantity(value: object) -> str:
@@ -34,8 +38,55 @@ def _measurement_unit(attributes: dict[str, Any], quantity: str) -> str | None:
     return None
 
 
+def _is_temperature_unit(value: object) -> bool:
+    normalized = normalize_search_text(value).replace(" ", "")
+    return normalized in _TEMPERATURE_UNITS
+
+
+def _has_temperature_name(*values: object) -> bool:
+    return any(
+        _TEMPERATURE_NAME_HINTS.intersection(normalize_search_text(value).split())
+        for value in values
+    )
+
+
+def _inferred_sensor_temperature(
+    state: dict[str, Any],
+    attributes: dict[str, Any],
+    entity_id: str,
+    entity_name: str,
+) -> CatalogMeasurement | None:
+    """Expose only strongly identified numeric sensor temperatures.
+
+    Some integrations omit ``device_class`` while still publishing a numeric
+    temperature state. Require a sensor domain, temperature-bearing identity,
+    and a recognized unit before promoting the state to a reading.
+    """
+
+    if entity_id.split(".", 1)[0] != "sensor":
+        return None
+    if not _has_temperature_name(entity_id, entity_name):
+        return None
+    unit = _measurement_unit(attributes, "temperature")
+    if not _is_temperature_unit(unit):
+        return None
+    raw_state = state.get("state")
+    state_text = str(raw_state).strip() if raw_state is not None else ""
+    if state_text.casefold() in _UNAVAILABLE_STATES:
+        return None
+    try:
+        float(state_text)
+    except ValueError:
+        return None
+    return CatalogMeasurement("temperature", state_text, unit, source="inferred_state")
+
+
 def _measurements(
-    state: dict[str, Any], attributes: dict[str, Any]
+    state: dict[str, Any],
+    attributes: dict[str, Any],
+    *,
+    entity_id: str,
+    entity_name: str,
 ) -> tuple[CatalogMeasurement, ...]:
     """Extract readings using HA's semantic metadata rather than entity domains."""
 
@@ -77,6 +128,13 @@ def _measurements(
             unit=_measurement_unit(attributes, quantity),
             source=key,
         )
+
+    if "temperature" not in readings:
+        inferred_temperature = _inferred_sensor_temperature(
+            state, attributes, entity_id, entity_name
+        )
+        if inferred_temperature is not None:
+            readings["temperature"] = inferred_temperature
 
     return tuple(readings[key] for key in sorted(readings))
 
@@ -189,7 +247,12 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                     else None
                 ),
                 state=(str(state["state"]) if state.get("state") is not None else None),
-                measurements=_measurements(state, attributes),
+                measurements=_measurements(
+                    state,
+                    attributes,
+                    entity_id=entity_id,
+                    entity_name=canonical_name,
+                ),
                 entity_category=(
                     str(registry["ec"]) if registry.get("ec") not in (None, "") else None
                 ),

@@ -79,6 +79,7 @@ _ENTITY_TARGETING_INTENTS = frozenset(
         "HassVacuumStart",
     }
 )
+_COORDINATION_CONNECTOR_RE = re.compile(r"\b(?:and|plus|as well as)\b")
 
 
 def _reading_speech(step: PlannedIntent) -> str:
@@ -222,6 +223,10 @@ class DeterministicIntentEngine:
         # broad power grammar can consume words such as ``on`` or ``off``.
         # This is capability-level precedence, independent of device type.
         normalized_text = request.text.casefold()
+        # Timers have their own operation vocabulary.  Do not let the generic
+        # power normalizer turn ``turn off the oven timer`` into a device
+        # action instead of a timer cancellation.
+        timer_language = bool(re.search(r"\b(?:timer|timers|countdown)\b", normalized_text))
         structural_automation = bool(_AUTOMATION_REQUEST_RE.search(request.text))
         lexical_operator = normalize_lexical_operator(request.text)
         property_semantics = bool(
@@ -238,8 +243,11 @@ class DeterministicIntentEngine:
                 )
             )
         )
-        if not structural_automation and (lexical_operator is not None or property_semantics) and (
-            semantic := self._try_planner(self._fallback_planner, request, catalog)
+        if (
+            not structural_automation
+            and not timer_language
+            and (lexical_operator is not None or property_semantics)
+            and (semantic := self._try_planner(self._fallback_planner, request, catalog))
         ):
             LOGGER.info(
                 "INTENT PLAN selected semantic-first planner text=%r operator=%r "
@@ -252,6 +260,12 @@ class DeterministicIntentEngine:
 
         preferred = self._try_planner(self._preferred_planner, request, catalog)
         if preferred is not None:
+            if coordinated := self._try_bounded_coordination_fallback(
+                request,
+                catalog,
+                preferred,
+            ):
+                return self._validate_target_cardinality(request.text, coordinated, catalog)
             return self._validate_target_cardinality(request.text, preferred, catalog)
 
         matches = self._recognizer.recognize(
@@ -416,6 +430,46 @@ class DeterministicIntentEngine:
             )
             return IntentPlan(response=self._ambiguity_response)
         return plan
+
+    def _try_bounded_coordination_fallback(
+        self,
+        request: VoiceRequest,
+        catalog: CatalogSnapshot,
+        preferred: IntentPlan,
+    ) -> IntentPlan | None:
+        """Replace a partial preferred match with a complete safe coordination.
+
+        A preferred route can resolve the first target of a heterogeneous
+        conjunction and silently drop the remainder. Re-run the topology-aware
+        fallback only for one clause containing an explicit coordination
+        connector. Accept it only when it returns distinct singleton entities;
+        unresolved or group-expanded targets stay on the conservative path.
+        """
+
+        if len(split_compound_request(request.text)) != 1 or not _COORDINATION_CONNECTOR_RE.search(
+            request.text.casefold()
+        ):
+            return None
+        fallback = self._try_planner(self._fallback_planner, request, catalog)
+        if fallback is None or fallback.response is not None or len(fallback.steps) < 2:
+            return None
+        if any(len(step.entity_ids) != 1 for step in fallback.steps):
+            return None
+        preferred_ids = tuple(
+            entity_id for step in preferred.steps for entity_id in step.entity_ids
+        )
+        fallback_ids = tuple(
+            entity_id for step in fallback.steps for entity_id in step.entity_ids
+        )
+        if len(set(fallback_ids)) != len(fallback_ids) or fallback_ids == preferred_ids:
+            return None
+        LOGGER.info(
+            "INTENT PLAN selected bounded coordination fallback text=%r preferred=%s fallback=%s",
+            request.text,
+            preferred_ids,
+            fallback_ids,
+        )
+        return fallback
 
     def _try_planner(
         self,

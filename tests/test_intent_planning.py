@@ -263,6 +263,58 @@ def test_structural_split_preserves_target_coordination_and_orders_dependencies(
     )
 
 
+def test_partial_preferred_coordination_is_replaced_by_complete_entity_plan():
+    class PartialPreferredPlanner:
+        def plan(self, text, catalog, origin_context=None):
+            return IntentPlan(
+                steps=(
+                    PlannedIntent(
+                        OhfIntentCall(
+                            "HassTurnOn",
+                            {"name": "Living Room Fan", "entity_id": "fan.living"},
+                        ),
+                        ("fan.living",),
+                    ),
+                )
+            )
+
+    class CompleteFallbackPlanner:
+        def plan(self, text, catalog, origin_context=None):
+            return IntentPlan(
+                steps=(
+                    PlannedIntent(
+                        OhfIntentCall(
+                            "HassTurnOn",
+                            {"name": "Living Room Fan", "entity_id": "fan.living"},
+                        ),
+                        ("fan.living",),
+                    ),
+                    PlannedIntent(
+                        OhfIntentCall(
+                            "HassTurnOn",
+                            {"name": "Coffee Maker", "entity_id": "switch.coffee"},
+                        ),
+                        ("switch.coffee",),
+                    ),
+                )
+            )
+
+    engine = DeterministicIntentEngine(
+        _Recognizer(()),
+        _CatalogProvider(_catalog()),
+        _RecordingExecutor(),
+        preferred_planner=PartialPreferredPlanner(),
+        fallback_planner=CompleteFallbackPlanner(),
+    )
+
+    plan = engine.plan(_request("activate the living room fan and coffee maker"))
+
+    assert tuple(step.entity_ids for step in plan.steps) == (
+        ("fan.living",),
+        ("switch.coffee",),
+    )
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [

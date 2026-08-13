@@ -14,6 +14,7 @@ from intent_bridge.intent_engine.models import (
     PlannedIntent,
     semantic_effect_for_call,
 )
+from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
 from intent_bridge.intent_engine.supplemental import (
     DialogueState,
     PendingClarification,
@@ -254,6 +255,37 @@ def test_dialogue_session_accepts_safe_bare_numeric_follow_up(catalog, words):
     assert step.entity_ids == ("light.kitchen_ceiling", "light.kitchen_counter")
 
 
+def test_ambiguous_property_query_retains_group_for_numeric_follow_up(catalog):
+    session = PlanningSession(
+        _QueuedPlanner([IntentPlan(response="I found more than one possible target.")])
+    )
+
+    first = session.plan_turn("Kitchen light brightness level?", catalog)
+    second = session.plan_turn("Make it 27 if you don't mind.", catalog)
+
+    assert first.plan.steps == ()
+    assert first.state.pending is not None
+    assert second.plan.response is None
+    assert second.plan.steps[0].operation == "HassLightSet"
+    assert second.plan.steps[0].call.data == {"brightness": 27}
+    assert second.plan.steps[0].entity_ids == (
+        "light.kitchen_ceiling",
+        "light.kitchen_counter",
+    )
+    assert second.state.pending is None
+
+
+def test_ambiguous_property_query_rejects_unrelated_numeric_reply(catalog):
+    session = PlanningSession(NaturalLanguageIntentPlanner())
+    session.plan_turn("Kitchen light brightness level?", catalog)
+
+    followup = session.plan_turn("I have 27 apples", catalog)
+
+    assert followup.plan.steps == ()
+    assert followup.plan.response == "I found more than one possible target. Please be more specific."
+    assert followup.state.pending is not None
+
+
 def test_dialogue_qualifier_repeats_prior_multi_entity_intent(catalog):
     lamps = (
         _entity("light.left_bedside", "Left Bedside Lamp", "living"),
@@ -465,6 +497,12 @@ def test_list_dispatch_requires_list_evidence(catalog):
             {"shopping_list_items": ["orange juice", "olive oil"]},
             "HassShoppingListCompleteItem",
             "orange juice",
+        ),
+        (
+            "Check off olive oil on the list",
+            {"shopping_list_items": ["olive oil", "orange juice"]},
+            "HassShoppingListCompleteItem",
+            "olive oil",
         ),
         (
             "put bread on the done list",

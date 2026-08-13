@@ -539,34 +539,6 @@ class SupplementalIntentPlanner:
             and not completion
             and re.match(r"^(?:add|put|place|stick)\b", command)
         )
-        explicit_shopping = "shopping" in normal or "grocery" in normal
-        known_shopping = _shopping_items(origin_context)
-        known_todo = tuple(
-            item
-            for entity in list_entities
-            for item in _context_items(origin_context, entity.name)
-        )
-        is_shopping = explicit_shopping or (
-            selected_list is None
-            and bool(known_shopping)
-            and _canonical_item(text, known_shopping) in known_shopping
-        )
-        if selected_list is None and known_todo:
-            matched_todo = _canonical_item(text, known_todo)
-            if not known_shopping or matched_todo in known_todo:
-                is_shopping = False
-        elif selected_list is None and not known_todo:
-            is_shopping = True
-        if (
-            selected_list is None
-            and len(list_entities) > 1
-            and not explicit_shopping
-            and not known_shopping
-            and not known_todo
-        ):
-            is_shopping = False
-        if not (removal or completion or addition or (explicit_shopping and " to " in normal)):
-            raise RouteDeclined("The list operation was not understood")
 
         item = _clean_item(text)
         item = re.sub(
@@ -601,6 +573,48 @@ class SupplementalIntentPlanner:
                 flags=re.IGNORECASE,
             )[0]
         item = _clean_item(item)
+
+        explicit_shopping = "shopping" in normal or "grocery" in normal
+        known_shopping = _shopping_items(origin_context)
+        known_todo = tuple(
+            item
+            for entity in list_entities
+            for item in _context_items(origin_context, entity.name)
+        )
+        explicit_todo_list = any(
+            phrase not in {"list", "shopping list", "grocery list"}
+            and f" {phrase} " in f" {normal} "
+            for entity in list_entities
+            for phrase in {
+                _normal(entity.name),
+                _normal(entity.entity_id.split(".", 1)[-1]),
+                *(_normal(alias) for alias in entity.aliases),
+            }
+            if phrase
+        )
+        matched_shopping = _canonical_item(item, known_shopping)
+        is_shopping = explicit_shopping or (
+            bool(known_shopping)
+            and matched_shopping in known_shopping
+            and not explicit_todo_list
+        )
+        if selected_list is None and known_todo:
+            matched_todo = _canonical_item(text, known_todo)
+            if not known_shopping or matched_todo in known_todo:
+                is_shopping = False
+        elif selected_list is None and not known_todo and not explicit_todo_list:
+            is_shopping = True
+        if (
+            selected_list is None
+            and len(list_entities) > 1
+            and not explicit_shopping
+            and not known_shopping
+            and not known_todo
+        ):
+            is_shopping = False
+        if not (removal or completion or addition or (explicit_shopping and " to " in normal)):
+            raise RouteDeclined("The list operation was not understood")
+
         if not item:
             raise RouteDeclined("The list item was empty")
         if is_shopping:
@@ -1276,6 +1290,12 @@ def _pending_from_request(
         intent = "HassTurnOff"
     elif re.search(r"\block\b", normal) and domain == "lock":
         intent = "HassTurnOn"
+    elif re.search(r"\b(?:brightness|bright|level|state|status)\b", normal):
+        # Keep an ambiguous read-only target alive for a property-setting
+        # follow-up such as ``Kitchen light brightness level?`` -> ``Make it
+        # 27``.  The first turn is intentionally not executed; the second
+        # turn supplies the missing value while retaining the candidate set.
+        intent = "HassGetState"
     else:
         return None
 
@@ -1315,9 +1335,62 @@ def _resolve_pending(
     candidates = tuple(
         entity for entity in catalog.entities if entity.entity_id in pending.candidate_entity_ids
     )
+    # A broad property query can establish a group referent before the value
+    # is supplied. Resolve only bounded setter wording against that group;
+    # ordinary ambiguous commands still require a singular qualifier.
+    if pending.original_predicate == "HassGetState":
+        number = _first_number(text)
+        property_name = next(
+            (
+                name
+                for token, name in (
+                    ("brightness", "brightness"),
+                    ("bright", "brightness"),
+                    ("position", "position"),
+                    ("temperature", "temperature"),
+                    ("volume", "volume_level"),
+                    ("speed", "percentage"),
+                )
+                if re.search(rf"\b{re.escape(token)}\b", _normal(pending.source_clause))
+            ),
+            None,
+        )
+        property_operations = {
+            "brightness": ("HassLightSet", "brightness", "light"),
+            "position": ("HassSetPosition", "position", "cover"),
+            "temperature": ("HassClimateSetTemperature", "temperature", "climate"),
+            "volume_level": ("HassSetVolume", "volume_level", "media_player"),
+            "percentage": ("HassFanSetSpeed", "percentage", "fan"),
+        }
+        operation = property_operations.get(property_name or "")
+        compact = _normal(_clean_item(text))
+        bounded_value_followup = bool(
+            re.fullmatch(
+                rf"(?:make|set|change|adjust|turn|flick|flip)"
+                rf"(?:\s+(?:it|this|that))?"
+                rf"(?:\s+(?:to|at))?\s+{_NUMBER_EXPRESSION}"
+                rf"(?:\s+(?:percent|brightness|level))?",
+                compact,
+            )
+        )
+        if number is not None and operation is not None and bounded_value_followup:
+            intent, slot, domain = operation
+            if all(entity.domain == domain for entity in candidates):
+                call = OhfIntentCall(intent, {slot: number})
+                return IntentPlan(
+                    steps=(
+                        PlannedIntent(
+                            call,
+                            tuple(entity.entity_id for entity in candidates),
+                            effect=semantic_effect_for_call(call),
+                        ),
+                    )
+                )
+
     scores = [(entity, _entity_score(text, entity, catalog)) for entity in candidates]
     if not scores:
         return None
+
     highest = max(score for _, score in scores)
     winners = tuple(entity for entity, score in scores if score == highest and score > 0)
     if len(winners) != 1:

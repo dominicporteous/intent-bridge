@@ -214,6 +214,9 @@ def _candidate_score(
     if measurement.source == "state":
         score += 20
         evidence.append("direct_state:+20")
+    elif measurement.source == "inferred_state":
+        score -= 30
+        evidence.append("inferred_state:-30")
     if entity.entity_category is not None:
         score -= 40
         evidence.append(f"secondary_category={entity.entity_category}:-40")

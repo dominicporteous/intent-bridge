@@ -632,6 +632,8 @@ def _semantic_domain(text: str) -> str | None:
         return "cover"
     if re.search(r"\b(?:volume|sound|mute)\b", text):
         return "media_player"
+    if re.search(r"\b(?:motion|occupancy|presence|contact|vibration|triggered)\b", text):
+        return "binary_sensor"
     if re.search(r"\btemperature sensors?\b", text):
         return "sensor"
     if re.search(r"\b(?:temperature|temp|climate|warm)\b", text):
@@ -740,9 +742,12 @@ def normalize_lexical_operator(
     # ``bathroom and kitchen lights``), while never inferring the switch domain
     # merely from the verb itself.  Power remains polymorphic for explicitly
     # named heterogeneous members.
-    switch_power = re.match(r"^switch\s+(?P<state>on|off)\b", text)
-    if switch_power:
-        is_on = switch_power.group("state") == "on"
+    explicit_power = re.match(r"^(?:turn|switch|power)\s+(?P<state>on|off)\b", text)
+    if explicit_power:
+        # An explicit power verb is stronger than a noun-derived domain. In
+        # particular, ``turn off the front door lock`` is a power transition
+        # on a lock, not a request to resolve the lock as a switch.
+        is_on = explicit_power.group("state") == "on"
         return NormalizedOperator(
             "power",
             "set",
@@ -799,6 +804,7 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
         generic_temperature_query = bool(
             re.search(r"\b(?:temperature|temp)\b", text)
             and contextual_domain != "climate"
+            and not re.search(r"\b(?:studio|room|indoor|inside|home)\b", text)
             and not re.search(
                 r"\b(?:thermostat|climate|sensor)\b|"
                 r"\btemperature\s+(?:in|at|of|for)\b",
@@ -1022,6 +1028,10 @@ def _area_phrases(area: CatalogArea) -> tuple[str, ...]:
         phrases.add(name.removesuffix(" room"))
     else:
         phrases.add(f"{name} room")
+    # Speech-to-text often fuses topology words (``livingroom``). Keep the
+    # compact spelling as a local alias without weakening ordinary boundaries.
+    if name:
+        phrases.add(name.replace(" ", ""))
     common_aliases = {
         "backyard": ("back yard", "outside", "outdoors", "out back", "yard"),
         "entryway": (
@@ -1212,6 +1222,42 @@ def _named_entities(
     if not hits:
         return ()
 
+    if domain == "binary_sensor" and len(hits) > 1:
+        # Capability words are stronger evidence than a shared noun such as
+        # ``door``. For ``motion at the front door``, keep the motion sensor
+        # whose distinctive labels match most of the request and retain ties
+        # so genuinely ambiguous sensors still ask for clarification.
+        scored_hits = [
+            (
+                sum(
+                    _contains_phrase(text, token)
+                    for token in _distinctive_tokens(entity, catalog)
+                )
+                + 2
+                * sum(
+                    _contains_phrase(text, token)
+                    for token in {
+                        "motion",
+                        "occupancy",
+                        "presence",
+                        "contact",
+                        "vibration",
+                        "triggered",
+                    }
+                    if token in _distinctive_tokens(entity, catalog)
+                ),
+                entity,
+                phrase,
+            )
+            for entity, phrase in hits
+        ]
+        best_score = max(score for score, _, _ in scored_hits)
+        hits = [
+            (entity, phrase)
+            for score, entity, phrase in scored_hits
+            if score == best_score
+        ]
+
     hits = _prefer_power_switch_hits(text, hits)
 
     by_phrase: dict[str, list[CatalogEntity]] = {}
@@ -1390,6 +1436,14 @@ def _elliptical_query(
             and _domain_compatible(entity, domain)
             and entity.area_id in area_ids
         )
+        if domain and areas and len(areas) > 1 and compatible and not re.search(
+            r"\b(?:turn|switch|power|set|change|adjust|open|close|lock|unlock|start|stop|activate|deactivate)\b",
+            text,
+        ):
+            # A compact topology query such as ``status livingroom kitchen
+            # lights`` denotes the read-only group in each named area. The
+            # normal target resolver expands the one operation into groups.
+            return _Operation("HassGetState", {}, domain)
         if len(compatible) == 1:
             intent = (
                 "HassClimateGetTemperature"
@@ -1733,7 +1787,10 @@ def _resolve_elliptical_coordinated_member(
         if score:
             scored.append((score, entity))
     if not scored:
-        return ()
+        # If the catalog contains exactly one compatible entity, no sibling
+        # evidence is needed.  Never apply this fallback when there are two
+        # possible devices: an unscoped ``fan`` must still clarify.
+        return (_target_for_entity(candidates[0]),) if len(candidates) == 1 else ()
     best_score = max(score for score, _ in scored)
     winners = tuple(entity for score, entity in scored if score == best_score)
     return (_target_for_entity(winners[0]),) if len(winners) == 1 else ()
@@ -1744,12 +1801,28 @@ def _is_generic_coordinated_member(text: str, domain: str | None) -> bool:
 
     if domain is None:
         return False
+    text = _normal(text).strip()
+    # Structural splitting can leave the shared predicate or polite tail on
+    # the abbreviated member (``fan on`` / ``fan for me``). Strip only these
+    # bounded surface forms; topology and descriptive words remain intact.
+    text = re.sub(
+        r"^(?:(?:please|could you|would you|can you)\s+)?"
+        r"(?:(?:turn|switch|power|flip|flick|activate|enable|start|deactivate|"
+        r"disable|stop|kill|shut down)\s+)?(?:on|off)\s+",
+        "",
+        text,
+    )
+    text = re.sub(
+        r"\s+(?:on|off|please|now|for me|if possible|if you don t mind)$",
+        "",
+        text,
+    )
     forms = {
         "cover": ("cover", "covers", "blind", "blinds", "curtain", "curtains"),
         "fan": ("fan", "fans"),
         "light": ("light", "lights", "lamp", "lamps"),
         "lock": ("lock", "locks", "deadbolt", "deadbolts"),
-        "media_player": ("tv", "television", "speaker", "speakers"),
+        "media_player": ("tv", "television", "speaker", "speakers", "media player"),
         "switch": ("switch", "switches"),
     }.get(domain, ())
     return bool(forms) and bool(

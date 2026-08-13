@@ -109,6 +109,65 @@ def test_explicit_entity_evidence_can_select_cross_domain_attribute_reading(
     assert step.reading.measurement.source == "current_temperature"
 
 
+def test_explicit_temperature_sensor_name_beats_generic_climate_reading():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity(
+                "climate.studio_thermostat",
+                "Thermostat",
+                (),
+                "climate",
+                "living",
+                measurements=(_measurement("temperature", "20", "°C", source="current_temperature"),),
+            ),
+            CatalogEntity(
+                "sensor.studio_temperature",
+                "Studio Temperature Sensor",
+                (),
+                "sensor",
+                "living",
+                measurements=(_measurement("temperature", "20.5", "°C", source="inferred_state"),),
+            ),
+        ),
+    )
+
+    step = MeasurementIntentPlanner().plan(
+        "tell me the Studio Temperature Sensor state", catalog
+    ).steps[0]
+
+    assert step.entity_ids == ("sensor.studio_temperature",)
+
+
+def test_generic_area_temperature_prefers_climate_over_inferred_sensor():
+    catalog = CatalogSnapshot(
+        areas=(CatalogArea("living", "Living"),),
+        entities=(
+            CatalogEntity(
+                "climate.studio_thermostat",
+                "Thermostat",
+                (),
+                "climate",
+                "living",
+                measurements=(_measurement("temperature", "20", "°C", source="current_temperature"),),
+            ),
+            CatalogEntity(
+                "sensor.studio_temperature",
+                "Studio Temperature Sensor",
+                (),
+                "sensor",
+                "living",
+                measurements=(_measurement("temperature", "20.5", "°C", source="inferred_state"),),
+            ),
+        ),
+    )
+
+    step = MeasurementIntentPlanner().plan(
+        "what is the temperature in the living room", catalog
+    ).steps[0]
+
+    assert step.entity_ids == ("climate.studio_thermostat",)
+
+
 def test_multiple_requested_quantities_produce_ordered_direct_readings(
     bedroom_measurements,
 ):

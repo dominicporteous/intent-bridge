@@ -228,6 +228,35 @@ def test_coordinated_target_uses_sibling_terms_to_resolve_an_elliptical_name(cat
     }
 
 
+@pytest.mark.parametrize(
+    ("text", "entity_ids"),
+    [
+        (
+            "turn the mirror light and fan on",
+            {("light.bathroom_mirror",), ("switch.bathroom_fan",)},
+        ),
+        (
+            "turn on the coffee maker and media player",
+            {("switch.coffee_maker",), ("media_player.living_tv",)},
+        ),
+    ],
+)
+def test_bounded_generic_coordination_uses_unique_or_sibling_target(catalog, text, entity_ids):
+    plan = NaturalLanguageIntentPlanner().plan(text, catalog)
+
+    assert plan.response is None
+    assert {step.entity_ids for step in plan.steps} == entity_ids
+
+
+def test_unscoped_generic_fan_coordination_remains_ambiguous(catalog):
+    plan = NaturalLanguageIntentPlanner().plan(
+        "turn on the fan and coffee maker", catalog
+    )
+
+    assert plan.steps == ()
+    assert plan.response == "I found more than one possible target. Please be more specific."
+
+
 def test_generic_area_member_resolves_the_complete_area_group():
     local_catalog = CatalogSnapshot(
         areas=(CatalogArea("kitchen", "Kitchen"), CatalogArea("bathroom", "Bathroom")),
@@ -281,6 +310,9 @@ def test_shared_property_update_rejects_an_incompatible_member(catalog):
         ("close the entry locks", "HassTurnOn", "lock.front_door"),
         ("flip the entry locks to unlocked", "HassTurnOff", "lock.front_door"),
         ("flick the entry deadbolts to locked", "HassTurnOn", "lock.front_door"),
+        ("turn off the front door lock", "HassTurnOff", "lock.front_door"),
+        ("switch on the front door lock", "HassTurnOn", "lock.front_door"),
+        ("power off the front door lock", "HassTurnOff", "lock.front_door"),
         ("activate movie night", "HassTurnOn", "scene.movie_night"),
         ("run the leaving home script", "HassTurnOn", "script.leaving_home"),
     ],
@@ -290,6 +322,21 @@ def test_common_action_synonyms(catalog, text, operation, entity_id):
 
     assert step.operation == operation
     assert step.entity_ids == (entity_id,)
+
+
+def test_motion_wording_prefers_binary_sensor_capability_over_lock_name():
+    catalog = CatalogSnapshot(
+        entities=(
+            _entity("lock.front_door", "Front Door", "entry"),
+            _entity("binary_sensor.front_door_motion", "Front Door Motion", "entry"),
+        ),
+        areas=(CatalogArea("entry", "Entryway"),),
+    )
+
+    step = NaturalLanguageIntentPlanner().plan("check motion at the front door", catalog).steps[0]
+
+    assert step.operation == "HassGetState"
+    assert step.entity_ids == ("binary_sensor.front_door_motion",)
 
 
 @pytest.mark.parametrize(

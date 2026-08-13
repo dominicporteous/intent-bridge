@@ -193,6 +193,29 @@ def test_catalog_snapshot_extracts_domain_neutral_measurements():
     assert entities["sensor.unavailable_power"].measurements == ()
 
 
+def test_catalog_infers_temperature_for_numeric_sensor_without_device_class():
+    client = SimpleNamespace(
+        states={
+            "sensor.studio_temperature": {
+                "state": "20.5",
+                "attributes": {
+                    "friendly_name": "Studio Temperature Sensor",
+                    "unit_of_measurement": "°C",
+                },
+            }
+        },
+        entity_registry={},
+        devices={},
+        areas={},
+    )
+
+    entity = snapshot_from_client(client).entities[0]
+
+    assert entity.measurements == (
+        CatalogMeasurement("temperature", "20.5", "°C", "inferred_state"),
+    )
+
+
 def test_catalog_classifies_voice_satellite_led_without_hiding_normal_lights():
     client = SimpleNamespace(
         states={
