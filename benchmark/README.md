@@ -28,7 +28,7 @@ Install the development environment, then run:
 
 ```shell
 uv sync --all-groups
-uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 Run the loader and corpus-integrity contract tests separately with:
@@ -45,13 +45,13 @@ To filter the benchmark to a single home or scenario path, set one or both of:
 Example:
 
 ```shell
-BENCHMARK_HOME=2_floor_2_bed uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+BENCHMARK_HOME=2_floor_2_bed uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 Or, to select a specific scenario file:
 
 ```shell
-BENCHMARK_SOURCE=switches.yaml uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+BENCHMARK_SOURCE=switches.yaml uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 To see every dynamically collected example without executing the matcher:
@@ -157,13 +157,17 @@ Start with a small filtered sample because LLM cases make real model requests:
 ```powershell
 $env:BENCHMARK_HOME = "studio"
 $env:BENCHMARK_LIMIT = "25"
-uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 Supported controls are `BENCHMARK_HOME`, `BENCHMARK_SOURCE`,
-and `BENCHMARK_LIMIT`. Runs remain exhaustive by default, including when
-LLM-backed; set `BENCHMARK_LIMIT` explicitly to control model usage and cost.
-Execution is sequential because the agent-facing HA transport is process-global.
+and `BENCHMARK_LIMIT`. Runs remain exhaustive by default,
+including when LLM-backed; set `BENCHMARK_LIMIT` explicitly to control model
+usage and cost. Examples run concurrently using one worker per CPU core by
+default when invoked with `-n auto` through pytest-xdist. Each example remains
+an individually collected test. Use `-n 1` for sequential execution or choose
+a lower `-n` value when the configured LLM endpoint has a request limit.
+Benchmark temp files are stored under the repository `.cache` directory.
 
 The normal fallback agent and its `ha_search`, `ha_get_state`,
 `ha_list_services`, and `ha_call_service` tools are exercised. The advanced

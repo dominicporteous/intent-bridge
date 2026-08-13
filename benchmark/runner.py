@@ -6,10 +6,14 @@ import asyncio
 import os
 from collections import Counter
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from benchmark.models import BenchmarkCorpus, BenchmarkExample, BenchmarkMatcher, Operation
+
+
+def _default_worker_count() -> int:
+    return os.cpu_count() or 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,6 +23,7 @@ class BenchmarkOptions:
     homes: tuple[str, ...] = ()
     sources: tuple[str, ...] = ()
     limit: int | None = None
+    workers: int = field(default_factory=_default_worker_count)
 
     @classmethod
     def from_environment(
@@ -31,7 +36,9 @@ class BenchmarkOptions:
 
         raw_limit = environ.get("BENCHMARK_LIMIT")
         limit = max(1, int(raw_limit)) if raw_limit else None
-        return cls(homes, sources, limit)
+        raw_workers = environ.get("BENCHMARK_WORKERS")
+        workers = max(1, int(raw_workers)) if raw_workers else _default_worker_count()
+        return cls(homes, sources, limit, workers)
 
 
 def _csv(value: str) -> tuple[str, ...]:
@@ -112,27 +119,59 @@ async def evaluate_example(
     return None
 
 
-async def run_corpus(
+async def run_examples(
     matcher: BenchmarkMatcher,
-    corpus: BenchmarkCorpus,
+    examples: Sequence[BenchmarkExample],
     *,
-    concurrency: int = 1,
+    workers: int | None = None,
+    concurrency: int | None = None,
 ) -> BenchmarkSummary:
-    """Evaluate every example; no sampling, skipping, or xfail path exists."""
+    """Evaluate examples concurrently, preserving input order in failures.
 
-    examples = corpus.examples
-    semaphore = asyncio.Semaphore(max(1, concurrency))
+    ``concurrency`` is retained as a compatibility alias for callers of the
+    original runner API. New callers should use ``workers``.
+    """
+
+    if workers is not None and concurrency is not None:
+        raise ValueError("pass either workers or concurrency, not both")
+    worker_count = max(
+        1,
+        workers
+        if workers is not None
+        else concurrency
+        if concurrency is not None
+        else _default_worker_count(),
+    )
+    selected = tuple(examples)
+    semaphore = asyncio.Semaphore(worker_count)
 
     async def evaluate(example: BenchmarkExample) -> ExampleFailure | None:
         async with semaphore:
             return await evaluate_example(matcher, example)
 
-    results = await asyncio.gather(*(evaluate(example) for example in examples))
+    results = await asyncio.gather(*(evaluate(example) for example in selected))
     failures = tuple(result for result in results if result is not None)
     return BenchmarkSummary(
-        total=len(examples),
-        passed=len(examples) - len(failures),
+        total=len(selected),
+        passed=len(selected) - len(failures),
         failures=failures,
+    )
+
+
+async def run_corpus(
+    matcher: BenchmarkMatcher,
+    corpus: BenchmarkCorpus,
+    *,
+    workers: int | None = None,
+    concurrency: int | None = None,
+) -> BenchmarkSummary:
+    """Evaluate every example; no sampling, skipping, or xfail path exists."""
+
+    return await run_examples(
+        matcher,
+        corpus.examples,
+        workers=workers,
+        concurrency=concurrency,
     )
 
 
@@ -143,6 +182,7 @@ __all__ = [
     "compare_operations",
     "evaluate_example",
     "make_benchmark_matcher",
+    "run_examples",
     "run_corpus",
     "select_examples",
 ]

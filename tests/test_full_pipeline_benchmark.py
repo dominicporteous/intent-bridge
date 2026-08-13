@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from types import SimpleNamespace
 
@@ -12,6 +13,7 @@ from benchmark.full_pipeline import (
 )
 from benchmark.loader import load_corpus
 from benchmark.models import (
+    BenchmarkExample,
     BenchmarkRequest,
     BenchmarkResult,
     Home,
@@ -23,6 +25,7 @@ from benchmark.runner import (
     BenchmarkOptions,
     compare_operations,
     make_benchmark_matcher,
+    run_examples,
     select_examples,
 )
 from intent_bridge.config import settings
@@ -341,6 +344,42 @@ async def test_full_pipeline_benchmark_runs_fallback_tools_against_fixture_home(
     )
 
 
+async def test_full_pipeline_matcher_isolates_concurrent_fixture_dependencies():
+    async def fallback(_request):
+        await asyncio.sleep(0)
+        arguments = json.dumps(
+            {
+                "domain": "light",
+                "service": "turn_on",
+                "entity_id": "light.lamp",
+                "area_id": None,
+                "data": {},
+                "return_response": False,
+            }
+        )
+        await ha_call_service.on_invoke_tool(
+            ToolContext(
+                None,
+                tool_name="ha_call_service",
+                tool_call_id="concurrent-benchmark-test",
+                tool_arguments=arguments,
+            ),
+            arguments,
+        )
+        return settings.api.action_confirmation
+
+    matcher = FullPipelineBenchmarkMatcher(fallback_handler=fallback)
+    results = await asyncio.gather(
+        matcher.match(BenchmarkRequest(("use the fallback",), _home())),
+        matcher.match(BenchmarkRequest(("use the fallback",), _home())),
+    )
+
+    assert [result.operations for result in results] == [
+        (Operation(kind="action", entity_ids=("light.lamp",), state="on"),),
+        (Operation(kind="action", entity_ids=("light.lamp",), state="on"),),
+    ]
+
+
 async def test_fallback_can_return_speech_with_observable_query_evidence():
     async def fallback(_request):
         await ha_get_state.on_invoke_tool(
@@ -371,13 +410,53 @@ def test_benchmark_options_are_independent_of_llm_configuration():
     assert isinstance(make_benchmark_matcher(options), FullPipelineBenchmarkMatcher)
 
 
+def test_benchmark_options_default_workers_follow_cpu_count(monkeypatch):
+    monkeypatch.setattr("benchmark.runner.os.cpu_count", lambda: 6)
+
+    assert BenchmarkOptions.from_environment({}).workers == 6
+
+
 def test_benchmark_options_preserve_exhaustive_default():
     options = BenchmarkOptions.from_environment(
-        {"BENCHMARK_HOME": "first, second", "BENCHMARK_LIMIT": "2"}
+        {
+            "BENCHMARK_HOME": "first, second",
+            "BENCHMARK_LIMIT": "2",
+            "BENCHMARK_WORKERS": "3",
+        }
     )
 
     assert options.homes == ("first", "second")
     assert options.limit == 2
+    assert options.workers == 3
+
+
+async def test_run_examples_limits_parallel_match_calls():
+    active = 0
+    maximum_active = 0
+
+    class Matcher:
+        async def match(self, _request):
+            nonlocal active, maximum_active
+            active += 1
+            maximum_active = max(maximum_active, active)
+            await asyncio.sleep(0.01)
+            active -= 1
+            return BenchmarkResult(operations=())
+
+    examples = tuple(
+        BenchmarkExample(
+            diagnostic_id=f"example-{index}",
+            request=BenchmarkRequest(("noop",), _home()),
+            expected=(),
+        )
+        for index in range(6)
+    )
+
+    summary = await run_examples(Matcher(), examples, workers=3)
+
+    assert summary.total == 6
+    assert summary.passed == 6
+    assert maximum_active == 3
 
 
 def test_benchmark_selection_applies_filters_before_limit():

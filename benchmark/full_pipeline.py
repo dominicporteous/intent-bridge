@@ -355,17 +355,16 @@ class FullPipelineBenchmarkMatcher:
             step_observer=fixture.record_step,
         )
 
-        previous_ws = runtime.ha_ws
-        previous_agent = runtime.fallback_agent
         routes: list[str] = []
         response_text = ""
         operations_by_turn: list[tuple[Operation, ...]] = []
         conversation_id = f"benchmark-{uuid.uuid4().hex}"
         messages: list[dict[str, str]] = []
-        runtime.ha_ws = fixture
-        if self._fallback_agent is not None:
-            runtime.fallback_agent = self._fallback_agent
-        try:
+        with runtime.override(
+            ha_ws=fixture,
+            fallback_agent=self._fallback_agent,
+            fallback_lock=asyncio.Lock(),
+        ):
             for turn in request.turns:
                 operation_start = len(fixture.operations)
                 messages.append({"role": "user", "content": turn})
@@ -380,9 +379,6 @@ class FullPipelineBenchmarkMatcher:
                 routes.append(result.route)
                 messages.append({"role": "assistant", "content": response_text})
                 operations_by_turn.append(tuple(fixture.operations[operation_start:]))
-        finally:
-            runtime.ha_ws = previous_ws
-            runtime.fallback_agent = previous_agent
 
         self.last_routes = tuple(routes)
         return BenchmarkResult.from_turn_operations(

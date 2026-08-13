@@ -236,20 +236,23 @@ The exhaustive corpus now lives in `benchmark/datasets/` and is collected
 dynamically. Run all 17,815 sentence/dialogue examples with:
 
 ```powershell
-uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 The runner always exercises the production voice pipeline. When the LLM is
 enabled and configured, the normal fallback route is available after the
 deterministic route exactly as it is in the application.
-Runs are exhaustive unless `BENCHMARK_LIMIT` is explicitly set; see
+Runs are exhaustive unless `BENCHMARK_LIMIT` is explicitly set. Independent
+examples run in parallel using one worker per CPU core by default; use
+`-n 1` for sequential execution. See
 [`benchmark/README.md`](benchmark/README.md) for filtering, limiting, and
-LLM configuration.
+LLM configuration. Benchmark scratch files stay under `.cache` so stale
+Windows `%TEMP%` permissions do not prevent collection.
 
 To run only one benchmark home:
 
 ```powershell
-$env:BENCHMARK_HOME='studio'; uv run pytest benchmark/test_benchmark.py -o addopts="" -q
+$env:BENCHMARK_HOME='studio'; uv run pytest benchmark/test_benchmark.py -o addopts="" -n auto -q
 ```
 
 Every example must produce the exact expected entity operations; the benchmark

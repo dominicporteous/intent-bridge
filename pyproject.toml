@@ -22,6 +22,7 @@ dev = [
   "pytest>=8.4",
   "pytest-asyncio>=1.1",
   "pytest-cov>=6.2",
+  "pytest-xdist>=3.8",
   "ruff>=0.12",
 ]
 
@@ -31,6 +32,10 @@ asyncio_mode = "auto"
 pythonpath = ["."]
 cache_dir = ".cache/pytest"
 addopts = [
+  "-n",
+  "auto",
+  "--basetemp",
+  ".cache/pytest-tmp",
   "--cov=main",
   "--cov=intent_bridge",
   "--cov-branch",
