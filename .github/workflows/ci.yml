@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --dev
 
+      - name: Prepare pytest temporary directory
+        run: mkdir -p .cache/pytest-tmp
+
       - name: Run pytest
         run: uv run pytest -q
 
