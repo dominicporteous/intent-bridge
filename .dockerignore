@@ -1,0 +1,15 @@
+.git
+.github
+.cache
+.pytest_cache
+.ruff_cache
+.uv-cache
+.venv
+__pycache__
+*.py[cod]
+.coverage
+.env
+mcp.json
+dist
+tests
+benchmark
