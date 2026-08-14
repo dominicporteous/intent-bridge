@@ -32,10 +32,18 @@ def test_gate_accepts_clear_general_requests(text):
         "Play some music",
         "Turn it off",
         "List unavailable devices",
+        "What's my calendar like next week?",
+        "What is the weather tomorrow?",
+        "Tell me about my appointments",
     ],
 )
 def test_gate_rejects_household_and_media_requests(text):
     assert not is_informational_or_conversational(text)
+
+
+def test_gate_treats_unpunctuated_general_openings_consistently():
+    assert is_informational_or_conversational("whats the capital of France")
+    assert not is_informational_or_conversational("whats my calendar like next week")
 
 
 def test_gate_uses_general_conversation_context_for_follow_up():

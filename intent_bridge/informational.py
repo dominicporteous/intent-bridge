@@ -14,7 +14,9 @@ _HOME_TERMS = re.compile(
     r"air\s*condition(?:er|ing)?|fan|blind|blinds|curtain|curtains|cover|lock|"
     r"door|garage|vacuum|speaker|music|song|album|playlist|volume|media|tv|"
     r"television|kettle|sensor|automation|script|scene|timer|alarm|camera|"
-    r"device|entity|home\s+assistant"
+    r"device|entity|home\s+assistant|calendar|calendars|agenda|schedule|"
+    r"schedules|appointment|appointments|event|events|booking|bookings|"
+    r"weather|forecast|forecasts"
     r")\b",
     re.IGNORECASE,
 )
@@ -25,7 +27,7 @@ _HOME_ACTIONS = re.compile(
 )
 _GENERAL_OPENING = re.compile(
     r"^(?:who(?:'s|\s+is|\s+was|\s+are|\s+were)?|"
-    r"what(?:'s|\s+is|\s+was|\s+are|\s+were|\s+does|\s+do|\s+did)?|"
+    r"what(?:'s|s|\s+is|\s+was|\s+are|\s+were|\s+does|\s+do|\s+did)?|"
     r"when|where|why|how|which|is|are|was|were|do|does|did|"
     r"can you|could you)\b",
     re.IGNORECASE,
