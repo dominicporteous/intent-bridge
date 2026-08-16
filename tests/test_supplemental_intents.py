@@ -900,6 +900,23 @@ def test_singular_pronoun_does_not_expand_group_focus(catalog):
     assert second.state.unresolved.required_constraint == "single target"
 
 
+def test_repeating_targetless_question_does_not_create_an_ambiguous_referent(catalog):
+    first_plan = IntentPlan(
+        steps=(PlannedIntent(OhfIntentCall("HassGetCurrentTime", {})),)
+    )
+    second_plan = IntentPlan(
+        steps=(PlannedIntent(OhfIntentCall("HassGetCurrentTime", {})),)
+    )
+    session = PlanningSession(_QueuedPlanner([first_plan, second_plan]))
+
+    first = session.plan_turn("What time is it?", catalog)
+    second = session.plan_turn("What time is it?", catalog)
+
+    assert first.state.focus is None
+    assert second.plan is second_plan
+    assert second.plan.response is None
+
+
 def test_property_focus_and_clause_referents_are_typed(catalog):
     query = IntentPlan(
         steps=(

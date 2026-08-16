@@ -1723,14 +1723,22 @@ def _state_from_plan(
         if same_discourse_operation
         else last_frame.resolved_targets
     )
-    focus = EntityFocus(
-        entity_set=entity_ids,
-        cardinality=(
-            ReferentCardinality.SINGULAR
-            if len(entity_ids) == 1
-            else ReferentCardinality.GROUP
-        ),
-        selected_member=entity_ids[0] if len(entity_ids) == 1 else None,
+    # A targetless intent (for example, ``HassGetCurrentTime``) must not
+    # manufacture an empty group referent.  Otherwise a later question such
+    # as "What time is it?" treats its impersonal "it" as an ambiguous
+    # singular reference before the intent recognizer gets a chance to run.
+    focus = (
+        EntityFocus(
+            entity_set=entity_ids,
+            cardinality=(
+                ReferentCardinality.SINGULAR
+                if len(entity_ids) == 1
+                else ReferentCardinality.GROUP
+            ),
+            selected_member=entity_ids[0] if len(entity_ids) == 1 else None,
+        )
+        if entity_ids
+        else None
     )
     effect = last_frame.effect
     property_focus = (
@@ -1743,12 +1751,13 @@ def _state_from_plan(
         entity_ids,
     )
     clause_referents = dict(previous.clause_referents)
-    if focus.cardinality == ReferentCardinality.SINGULAR:
-        clause_referents.update({"it": referent, "its": referent})
-    else:
-        clause_referents.update({"them": referent, "their": referent})
-        clause_referents.pop("it", None)
-        clause_referents.pop("its", None)
+    if focus is not None:
+        if focus.cardinality == ReferentCardinality.SINGULAR:
+            clause_referents.update({"it": referent, "its": referent})
+        else:
+            clause_referents.update({"them": referent, "their": referent})
+            clause_referents.pop("it", None)
+            clause_referents.pop("its", None)
 
     return DialogueState(
         referent_entity_ids=entity_ids,
