@@ -298,7 +298,8 @@ class DeterministicIntentEngine:
             return IntentPlan(response="Which area should I use?")
 
         resolved = [
-            resolve_candidate(candidate, catalog, request.origin_context) for candidate in matches
+            resolve_candidate(candidate, catalog, request.origin_context, text=request.text)
+            for candidate in matches
         ]
         LOGGER.info(
             "INTENT PLAN resolved_candidates text=%r candidates=%s",

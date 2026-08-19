@@ -4,13 +4,20 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from intent_bridge.core.text import normalize_search_text
-from intent_bridge.intent_engine.models import CatalogEntity, CatalogSnapshot, IntentMatch
+from intent_bridge.intent_engine.models import (
+    CatalogEntity,
+    CatalogSnapshot,
+    IntentMatch,
+    SlotValue,
+)
 
-_TARGET_SLOT_NAMES = frozenset({"name", "area", "floor", "domain", "device_class"})
+_TARGET_SLOT_NAMES = frozenset(
+    {"name", "area", "floor", "domain", "device_class", "entity_id"}
+)
 _INTENT_DEFAULT_DOMAINS = {
     "HassClimateGetTemperature": "climate",
     "HassClimateSetTemperature": "climate",
@@ -109,6 +116,120 @@ def _matching_named_entities(match: IntentMatch, catalog: CatalogSnapshot) -> li
     return []
 
 
+def _surface_target_phrases(
+    entity: CatalogEntity,
+    catalog: CatalogSnapshot,
+) -> frozenset[str]:
+    """Return full and area-relative catalog labels for spoken target matching."""
+
+    labels = {
+        entity.name,
+        *entity.aliases,
+        entity.entity_id.split(".", 1)[-1].replace("_", " "),
+    }
+    area = next((area for area in catalog.areas if area.area_id == entity.area_id), None)
+    area_words: set[str] = set()
+    if area is not None:
+        for area_label in (area.name, area.area_id, *area.aliases):
+            normalized_area = _normal(area_label)
+            area_words.update(normalized_area.split())
+            area_words.add(normalized_area.replace(" ", ""))
+
+    phrases: set[str] = set()
+    for label in labels:
+        normalized_label = _normal(label)
+        if not normalized_label:
+            continue
+        phrases.add(normalized_label)
+        relative_label = " ".join(
+            word for word in normalized_label.split() if word not in area_words
+        )
+        if relative_label:
+            phrases.add(relative_label)
+    return frozenset(phrases)
+
+
+def _contains_surface_phrase(text: str, phrase: str) -> bool:
+    return bool(re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text))
+
+
+def _has_plural_domain_target(text: str, domain: str) -> bool:
+    """Keep plural domain words as group requests, not abbreviated names."""
+
+    plural_forms = {
+        "cover": ("blinds", "covers", "curtains", "shades", "shutters"),
+        "fan": ("fans",),
+        "light": ("lights", "lamps"),
+        "lock": ("locks", "deadbolts"),
+        "media_player": ("media players", "speakers", "televisions", "tvs"),
+        "switch": ("switches",),
+    }.get(domain, ())
+    return any(_contains_surface_phrase(text, form) for form in plural_forms)
+
+
+def _surface_named_entity(
+    text: str | None,
+    catalog: CatalogSnapshot,
+    domain: str,
+    area_ids: frozenset[str] | None,
+) -> CatalogEntity | None:
+    """Find one catalog entity named by the surface target phrase.
+
+    Packaged OHF grammar intentionally treats terms such as ``lamp`` as the
+    ``light`` domain.  A unique label within the requested/origin area is more
+    specific than that broad domain target, but ties remain unresolved so the
+    normal clarification path can handle them safely.
+    """
+
+    normalized_text = _normal(text)
+    if not normalized_text or _has_plural_domain_target(normalized_text, domain):
+        return None
+    candidates = [
+        entity
+        for entity in catalog.entities
+        if _normal(entity.domain) == domain
+        and (area_ids is None or entity.area_id in area_ids)
+    ]
+    matched: list[tuple[int, CatalogEntity]] = []
+    for entity in candidates:
+        phrase_lengths = [
+            len(phrase.split())
+            for phrase in _surface_target_phrases(entity, catalog)
+            if _contains_surface_phrase(normalized_text, phrase)
+        ]
+        if phrase_lengths:
+            matched.append((max(phrase_lengths), entity))
+    if not matched:
+        return None
+    best_length = max(length for length, _ in matched)
+    winners = [entity for length, entity in matched if length == best_length]
+    return winners[0] if len(winners) == 1 else None
+
+
+def _with_surface_name(match: IntentMatch, entity: CatalogEntity) -> IntentMatch:
+    """Replace a broad parser target with the catalog's exact name and ID."""
+
+    slots = {
+        name: slot
+        for name, slot in match.slots.items()
+        if name not in _TARGET_SLOT_NAMES
+    }
+    slots.update(
+        {
+            "name": SlotValue(
+                value=entity.name,
+                text=entity.name,
+                metadata={"entity_id": entity.entity_id},
+            ),
+            # The HA intent API resolves by name; retaining the catalog ID
+            # lets the executor retry an exact service call if HA reports a
+            # duplicate display name.
+            "entity_id": SlotValue(value=entity.entity_id, text=entity.entity_id),
+        }
+    )
+    return replace(match, slots=slots)
+
+
 def _matches_device_class(entity: CatalogEntity, wanted: str) -> bool:
     """Match an explicit device class without requiring registry metadata.
 
@@ -143,6 +264,8 @@ def resolve_candidate(
     match: IntentMatch,
     catalog: CatalogSnapshot,
     origin_context: Mapping[str, object] | None = None,
+    *,
+    text: str | None = None,
 ) -> ResolvedCandidate:
     """Resolve a parser match and construct a provider-neutral equivalence key."""
 
@@ -177,6 +300,22 @@ def resolve_candidate(
                 area_id = area_matches[0]
             else:
                 unresolved_origin_area = True
+
+    surface_area_ids = (
+        frozenset({area_id})
+        if area_id
+        else frozenset(area.area_id for area in catalog.areas if area.floor_id == floor_id)
+        if floor_id
+        else None
+    )
+    has_unresolved_explicit_topology = (has_explicit_area and not area_id) or (
+        has_explicit_floor and not floor_id
+    )
+    if not named_entities and not has_explicit_name and domain and not has_unresolved_explicit_topology:
+        if surface_entity := _surface_named_entity(text, catalog, domain, surface_area_ids):
+            match = _with_surface_name(match, surface_entity)
+            named_entities = [surface_entity]
+            has_explicit_name = True
 
     if len(named_entities) == 1:
         entities = named_entities

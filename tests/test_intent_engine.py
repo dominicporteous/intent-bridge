@@ -16,6 +16,7 @@ from intent_bridge.intent_engine.models import (
     OhfIntentCall,
     SlotValue,
 )
+from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 from intent_bridge.intent_engine.route import DeterministicVoiceRoute
 
@@ -199,6 +200,57 @@ async def test_origin_area_is_added_to_context_relative_domain_intent():
 
     await engine.handle(request("turn on the lights", area_name="Living Room"))
     assert executor.calls[0].data == {"domain": "light", "area": "Living Room"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("text", "entity_name", "entity_id"),
+    [
+        ("turn the lamp off", "Living Room Lamp", "light.living_room_lamp"),
+        ("turn the light off", "Living Room Light", "light.living_room"),
+    ],
+)
+async def test_domain_match_promotes_a_unique_surface_target(
+    text, entity_name, entity_id
+):
+    executor = RecordingExecutor()
+    engine = DeterministicIntentEngine(
+        StaticRecognizer((match("HassTurnOff", domain="light"),)),
+        StaticCatalog(living_room_catalog(two_lights=True)),
+        executor,
+    )
+
+    assert await engine.handle(request(text, area_name="Living Room")) == "Done."
+    assert executor.calls[0].data == {"name": entity_name, "entity_id": entity_id}
+
+
+@pytest.mark.asyncio
+async def test_bare_tv_target_uses_the_named_entity_fallback():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity(
+                "media_player.living_room_tv",
+                "Living Room TV",
+                (),
+                "media_player",
+                "living_room",
+            ),
+        ),
+        areas=(CatalogArea("living_room", "Living Room"),),
+    )
+    executor = RecordingExecutor()
+    engine = DeterministicIntentEngine(
+        StaticRecognizer(()),
+        StaticCatalog(catalog),
+        executor,
+        fallback_planner=NaturalLanguageIntentPlanner(),
+    )
+
+    assert await engine.handle(request("turn the TV off", area_name="Living Room")) == "Done."
+    assert executor.calls[0].data == {
+        "name": "Living Room TV",
+        "entity_id": "media_player.living_room_tv",
+    }
 
 
 @pytest.mark.asyncio

@@ -590,6 +590,37 @@ def test_resolution_builds_equivalent_keys_for_all_target_shapes():
     assert unresolved_origin.entity_ids == frozenset()
 
 
+def test_resolution_promotes_a_unique_surface_target_over_a_domain_group():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.living_light", "Living Room Light", (), "light", "living"),
+            CatalogEntity("light.living_lamp", "Living Room Lamp", (), "light", "living"),
+        ),
+        areas=(CatalogArea("living", "Living Room"),),
+    )
+    domain_match = _match("HassTurnOff", domain=_slot("light"))
+
+    lamp = resolution_module.resolve_candidate(
+        domain_match,
+        catalog,
+        {"area_id": "living"},
+        text="Turn the lamp off",
+    )
+    generic = resolution_module.resolve_candidate(
+        domain_match,
+        catalog,
+        {"area_id": "living"},
+        text="Turn the lights off",
+    )
+
+    assert lamp.entity_ids == frozenset({"light.living_lamp"})
+    assert lamp.match.slots["name"].value == "Living Room Lamp"
+    assert lamp.match.slots["entity_id"].value == "light.living_lamp"
+    assert lamp.specificity == 3
+    assert generic.entity_ids == frozenset({"light.living_light", "light.living_lamp"})
+    assert "name" not in generic.match.slots
+
+
 def test_freeze_handles_mapping_sequences_sets_and_scalars():
     frozen = resolution_module._freeze({"b": {2, 1}, "a": ["x", ("y",)]})
     assert frozen[0] == ("a", ("x", ("y",)))
