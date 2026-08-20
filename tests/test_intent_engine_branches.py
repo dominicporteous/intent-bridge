@@ -621,6 +621,37 @@ def test_resolution_promotes_a_unique_surface_target_over_a_domain_group():
     assert "name" not in generic.match.slots
 
 
+def test_resolution_promotes_a_named_switch_for_a_light_power_command():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.living_light", "Living Room Light", (), "light", "living"),
+            CatalogEntity("switch.living_lamp", "Living Room Lamp", (), "switch", "living"),
+        ),
+        areas=(CatalogArea("living", "Living Room"),),
+    )
+    turn_off = _match("HassTurnOff", domain=_slot("light"))
+    set_brightness = _match("HassLightSet", domain=_slot("light"))
+
+    powered_lamp = resolution_module.resolve_candidate(
+        turn_off,
+        catalog,
+        {"area_id": "living"},
+        text="Turn the lamp off",
+    )
+    brightness_target = resolution_module.resolve_candidate(
+        set_brightness,
+        catalog,
+        {"area_id": "living"},
+        text="Set the lamp to 50 percent",
+    )
+
+    assert powered_lamp.entity_ids == frozenset({"switch.living_lamp"})
+    assert powered_lamp.match.slots["entity_id"].value == "switch.living_lamp"
+    assert powered_lamp.specificity == 3
+    assert brightness_target.entity_ids == frozenset({"light.living_light"})
+    assert "name" not in brightness_target.match.slots
+
+
 def test_freeze_handles_mapping_sequences_sets_and_scalars():
     frozen = resolution_module._freeze({"b": {2, 1}, "a": ["x", ("y",)]})
     assert frozen[0] == ("a", ("x", ("y",)))

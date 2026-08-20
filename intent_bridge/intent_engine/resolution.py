@@ -167,10 +167,19 @@ def _has_plural_domain_target(text: str, domain: str) -> bool:
     return any(_contains_surface_phrase(text, form) for form in plural_forms)
 
 
+def _surface_target_domains(intent_name: str, domain: str) -> frozenset[str]:
+    """Return domains that can satisfy an exact spoken target for an intent."""
+
+
+    if intent_name in {"HassTurnOn", "HassTurnOff"} and domain == "light":
+        return frozenset({"light", "switch"})
+    return frozenset({domain})
+
+
 def _surface_named_entity(
     text: str | None,
     catalog: CatalogSnapshot,
-    domain: str,
+    domains: frozenset[str],
     area_ids: frozenset[str] | None,
 ) -> CatalogEntity | None:
     """Find one catalog entity named by the surface target phrase.
@@ -182,12 +191,12 @@ def _surface_named_entity(
     """
 
     normalized_text = _normal(text)
-    if not normalized_text or _has_plural_domain_target(normalized_text, domain):
+    if not normalized_text:
         return None
     candidates = [
         entity
         for entity in catalog.entities
-        if _normal(entity.domain) == domain
+        if _normal(entity.domain) in domains
         and (area_ids is None or entity.area_id in area_ids)
     ]
     matched: list[tuple[int, CatalogEntity]] = []
@@ -312,7 +321,18 @@ def resolve_candidate(
         has_explicit_floor and not floor_id
     )
     if not named_entities and not has_explicit_name and domain and not has_unresolved_explicit_topology:
-        if surface_entity := _surface_named_entity(text, catalog, domain, surface_area_ids):
+        normalized_text = _normal(text)
+        if (
+            not _has_plural_domain_target(normalized_text, domain)
+            and (
+                surface_entity := _surface_named_entity(
+                    text,
+                    catalog,
+                    _surface_target_domains(match.intent_name, domain),
+                    surface_area_ids,
+                )
+            )
+        ):
             match = _with_surface_name(match, surface_entity)
             named_entities = [surface_entity]
             has_explicit_name = True

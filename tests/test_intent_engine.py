@@ -225,6 +225,29 @@ async def test_domain_match_promotes_a_unique_surface_target(
 
 
 @pytest.mark.asyncio
+async def test_light_power_grammar_can_target_a_uniquely_named_switch_lamp():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("light.living_room", "Living Room Light", (), "light", "living_room"),
+            CatalogEntity("switch.living_room_lamp", "Living Room Lamp", (), "switch", "living_room"),
+        ),
+        areas=(CatalogArea("living_room", "Living Room"),),
+    )
+    executor = RecordingExecutor()
+    engine = DeterministicIntentEngine(
+        StaticRecognizer((match("HassTurnOff", domain="light"),)),
+        StaticCatalog(catalog),
+        executor,
+    )
+
+    assert await engine.handle(request("turn the lamp off", area_name="Living Room")) == "Done."
+    assert executor.calls[0].data == {
+        "name": "Living Room Lamp",
+        "entity_id": "switch.living_room_lamp",
+    }
+
+
+@pytest.mark.asyncio
 async def test_bare_tv_target_uses_the_named_entity_fallback():
     catalog = CatalogSnapshot(
         entities=(
