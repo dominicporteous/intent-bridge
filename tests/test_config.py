@@ -23,6 +23,7 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_LLM_API_KEY": "secret",
             "INTENT_BRIDGE_MCP_CONFIG_PATH": "config/mcp.json",
             "INTENT_BRIDGE_MCP_CONNECT_TIMEOUT_SECONDS": "12",
+            "INTENT_BRIDGE_MCP_CLIENT_SESSION_TIMEOUT_SECONDS": "45",
             "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "4",
             "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "9",
             "INTENT_BRIDGE_HA_CATALOG_REFRESH_SECONDS": "45",
@@ -58,6 +59,7 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.llm.api_key == "secret"
     assert settings.mcp.config_path == Path("config/mcp.json")
     assert settings.mcp.connect_timeout_seconds == 12
+    assert settings.mcp.client_session_timeout_seconds == 45
     assert settings.home_assistant.search_default_limit == 4
     assert settings.home_assistant.search_max_limit == 9
     assert settings.home_assistant.websocket.catalog_refresh_seconds == 45

@@ -74,7 +74,7 @@ def make_ha_mcp_server() -> MCPServerStdio:
             "env": child_env,
         },
         cache_tools_list=True,
-        client_session_timeout_seconds=settings.llm.timeout_seconds,
+        client_session_timeout_seconds=settings.mcp.client_session_timeout_seconds,
     )
 
 

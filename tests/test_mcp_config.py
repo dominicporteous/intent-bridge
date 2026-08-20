@@ -42,13 +42,15 @@ def test_loads_active_http_servers_and_skips_inactive_entries(tmp_path):
         encoding="utf-8",
     )
 
-    configured = load_mcp_servers(path)
+    configured = load_mcp_servers(path, client_session_timeout_seconds=45)
 
     assert [item.key for item in configured] == ["web_search", "events"]
     assert isinstance(configured[0].server, MCPServerStreamableHttp)
     assert configured[0].server.params["url"] == "http://localhost:3000/mcp"
     assert configured[0].server.params["headers"] == {"Authorization": "Bearer test"}
+    assert configured[0].server.client_session_timeout_seconds == 45
     assert isinstance(configured[1].server, MCPServerSse)
+    assert configured[1].server.client_session_timeout_seconds == 45
     instructions = mcp_agent_instructions(configured)
     assert "Web Search MCP: Search current web content" in instructions
 
@@ -71,11 +73,12 @@ def test_loads_stdio_server(tmp_path):
         encoding="utf-8",
     )
 
-    configured = load_mcp_servers(path)
+    configured = load_mcp_servers(path, client_session_timeout_seconds=30)
 
     assert isinstance(configured[0].server, MCPServerStdio)
     assert configured[0].server.params.command == "python"
     assert configured[0].server.params.args == ["-m", "example"]
+    assert configured[0].server.client_session_timeout_seconds == 30
 
 
 @pytest.mark.parametrize(

@@ -221,6 +221,9 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             cleanup_timeout_seconds=_number(
                 environ, "MCP_CLEANUP_TIMEOUT_SECONDS", 10.0, minimum=0.1
             ),
+            client_session_timeout_seconds=_number(
+                environ, "MCP_CLIENT_SESSION_TIMEOUT_SECONDS", 120.0, minimum=0.1
+            ),
         ),
         voice_origin=VoiceOriginSettings(
             enabled=_boolean(environ, "VOICE_ORIGIN_ENABLED", True),

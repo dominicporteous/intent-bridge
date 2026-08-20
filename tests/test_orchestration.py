@@ -98,8 +98,10 @@ def test_advanced_configuration_helpers(monkeypatch):
     assert "office -> player1" in advanced._music_assistant_agent_instructions()
     monkeypatch.setattr(settings.music_assistant, "area_player_map", "")
     assert advanced._parse_music_area_player_map() == {}
+    monkeypatch.setattr(settings.mcp, "client_session_timeout_seconds", 45)
     server = advanced.make_ha_mcp_server()
     assert server.name == "Home Assistant Advanced"
+    assert server.client_session_timeout_seconds == 45
 
 
 @pytest.mark.asyncio

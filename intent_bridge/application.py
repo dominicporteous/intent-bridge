@@ -169,7 +169,10 @@ async def lifespan(app: FastAPI):
     mcp_servers = []
     if settings.llm.enabled and not missing:
         try:
-            configured_mcp = load_mcp_servers(settings.mcp.config_path)
+            configured_mcp = load_mcp_servers(
+                settings.mcp.config_path,
+                client_session_timeout_seconds=settings.mcp.client_session_timeout_seconds,
+            )
             mcp_servers.extend(item.server for item in configured_mcp)
             if configured_mcp:
                 log.info(
@@ -759,6 +762,7 @@ async def health():
         else None,
         "ha_advanced_tool_search": settings.home_assistant.advanced.tool_search_enabled,
         "ha_advanced_pinned_tools": settings.home_assistant.advanced.pinned_tools,
+        "mcp_client_session_timeout_seconds": settings.mcp.client_session_timeout_seconds,
         "mcp_active_servers": (
             [server.name for server in runtime.mcp_manager.active_servers]
             if runtime.mcp_manager is not None

@@ -22,7 +22,9 @@ class ConfiguredMcpServer:
     server: Any
 
 
-def load_mcp_servers(path: Path) -> tuple[ConfiguredMcpServer, ...]:
+def load_mcp_servers(
+    path: Path, *, client_session_timeout_seconds: float | None = None
+) -> tuple[ConfiguredMcpServer, ...]:
     """Build active MCP transports from a Codex-style ``mcpServers`` object."""
     if not path.is_file():
         return ()
@@ -62,6 +64,8 @@ def load_mcp_servers(path: Path) -> tuple[ConfiguredMcpServer, ...]:
             "name": name,
             "cache_tools_list": _optional_boolean(raw, "cacheToolsList", True, key),
         }
+        if client_session_timeout_seconds is not None:
+            common["client_session_timeout_seconds"] = client_session_timeout_seconds
         if normalized_type == "streamablehttp":
             params = _http_params(raw, key)
             server = MCPServerStreamableHttp(params=params, **common)

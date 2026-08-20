@@ -107,7 +107,13 @@ async def test_lifespan_exposes_active_custom_mcp_to_fallback(monkeypatch, tmp_p
     monkeypatch.setattr(application, "validate_fallback_config", lambda: [])
     server = SimpleNamespace(name="Web Search MCP")
     configured = application.ConfiguredMcpServer("web_search", "Search the web", server)
-    monkeypatch.setattr(application, "load_mcp_servers", lambda path: (configured,))
+
+    def load_servers(path, *, client_session_timeout_seconds):
+        assert path == settings.mcp.config_path
+        assert client_session_timeout_seconds == settings.mcp.client_session_timeout_seconds
+        return (configured,)
+
+    monkeypatch.setattr(application, "load_mcp_servers", load_servers)
 
     class Manager:
         def __init__(self, servers, **kwargs):

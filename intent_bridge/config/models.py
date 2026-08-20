@@ -50,6 +50,7 @@ class McpSettings:
     config_path: Path = Path("mcp.json")
     connect_timeout_seconds: float = 30.0
     cleanup_timeout_seconds: float = 10.0
+    client_session_timeout_seconds: float = 120.0
 
 
 @dataclass(slots=True)
