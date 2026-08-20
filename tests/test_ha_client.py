@@ -207,6 +207,29 @@ async def test_command_retries_one_disconnect(client, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_process_conversation_uses_the_existing_websocket_command(client):
+    client.command = AsyncMock(return_value={"success": True, "result": {"response": {}}})
+
+    reply = await client.process_conversation(
+        "turn on the office lights",
+        language="en",
+        device_id="assist_satellite.office",
+        timeout=4.5,
+    )
+
+    assert reply == {"success": True, "result": {"response": {}}}
+    client.command.assert_awaited_once_with(
+        {
+            "type": "conversation/process",
+            "text": "turn on the office lights",
+            "language": "en",
+            "device_id": "assist_satellite.office",
+        },
+        timeout=4.5,
+    )
+
+
+@pytest.mark.asyncio
 async def test_refresh_services_and_registries(client, monkeypatch):
     client.command = AsyncMock(
         side_effect=[

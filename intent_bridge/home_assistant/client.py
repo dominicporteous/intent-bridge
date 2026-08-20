@@ -259,6 +259,31 @@ class HomeAssistantWebSocket:
                 await asyncio.sleep(0)
         raise RuntimeError("Home Assistant WebSocket command failed")
 
+    async def process_conversation(
+        self,
+        text: str,
+        *,
+        language: str | None = None,
+        device_id: str | None = None,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
+        """Process one voice utterance over the established HA WebSocket.
+
+        The WebSocket API does not expose REST's named ``intent/handle``
+        endpoint. ``conversation/process`` is its supported command for
+        turning a spoken utterance into an intent response.
+        """
+
+        payload: dict[str, Any] = {
+            "type": "conversation/process",
+            "text": text,
+        }
+        if language:
+            payload["language"] = language
+        if device_id:
+            payload["device_id"] = device_id
+        return await self.command(payload, timeout=timeout)
+
     @staticmethod
     def _require_success(message: dict[str, Any], operation: str) -> Any:
         if message.get("success") is True:

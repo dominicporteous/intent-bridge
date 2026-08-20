@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any
 
 import httpx
@@ -84,6 +84,13 @@ def _speech_from_response(body: Mapping[str, Any]) -> str:
     if isinstance(nested_response, Mapping):
         return _speech_from_response(nested_response)
     return ""
+
+
+def _intent_response_body(body: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the common intent-result shape from REST or conversation WS."""
+
+    nested_response = body.get("response")
+    return nested_response if isinstance(nested_response, Mapping) else body
 
 
 def _entity_ids_from_intent_response(body: Mapping[str, Any]) -> tuple[str, ...]:
@@ -304,6 +311,7 @@ class HomeAssistantIntentExecutor:
         *,
         timeout: float = 15.0,
         client: httpx.AsyncClient | None = None,
+        websocket_provider: Callable[[], Any | None] | None = None,
     ) -> None:
         self._configured = bool(base_url.strip() and access_token.strip())
         self._base_url = base_url.rstrip("/")
@@ -311,22 +319,111 @@ class HomeAssistantIntentExecutor:
         self._access_token = access_token
         self._timeout = timeout
         self._client = client
+        self._websocket_provider = websocket_provider
 
-    async def execute(self, call: OhfIntentCall) -> ExecutionResult:
-        if not self._configured:
-            raise RouteDeclined("Home Assistant intent API is not configured")
-        headers = {
-            "Authorization": f"Bearer {self._access_token}",
-            "Content-Type": "application/json",
-        }
-        payload = {"name": call.intent_name, "data": dict(call.data)}
+    async def _execute_via_conversation_websocket(
+        self,
+        call: OhfIntentCall,
+    ) -> Mapping[str, Any] | None:
+        """Use HA's persistent conversation WebSocket when it is safe to do so.
+
+        Home Assistant exposes named intent handling only through its REST API.
+        Its WebSocket API accepts the source utterance via conversation/process.
+        We use that path for a single, ordinary deterministic command, but keep
+        the exact HTTP intent path for plans that cannot safely re-submit their
+        full utterance (compound plans and exact-target materialisation).
+        """
+
+        if self._websocket_provider is None:
+            return None
+        if not call.intent_name.startswith("Hass") or call.data.get("entity_id"):
+            return None
+
+        state = voice_tool_run_state
+        source_text = state.request_text.strip()
+        if not state.allow_conversation_websocket or not source_text:
+            return None
+
+        # An area inferred by this bridge cannot be represented by HA's
+        # conversation WebSocket unless the originating device is also known.
+        # Falling back preserves the explicit area on the resolved intent.
+        device_id = state.origin_device_id
+        if (state.origin_area_id or state.origin_area_name) and not device_id:
+            return None
+
+        ha_ws = self._websocket_provider()
+        ready = getattr(ha_ws, "ready", None)
+        if not (callable(getattr(ready, "is_set", None)) and ready.is_set()):
+            return None
+
+        processor = getattr(ha_ws, "process_conversation", None)
+        if not callable(processor):
+            return None
+
+        try:
+            reply = await processor(
+                source_text,
+                language=settings.deterministic.language,
+                device_id=device_id,
+                timeout=self._timeout,
+            )
+        except Exception:
+            # The command may have reached HA before a transport failure. Do
+            # not retry through HTTP here: doing so could execute an action
+            # twice. The normal WebSocket command retry handles a clean
+            # reconnect before this point where possible.
+            log.exception(
+                "HA WebSocket conversation dispatch failed; not retrying HTTP "
+                "to avoid a duplicate action intent=%s",
+                call.intent_name,
+            )
+            raise
+
+        if not isinstance(reply, Mapping):
+            log.warning(
+                "HA WebSocket conversation returned an invalid reply; falling back to HTTP "
+                "intent=%s",
+                call.intent_name,
+            )
+            return None
+        if reply.get("success") is not True:
+            log.warning(
+                "HA WebSocket conversation was rejected; falling back to HTTP "
+                "intent=%s error=%s",
+                call.intent_name,
+                reply.get("error"),
+            )
+            return None
+
+        body = reply.get("result")
+        if not isinstance(body, Mapping):
+            log.warning(
+                "HA WebSocket conversation returned no result; falling back to HTTP "
+                "intent=%s",
+                call.intent_name,
+            )
+            return None
+        if _intent_response_body(body).get("response_type") == "error":
+            log.info(
+                "HA WebSocket conversation could not handle intent; falling back to HTTP "
+                "intent=%s",
+                call.intent_name,
+            )
+            return None
 
         log.info(
-            "Executing Home Assistant intent intent=%s data=%s",
+            "Executed Home Assistant intent over persistent WebSocket "
+            "intent=%s data=%s",
             call.intent_name,
             dict(call.data),
         )
+        return body
 
+    async def _execute_via_http(
+        self,
+        headers: dict[str, str],
+        payload: dict[str, Any],
+    ) -> Mapping[str, Any]:
         if self._client is not None:
             response = await self._client.post(
                 self._url,
@@ -345,20 +442,47 @@ class HomeAssistantIntentExecutor:
 
         if not response.is_success:
             raise RuntimeError(
-                f"Home Assistant intent {call.intent_name} failed: {_error_detail(response)}"
+                f"Home Assistant intent {payload['name']} failed: {_error_detail(response)}"
             )
 
         try:
             body = response.json()
-            log.info(
-                "Home Assistant intent response intent=%s body=%s",
-                call.intent_name,
-                body,
-            )
         except ValueError as exc:
             raise RuntimeError("Home Assistant returned a non-JSON intent response") from exc
         if not isinstance(body, Mapping):
             raise RuntimeError("Home Assistant returned an invalid intent response")
+        return body
+
+    async def execute(self, call: OhfIntentCall) -> ExecutionResult:
+        if not self._configured:
+            raise RouteDeclined("Home Assistant intent API is not configured")
+        headers = {
+            "Authorization": f"Bearer {self._access_token}",
+            "Content-Type": "application/json",
+        }
+        payload = {"name": call.intent_name, "data": dict(call.data)}
+
+        log.info(
+            "Executing Home Assistant intent intent=%s data=%s",
+            call.intent_name,
+            dict(call.data),
+        )
+
+        body = await self._execute_via_conversation_websocket(call)
+        if body is None:
+            body = await self._execute_via_http(headers, payload)
+            log.info(
+                "Home Assistant intent response transport=http intent=%s body=%s",
+                call.intent_name,
+                body,
+            )
+        else:
+            log.info(
+                "Home Assistant intent response transport=websocket intent=%s body=%s",
+                call.intent_name,
+                body,
+            )
+        body = _intent_response_body(body)
 
         speech = _speech_from_response(body)
         action_succeeded = False

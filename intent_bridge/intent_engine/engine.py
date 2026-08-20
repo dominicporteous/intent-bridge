@@ -527,7 +527,14 @@ class DeterministicIntentEngine:
     async def execute_plan(self, request: VoiceRequest, plan: IntentPlan) -> str:
         """Execute a previously produced plan through the production boundary."""
 
-        _reset_voice_tool_run_state(request.text, dict(request.origin_context or {}))
+        _reset_voice_tool_run_state(
+            request.text,
+            dict(request.origin_context or {}),
+            # A conversation/process request contains the entire utterance.
+            # Replaying it once per planned step would repeat a compound
+            # command, so those plans retain their exact intent transport.
+            allow_conversation_websocket=len(plan.steps) == 1,
+        )
         if plan.response is not None:
             return plan.response
 

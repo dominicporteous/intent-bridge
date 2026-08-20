@@ -32,6 +32,7 @@ from intent_bridge.runtime.stores import (
 @dataclass
 class VoiceToolRunState:
     request_text: str = ""
+    allow_conversation_websocket: bool = False
     origin_device_id: str | None = None
     origin_device_name: str | None = None
     origin_area_id: str | None = None
@@ -81,10 +82,13 @@ voice_tool_run_state = _VoiceToolRunStateProxy()
 def _reset_voice_tool_run_state(
     request_text: str,
     origin_context: dict[str, Any] | None = None,
+    *,
+    allow_conversation_websocket: bool = False,
 ) -> None:
     origin_context = origin_context or {}
     fresh = VoiceToolRunState(
         request_text=request_text.strip(),
+        allow_conversation_websocket=allow_conversation_websocket,
         origin_device_id=origin_context.get("device_id"),
         origin_device_name=origin_context.get("device_name"),
         origin_area_id=origin_context.get("area_id"),

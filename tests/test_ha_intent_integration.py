@@ -9,8 +9,10 @@ import intent_bridge.home_assistant.intent_executor as executor_module
 from intent_bridge.config import settings
 from intent_bridge.home_assistant.intent_catalog import snapshot_from_client
 from intent_bridge.home_assistant.intent_executor import HomeAssistantIntentExecutor
-from intent_bridge.intent_engine.models import OhfIntentCall
+from intent_bridge.intent_engine.models import IntentMatch, OhfIntentCall, SlotValue
+from intent_bridge.intent_engine.resolution import resolve_candidate
 from intent_bridge.runtime.dependencies import runtime
+from intent_bridge.runtime.execution import _reset_voice_tool_run_state
 
 
 def test_catalog_snapshot_normalizes_state_and_registry_aliases():
@@ -30,9 +32,10 @@ def test_catalog_snapshot_normalizes_state_and_registry_aliases():
                 "ei": "light.kitchen_ceiling",
                 "en": "Ceiling Light",
                 "ai": "kitchen",
+                "di": "kitchen-lamp",
             }
         }
-        devices = {}
+        devices = {"kitchen-lamp": {"name_by_user": "Kitchen Lamp"}}
         areas = {"kitchen": {"area_id": "kitchen", "name": "Kitchen"}}
         floors = {}
 
@@ -43,8 +46,21 @@ def test_catalog_snapshot_normalizes_state_and_registry_aliases():
     assert entity.entity_id == "light.kitchen_ceiling"
     assert entity.name == "Kitchen Ceiling Lights"
     assert "Ceiling Light" in entity.aliases
+    assert "Kitchen Lamp" in entity.aliases
     assert "kitchen ceiling" in entity.aliases
     assert entity.area_id == "kitchen"
+
+    resolved = resolve_candidate(
+        IntentMatch(
+            intent_name="HassTurnOff",
+            slots={"domain": SlotValue(value="light", text="light")},
+        ),
+        snapshot,
+        {"area_id": "kitchen"},
+        text="Turn the kitchen lamp off",
+    )
+    assert resolved.entity_ids == frozenset({"light.kitchen_ceiling"})
+    assert resolved.match.slots["entity_id"].value == "light.kitchen_ceiling"
 
 
 @pytest.mark.asyncio
@@ -76,6 +92,95 @@ async def test_intent_executor_posts_official_call_and_extracts_speech():
         },
     }
     assert result.speech == "Turned off the kitchen lights"
+
+
+@pytest.mark.asyncio
+async def test_intent_executor_uses_persistent_websocket_before_http():
+    seen = []
+
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, text, *, language, device_id, timeout):
+            seen.append((text, language, device_id, timeout))
+            return {
+                "success": True,
+                "result": {
+                    "conversation_id": "ha-conversation",
+                    "response": {
+                        "response_type": "action_done",
+                        "speech": {"plain": {"speech": "Turned off the office lights"}},
+                        "data": {"success": [], "failed": []},
+                    },
+                },
+            }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        pytest.fail(f"HTTP should not be used while the WebSocket is ready: {request.url}")
+
+    _reset_voice_tool_run_state(
+        "turn off the office lights",
+        {"device_id": "assist_satellite.office"},
+        allow_conversation_websocket=True,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            timeout=4.5,
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(OhfIntentCall("HassTurnOff", {"name": "Office lights"}))
+
+    assert result.speech == "Turned off the office lights"
+    assert seen == [
+        (
+            "turn off the office lights",
+            settings.deterministic.language,
+            "assist_satellite.office",
+            4.5,
+        )
+    ]
+
+
+@pytest.mark.asyncio
+async def test_intent_executor_falls_back_to_http_when_websocket_rejects_request():
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, *_args, **_kwargs):
+            return {"success": False, "error": {"code": "unknown_command"}}
+
+    seen = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return httpx.Response(
+            200,
+            json={"speech": {"plain": {"speech": "Turned on the lamp"}}},
+        )
+
+    _reset_voice_tool_run_state("turn on the lamp", allow_conversation_websocket=True)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(OhfIntentCall("HassTurnOn", {"name": "Lamp"}))
+
+    assert result.speech == "Turned on the lamp"
+    assert seen == ["/api/intent/handle"]
 
 
 @pytest.mark.asyncio

@@ -113,6 +113,14 @@ used when every safe planning route declines or is unavailable. The default is
 inside the OpenAI-compatible response contract for HA Assist; failures after an
 action may have started still return an HTTP error rather than claiming safety.
 
+When `INTENT_BRIDGE_HA_WS_ENABLED=true`, ordinary single-step deterministic
+voice commands use Home Assistant's persistent WebSocket
+`conversation/process` command first. The direct `/api/intent/handle` HTTP
+request remains the fallback when the socket is unavailable or rejects the
+conversation request. Compound commands and deliberately materialised exact
+entity targets stay on the named-intent route so an utterance is never replayed
+or widened accidentally.
+
 Assistant feedback is configured through the transport-neutral
 `INTENT_BRIDGE_ASSISTANT_*` namespace. LED feedback uses
 `ASSISTANT_LED_ENABLED`, `ASSISTANT_LED_DOMAINS`, `ASSISTANT_LED_COLOR`,

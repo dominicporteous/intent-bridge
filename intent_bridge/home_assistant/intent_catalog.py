@@ -236,7 +236,13 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                 entity_id=entity_id,
                 name=canonical_name,
                 aliases=_clean_aliases(
-                    [registry_name, local_name, *registry_aliases, *attribute_aliases],
+                    [
+                        registry_name,
+                        context.get("device_name"),
+                        local_name,
+                        *registry_aliases,
+                        *attribute_aliases,
+                    ],
                     canonical_name,
                 ),
                 domain=entity_id.split(".", 1)[0],

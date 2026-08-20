@@ -360,6 +360,7 @@ def build_voice_pipeline(
         settings.home_assistant.base_url,
         settings.home_assistant.access_token,
         timeout=settings.home_assistant.websocket.command_timeout_seconds,
+        websocket_provider=lambda: runtime.ha_ws,
     )
     deterministic_engine = DeterministicIntentEngine(
         intent_recognizer,
