@@ -160,6 +160,25 @@ def _clean_aliases(values: list[object], canonical: str) -> tuple[str, ...]:
     return tuple(aliases[key] for key in sorted(aliases))
 
 
+def _registry_entry_is_disabled(entry: object) -> bool:
+    """Read the standard and compact registry markers used by HA WebSocket APIs."""
+
+    if not isinstance(entry, dict):
+        return False
+    for key in ("disabled_by", "db", "disabled"):
+        value = entry.get(key)
+        if isinstance(value, str):
+            if normalize_search_text(value) not in {"", "none", "false", "0"}:
+                return True
+        elif value:
+            return True
+    return False
+
+
+def _state_is_available(state: object) -> bool:
+    return normalize_search_text(state) not in _UNAVAILABLE_STATES
+
+
 def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
     areas: list[CatalogArea] = []
     for area_id, raw_area in sorted(client.areas.items()):
@@ -224,6 +243,8 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
             entity_id,
         )
         registry = client.entity_registry.get(entity_id, {})
+        device_id = registry.get("di") if isinstance(registry, dict) else None
+        device = client.devices.get(device_id, {}) if isinstance(device_id, str) else {}
         registry_aliases = registry.get("aliases") or registry.get("al") or []
         if not isinstance(registry_aliases, list):
             registry_aliases = []
@@ -263,6 +284,10 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                     str(registry["ec"]) if registry.get("ec") not in (None, "") else None
                 ),
                 is_indicator=is_indicator_control(client, entity_id),
+                is_enabled=not (
+                    _registry_entry_is_disabled(registry) or _registry_entry_is_disabled(device)
+                ),
+                is_available=_state_is_available(state.get("state")),
             )
         )
 

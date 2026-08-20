@@ -100,7 +100,7 @@ def _matching_named_entities(match: IntentMatch, catalog: CatalogSnapshot) -> li
     wanted = _normal(name_slot.value)
     catalog_matches = [
         entity
-        for entity in catalog.entities
+        for entity in catalog.selectable_entities
         if wanted
         in {
             _normal(entity.name),
@@ -112,7 +112,9 @@ def _matching_named_entities(match: IntentMatch, catalog: CatalogSnapshot) -> li
         return catalog_matches
     metadata_id = name_slot.metadata.get("entity_id")
     if isinstance(metadata_id, str) and metadata_id:
-        return [entity for entity in catalog.entities if entity.entity_id == metadata_id]
+        return [
+            entity for entity in catalog.selectable_entities if entity.entity_id == metadata_id
+        ]
     return []
 
 
@@ -195,7 +197,7 @@ def _surface_named_entity(
         return None
     candidates = [
         entity
-        for entity in catalog.entities
+        for entity in catalog.selectable_entities
         if _normal(entity.domain) in domains
         and (area_ids is None or entity.area_id in area_ids)
     ]
@@ -341,7 +343,7 @@ def resolve_candidate(
         entities = named_entities
         specificity = 3
     else:
-        entities = list(catalog.entities)
+        entities = list(catalog.selectable_entities)
         specificity = 0
         if has_explicit_name:
             entities = []

@@ -63,6 +63,90 @@ def test_catalog_snapshot_normalizes_state_and_registry_aliases():
     assert resolved.match.slots["entity_id"].value == "light.kitchen_ceiling"
 
 
+def test_catalog_selection_excludes_disabled_and_unavailable_entities():
+    class Client:
+        states = {
+            "light.kitchen_light": {
+                "state": "on",
+                "attributes": {"friendly_name": "Kitchen Light"},
+            },
+            "light.disabled_lamp": {
+                "state": "off",
+                "attributes": {"friendly_name": "Kitchen Lamp"},
+            },
+            "light.disabled_pendant": {
+                "state": "on",
+                "attributes": {"friendly_name": "Kitchen Pendant"},
+            },
+            "light.unavailable_lamp": {
+                "state": "unavailable",
+                "attributes": {"friendly_name": "Unavailable Kitchen Lamp"},
+            },
+            "switch.kitchen_lamp": {
+                "state": "on",
+                "attributes": {"friendly_name": "Kitchen Lamp"},
+            },
+        }
+        entity_registry = {
+            "light.kitchen_light": {"ei": "light.kitchen_light", "ai": "kitchen"},
+            # ``db`` is the compact disabled marker returned by HA's display registry.
+            "light.disabled_lamp": {
+                "ei": "light.disabled_lamp",
+                "ai": "kitchen",
+                "db": "user",
+            },
+            "light.disabled_pendant": {
+                "ei": "light.disabled_pendant",
+                "ai": "kitchen",
+                "di": "disabled-device",
+            },
+            "light.unavailable_lamp": {"ei": "light.unavailable_lamp", "ai": "kitchen"},
+            "switch.kitchen_lamp": {"ei": "switch.kitchen_lamp", "ai": "kitchen"},
+        }
+        devices = {"disabled-device": {"disabled_by": "user"}}
+        areas = {"kitchen": {"area_id": "kitchen", "name": "Kitchen"}}
+        floors = {}
+
+    snapshot = snapshot_from_client(Client())
+    entities = {entity.entity_id: entity for entity in snapshot.entities}
+
+    assert entities["light.disabled_lamp"].is_enabled is False
+    assert entities["light.disabled_pendant"].is_enabled is False
+    assert entities["light.unavailable_lamp"].is_available is False
+    assert {entity.entity_id for entity in snapshot.selectable_entities} == {
+        "light.kitchen_light",
+        "switch.kitchen_lamp",
+    }
+
+    light_match = IntentMatch(
+        intent_name="HassTurnOff",
+        slots={"domain": SlotValue(value="light", text="light")},
+    )
+    named = resolve_candidate(
+        light_match,
+        snapshot,
+        {"area_id": "kitchen"},
+        text="Turn the kitchen lamp off",
+    )
+    generic = resolve_candidate(
+        light_match,
+        snapshot,
+        {"area_id": "kitchen"},
+        text="Turn the kitchen lights off",
+    )
+    disabled_name = resolve_candidate(
+        IntentMatch(
+            intent_name="HassTurnOff",
+            slots={"name": SlotValue(value="Kitchen Pendant", text="Kitchen Pendant")},
+        ),
+        snapshot,
+    )
+
+    assert named.entity_ids == frozenset({"switch.kitchen_lamp"})
+    assert generic.entity_ids == frozenset({"light.kitchen_light"})
+    assert disabled_name.entity_ids == frozenset()
+
+
 @pytest.mark.asyncio
 async def test_intent_executor_posts_official_call_and_extracts_speech():
     seen = {}

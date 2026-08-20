@@ -152,7 +152,11 @@ def _quantity_phrases(quantity: str) -> tuple[str, ...]:
 
 def _requested_quantities(text: str, catalog: CatalogSnapshot) -> tuple[str, ...]:
     quantities = sorted(
-        {measurement.quantity for entity in catalog.entities for measurement in entity.measurements}
+        {
+            measurement.quantity
+            for entity in catalog.selectable_entities
+            for measurement in entity.measurements
+        }
     )
     return tuple(
         quantity
@@ -242,7 +246,7 @@ def _coordinated_target_members(
             return True
         return any(
             _contains_phrase(part, label)
-            for entity in catalog.entities
+            for entity in catalog.selectable_entities
             for label in _labels(entity)
             if set(label.split()) - _GENERIC_IDENTITY_WORDS
         )
@@ -319,7 +323,7 @@ class MeasurementIntentPlanner:
                         )
                     member_candidates = [
                         (entity, measurement)
-                        for entity in catalog.entities
+                        for entity in catalog.selectable_entities
                         if not member_area_ids or entity.area_id in member_area_ids
                         for measurement in entity.measurements
                         if measurement.quantity == quantity
@@ -378,7 +382,7 @@ class MeasurementIntentPlanner:
 
             candidates = [
                 (entity, measurement)
-                for entity in catalog.entities
+                for entity in catalog.selectable_entities
                 if not area_ids or entity.area_id in area_ids
                 for measurement in entity.measurements
                 if measurement.quantity == quantity

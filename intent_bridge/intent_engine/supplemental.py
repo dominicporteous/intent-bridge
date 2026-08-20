@@ -164,7 +164,9 @@ def _mentioned_entities(
     all_ties: bool = False,
 ) -> tuple[CatalogEntity, ...]:
     entities = tuple(
-        entity for entity in catalog.entities if domains is None or entity.domain in domains
+        entity
+        for entity in catalog.selectable_entities
+        if domains is None or entity.domain in domains
     )
     scores = {entity.entity_id: _entity_score(text, entity, catalog) for entity in entities}
     positive = {entity_id: score for entity_id, score in scores.items() if score > 0}
@@ -205,7 +207,7 @@ def _action_entities(
 
     normal = _normal(text)
     text_words = set(normal.split()) - _GENERIC_ENTITY_WORDS
-    candidates = [entity for entity in catalog.entities if entity.domain == domain]
+    candidates = [entity for entity in catalog.selectable_entities if entity.domain == domain]
     generic = _DOMAIN_REFERENCE_WORDS.get(domain, frozenset())
     mentioned_area_ids = {
         area.area_id
@@ -448,7 +450,9 @@ class SupplementalIntentPlanner:
             )
         ):
             return self._plan_automation(text, catalog)
-        list_entities = tuple(entity for entity in catalog.entities if entity.domain == "todo")
+        list_entities = tuple(
+            entity for entity in catalog.selectable_entities if entity.domain == "todo"
+        )
         has_list_context = bool(
             origin_context
             and (origin_context.get("list_items") or origin_context.get("shopping_list_items"))
@@ -489,7 +493,9 @@ class SupplementalIntentPlanner:
         origin_context: Mapping[str, object] | None,
     ) -> IntentPlan:
         normal = _normal(text)
-        list_entities = tuple(entity for entity in catalog.entities if entity.domain == "todo")
+        list_entities = tuple(
+            entity for entity in catalog.selectable_entities if entity.domain == "todo"
+        )
         selected_lists = _mentioned_entities(text, catalog, domains=frozenset({"todo"}))
         selected_list = selected_lists[0] if len(selected_lists) == 1 else None
         list_name = selected_list.name if selected_list else (
@@ -640,7 +646,9 @@ class SupplementalIntentPlanner:
         catalog: CatalogSnapshot,
         origin_context: Mapping[str, object] | None,
     ) -> tuple[CatalogEntity, ...]:
-        timers = tuple(entity for entity in catalog.entities if entity.domain == "timer")
+        timers = tuple(
+            entity for entity in catalog.selectable_entities if entity.domain == "timer"
+        )
         normal = _normal(text)
         explicit = tuple(
             entity
@@ -679,7 +687,11 @@ class SupplementalIntentPlanner:
         data: dict[str, Any] = {"name": timer_name} if timer_name else {}
 
         if re.search(r"\b(all|every)\b.*\btimers?\b", normal):
-            all_ids = tuple(entity.entity_id for entity in catalog.entities if entity.domain == "timer")
+            all_ids = tuple(
+                entity.entity_id
+                for entity in catalog.selectable_entities
+                if entity.domain == "timer"
+            )
             return _step("HassCancelAllTimers", {}, *all_ids)
         if re.search(
             r"\b(how (?:long|much time)|time remaining|status|check|where (?:are we|we re))\b",
@@ -789,7 +801,9 @@ def _automation_trigger(
         value = _first_number(condition)
         climates = _mentioned_entities(condition, catalog, domains=frozenset({"climate"}))
         if not climates:
-            climates = tuple(entity for entity in catalog.entities if entity.domain == "climate")
+            climates = tuple(
+                entity for entity in catalog.selectable_entities if entity.domain == "climate"
+            )
         if value is not None and len(climates) == 1:
             return {
                 "platform": "numeric_state",
@@ -861,7 +875,9 @@ def _automation_actions(
         temperature = adjustment
         climates = _action_entities(text, catalog, "climate")
         if not climates:
-            climates = tuple(entity for entity in catalog.entities if entity.domain == "climate")
+            climates = tuple(
+                entity for entity in catalog.selectable_entities if entity.domain == "climate"
+            )
         if temperature is not None and len(climates) == 1:
             add("climate.set_temperature", entity=climates[0], temperature=temperature)
 
@@ -899,7 +915,11 @@ def _automation_actions(
     def position(item: Mapping[str, Any]) -> int:
         if entity_id := item.get("entity_id"):
             entity = next(
-                (candidate for candidate in catalog.entities if candidate.entity_id == entity_id),
+                (
+                    candidate
+                    for candidate in catalog.selectable_entities
+                    if candidate.entity_id == entity_id
+                ),
                 None,
             )
             if entity is not None:
@@ -1103,7 +1123,7 @@ def _relative_plan(
     if not target_ids:
         return None
     entities = tuple(
-        entity for entity in catalog.entities if entity.entity_id in target_ids
+        entity for entity in catalog.selectable_entities if entity.entity_id in target_ids
     )
     domains = {entity.domain for entity in entities}
     data = dict(state.referent_data)
@@ -1216,7 +1236,9 @@ def _referent_qualifier_plan(
     if len(state.referent_entity_ids) < 2 or not state.referent_intent_name:
         return None
     candidates = tuple(
-        entity for entity in catalog.entities if entity.entity_id in state.referent_entity_ids
+        entity
+        for entity in catalog.selectable_entities
+        if entity.entity_id in state.referent_entity_ids
     )
     scores = [(entity, _entity_score(text, entity, catalog)) for entity in candidates]
     if not scores:
@@ -1333,7 +1355,9 @@ def _resolve_pending(
     pending: PendingClarification,
 ) -> IntentPlan | None:
     candidates = tuple(
-        entity for entity in catalog.entities if entity.entity_id in pending.candidate_entity_ids
+        entity
+        for entity in catalog.selectable_entities
+        if entity.entity_id in pending.candidate_entity_ids
     )
     # A broad property query can establish a group referent before the value
     # is supplied. Resolve only bounded setter wording against that group;

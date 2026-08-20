@@ -1169,7 +1169,7 @@ def _named_entities(
 ) -> tuple[tuple[CatalogEntity, bool], ...]:
     area_ids = {area.area_id for area in areas}
     candidates: list[tuple[CatalogEntity, tuple[str, ...]]] = []
-    for entity in catalog.entities:
+    for entity in catalog.selectable_entities:
         if entity.domain.casefold() in ignored_entity_domains:
             continue
         if not _domain_compatible(entity, domain):
@@ -1327,7 +1327,7 @@ def _context_entity_ids(
 ) -> tuple[str, ...]:
     if not context:
         return ()
-    known = {entity.entity_id for entity in catalog.entities}
+    known = {entity.entity_id for entity in catalog.selectable_entities}
     for key in ("target_entity_ids", "entity_ids", "last_entity_ids"):
         value = context.get(key)
         values = (value,) if isinstance(value, str) else value
@@ -1353,7 +1353,7 @@ def _contextual_domain(
     entity_ids = tuple(
         dict.fromkeys(entity_id for target in previous_targets for entity_id in target.entity_ids)
     ) or _context_entity_ids(context, catalog)
-    by_id = {entity.entity_id: entity for entity in catalog.entities}
+    by_id = {entity.entity_id: entity for entity in catalog.selectable_entities}
     domains = {by_id[entity_id].domain for entity_id in entity_ids if entity_id in by_id}
     return next(iter(domains)) if len(domains) == 1 else None
 
@@ -1373,7 +1373,7 @@ def _named_domain_hint(
         area_ids = {area.area_id for area in _mentioned_areas(text, catalog)}
         climates = tuple(
             entity
-            for entity in catalog.entities
+            for entity in catalog.selectable_entities
             if entity.domain == "climate" and entity.area_id in area_ids
         )
         if len(climates) == 1:
@@ -1431,7 +1431,7 @@ def _elliptical_query(
             area_ids.update(area.area_id for area in catalog.areas if area.floor_id in floor_ids)
         compatible = tuple(
             entity
-            for entity in catalog.entities
+            for entity in catalog.selectable_entities
             if entity.domain.casefold() not in ignored_entity_domains
             and _domain_compatible(entity, domain)
             and entity.area_id in area_ids
@@ -1494,7 +1494,7 @@ def _default_area_media_target(
     area_name = _normal(area.name)
     players = tuple(
         entity
-        for entity in catalog.entities
+        for entity in catalog.selectable_entities
         if entity.domain == "media_player" and entity.area_id == area.area_id
     )
     exact_area_matches = tuple(
@@ -1526,7 +1526,9 @@ def _group_target(
     floor: CatalogFloor | None = None,
     cover_subtype: str | None = None,
 ) -> _Target | None:
-    entities = [entity for entity in catalog.entities if _domain_compatible(entity, domain)]
+    entities = [
+        entity for entity in catalog.selectable_entities if _domain_compatible(entity, domain)
+    ]
     if domain == "cover":
         entities = [entity for entity in entities if _matches_cover_subtype(entity, cover_subtype)]
     slots: dict[str, Any] = {"domain": domain}
@@ -1761,7 +1763,7 @@ def _resolve_elliptical_coordinated_member(
     if not candidates and _is_generic_coordinated_member(text, domain):
         candidates = tuple(
             entity
-            for entity in catalog.entities
+            for entity in catalog.selectable_entities
             if entity.domain.casefold() not in ignored_entity_domains
             and _domain_compatible(entity, domain)
         )
@@ -1770,7 +1772,7 @@ def _resolve_elliptical_coordinated_member(
 
     member_words = set(_normal(text).split())
     sibling_words = set(_normal(full_text).split()) - member_words
-    by_id = {entity.entity_id: entity for entity in catalog.entities}
+    by_id = {entity.entity_id: entity for entity in catalog.selectable_entities}
     resolved_entities = tuple(
         by_id[entity_id]
         for target in resolved_targets
@@ -1843,7 +1845,9 @@ def _resolve_targets(
     # asking the user to choose among weather providers is rarely useful.
     if operation.intent_name == "HassGetWeather":
         weather_ids = tuple(
-            entity.entity_id for entity in catalog.entities if entity.domain == "weather"
+            entity.entity_id
+            for entity in catalog.selectable_entities
+            if entity.domain == "weather"
         )
         return (_Target({}, weather_ids),)
 
@@ -1948,7 +1952,7 @@ def _resolve_targets(
             return previous_targets
         referenced = _context_entity_ids(context, catalog)
         if referenced:
-            by_id = {entity.entity_id: entity for entity in catalog.entities}
+            by_id = {entity.entity_id: entity for entity in catalog.selectable_entities}
             targets = tuple(_target_for_entity(by_id[entity_id]) for entity_id in referenced)
             LOGGER.info(
                 "Pronoun reference resolved to context entities: %s",
@@ -2041,7 +2045,7 @@ def _resolve_targets(
         return ()
     compatible = tuple(
         entity
-        for entity in catalog.entities
+        for entity in catalog.selectable_entities
         if _domain_compatible(entity, domain)
         and (domain != "cover" or _matches_cover_subtype(entity, cover_subtype))
     )

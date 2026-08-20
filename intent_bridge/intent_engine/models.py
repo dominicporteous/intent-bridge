@@ -64,6 +64,14 @@ class CatalogEntity:
     measurements: tuple[CatalogMeasurement, ...] = ()
     entity_category: str | None = None
     is_indicator: bool = False
+    is_enabled: bool = True
+    is_available: bool = True
+
+    @property
+    def is_selectable(self) -> bool:
+        """Whether this entity is safe to offer as an intent target."""
+
+        return self.is_enabled and self.is_available
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,6 +79,12 @@ class CatalogSnapshot:
     entities: tuple[CatalogEntity, ...] = ()
     areas: tuple[CatalogArea, ...] = ()
     floors: tuple[CatalogFloor, ...] = ()
+
+    @property
+    def selectable_entities(self) -> tuple[CatalogEntity, ...]:
+        """Live targets that are enabled and have a usable HA state."""
+
+        return tuple(entity for entity in self.entities if entity.is_selectable)
 
 
 @dataclass(frozen=True, slots=True)

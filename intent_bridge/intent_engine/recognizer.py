@@ -39,7 +39,7 @@ def _area_context(catalog: CatalogSnapshot, area_id: str | None) -> dict[str, An
 
 def _runtime_slot_lists(catalog: CatalogSnapshot) -> dict[str, TextSlotList]:
     name_values: list[tuple[str, Any, dict[str, Any], dict[str, Any]]] = []
-    for entity in catalog.entities:
+    for entity in catalog.selectable_entities:
         context: dict[str, Any] = {"domain": entity.domain}
         area_context = _area_context(catalog, entity.area_id)
         if area_context is not None:
