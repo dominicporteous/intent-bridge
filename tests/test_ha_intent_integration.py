@@ -15,6 +15,20 @@ from intent_bridge.intent_engine.resolution import resolve_candidate
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.execution import _reset_voice_tool_run_state
 
+_AUDITED_AREA_INDEPENDENT_CONVERSATION_INTENTS = frozenset(
+    {
+        "HassBroadcast",
+        "HassGetCurrentDate",
+        "HassGetCurrentTime",
+        "HassGetWeather",
+        "HassNevermind",
+        "HassRespond",
+        "HassShoppingListAddItem",
+        "HassShoppingListCompleteItem",
+        "HassShoppingListLastItems",
+    }
+)
+
 
 def test_catalog_snapshot_normalizes_state_and_registry_aliases():
     class Client:
@@ -177,6 +191,12 @@ async def test_intent_executor_posts_official_call_and_extracts_speech():
         },
     }
     assert result.speech == "Turned off the kitchen lights"
+
+
+def test_area_independent_conversation_intents_match_the_audited_core_allow_list():
+    assert executor_module._AREA_INDEPENDENT_CONVERSATION_INTENTS == (
+        _AUDITED_AREA_INDEPENDENT_CONVERSATION_INTENTS
+    )
 
 
 @pytest.mark.asyncio
@@ -364,6 +384,113 @@ async def test_intent_executor_uses_persistent_websocket_before_http():
             4.5,
         )
     ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("intent_name", "data", "text"),
+    [
+        ("HassBroadcast", {"message": "Dinner is ready"}, "Broadcast that dinner is ready"),
+        ("HassGetCurrentDate", {}, "What is the date?"),
+        ("HassGetCurrentTime", {}, "What time is it?"),
+        ("HassGetWeather", {}, "What is the weather?"),
+        ("HassNevermind", {}, "Never mind"),
+        ("HassRespond", {"response": "You're welcome"}, "Thank you"),
+        ("HassShoppingListAddItem", {"item": "Milk"}, "Add milk to the shopping list"),
+        (
+            "HassShoppingListCompleteItem",
+            {"item": "Milk"},
+            "Mark milk as complete on the shopping list",
+        ),
+        ("HassShoppingListLastItems", {}, "What is on the shopping list?"),
+    ],
+)
+async def test_intent_executor_uses_conversation_websocket_for_area_independent_intents(
+    intent_name, data, text
+):
+    seen = []
+
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, text, *, language, device_id, timeout):
+            seen.append((text, language, device_id, timeout))
+            return {
+                "success": True,
+                "result": {
+                    "response": {
+                        "response_type": "action_done",
+                        "speech": {"plain": {"speech": "Native Home Assistant response."}},
+                        "data": {"success": [], "failed": []},
+                    }
+                },
+            }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        pytest.fail(f"HTTP should not be used for an area-independent intent: {request.url}")
+
+    _reset_voice_tool_run_state(
+        text,
+        {"area_id": "bedroom", "area_name": "Bedroom"},
+        allow_conversation_websocket=True,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            timeout=4.5,
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(OhfIntentCall(intent_name, data))
+
+    assert result.speech == "Native Home Assistant response."
+    assert seen == [(text, settings.deterministic.language, None, 4.5)]
+
+
+@pytest.mark.asyncio
+async def test_intent_executor_keeps_area_sensitive_intents_on_http_without_device_id():
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, *_args, **_kwargs):
+            pytest.fail("Area-sensitive commands must preserve bridge target resolution")
+
+    seen = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return httpx.Response(
+            200,
+            json={"speech": {"plain": {"speech": "Turned off the bedroom lights."}}},
+        )
+
+    _reset_voice_tool_run_state(
+        "Turn off the lights",
+        {"area_id": "bedroom", "area_name": "Bedroom"},
+        allow_conversation_websocket=True,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(
+            OhfIntentCall("HassTurnOff", {"area": "Bedroom", "domain": "light"})
+        )
+
+    assert result.speech == "Turned off the bedroom lights."
+    assert seen == ["/api/intent/handle"]
 
 
 @pytest.mark.asyncio

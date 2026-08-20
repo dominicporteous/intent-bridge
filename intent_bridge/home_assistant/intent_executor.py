@@ -46,6 +46,32 @@ _SPEECH_SLOT_INTENTS = frozenset(
 )
 _UNKNOWN_SPEECH_SLOTS_POLICY = "state_summary_then_llm_fallback"
 
+# These Core intents do not use an inferred source area to resolve their
+# result. ``HassBroadcast`` additionally observes the invoking *device*, but
+# this allow-list is considered only when no device ID exists, so its
+# behaviour is the same as the named HTTP route. When a voice satellite
+# supplies only an inferred area, these requests can safely use
+# ``conversation/process`` and receive Home Assistant's native response
+# template.
+#
+# Keep this an explicit allow-list. In particular, timer and to-do intents may
+# be materialised from bridge conversation state, while explicitly-targeted
+# entity, area, floor, climate, and media intents can resolve differently when
+# replayed as raw text.
+_AREA_INDEPENDENT_CONVERSATION_INTENTS = frozenset(
+    {
+        "HassBroadcast",
+        "HassGetCurrentDate",
+        "HassGetCurrentTime",
+        "HassGetWeather",
+        "HassNevermind",
+        "HassRespond",
+        "HassShoppingListAddItem",
+        "HassShoppingListCompleteItem",
+        "HassShoppingListLastItems",
+    }
+)
+
 
 def _speech_slots_from_response(body: Mapping[str, Any]) -> Mapping[str, Any] | None:
     """Return structured response-template values, if Home Assistant supplied them."""
@@ -570,10 +596,24 @@ class HomeAssistantIntentExecutor:
 
         # An area inferred by this bridge cannot be represented by HA's
         # conversation WebSocket unless the originating device is also known.
-        # Falling back preserves the explicit area on the resolved intent.
+        # Preserve that explicit resolution for target-sensitive commands, but
+        # allow targetless time/date requests through: their result is wholly
+        # independent of the source area.
         device_id = state.origin_device_id
-        if (state.origin_area_id or state.origin_area_name) and not device_id:
+        inferred_area = state.origin_area_id or state.origin_area_name
+        if (
+            inferred_area
+            and not device_id
+            and call.intent_name not in _AREA_INDEPENDENT_CONVERSATION_INTENTS
+        ):
             return None
+        if inferred_area and not device_id:
+            log.info(
+                "Using HA conversation WebSocket for area-independent intent "
+                "intent=%s inferred_area=%s",
+                call.intent_name,
+                inferred_area,
+            )
 
         ha_ws = self._websocket_provider()
         ready = getattr(ha_ws, "ready", None)
