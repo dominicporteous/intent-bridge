@@ -113,7 +113,7 @@ def test_sound_files_are_served_and_unknown_names_are_hidden():
     assert client.get("/assistant/sounds/other.mp3").status_code == 404
 
 
-def test_enabled_sounds_replace_default_confirmation_with_success_sound(monkeypatch):
+def test_enabled_sounds_preserve_default_confirmation_without_success_sound(monkeypatch):
     class Pipeline:
         async def handle(self, _request):
             return VoiceResult(speech="Done.", route="test")
@@ -132,8 +132,37 @@ def test_enabled_sounds_replace_default_confirmation_with_success_sound(monkeypa
     )
 
     assert response.status_code == 200
-    assert response.json()["choices"][0]["message"]["content"] == ""
+    assert response.json()["choices"][0]["message"]["content"] == "Done."
     begin.assert_awaited_once_with(None, led=False, sounds=True)
+    complete.assert_awaited_once_with(
+        handle,
+        success=True,
+        play_terminal_sound=False,
+    )
+
+
+def test_enabled_sounds_play_success_for_blank_response(monkeypatch):
+    class Pipeline:
+        async def handle(self, _request):
+            return VoiceResult(speech="   ", route="test")
+
+    handle = object()
+    complete = AsyncMock()
+    monkeypatch.setattr(settings.assistant, "sounds_enabled", True)
+    monkeypatch.setattr(
+        application.assistant_feedback,
+        "begin",
+        AsyncMock(return_value=handle),
+    )
+    monkeypatch.setattr(application.assistant_feedback, "complete", complete)
+
+    response = TestClient(application.create_app(Pipeline())).post(
+        "/v1/chat/completions",
+        json={"messages": [{"role": "user", "content": "turn it on"}]},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["choices"][0]["message"]["content"] == ""
     complete.assert_awaited_once_with(
         handle,
         success=True,

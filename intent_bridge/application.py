@@ -447,11 +447,6 @@ def extract_user_message(body: dict) -> str:
     return ""
 
 
-def _is_default_action_response(speech: str) -> bool:
-    """Whether a response may be replaced by the configured success sound."""
-    return speech.strip() == settings.api.action_confirmation.strip()
-
-
 @api_router.post("/v1/chat/completions")
 async def chat_completions(request: Request):
     body = await request.json()
@@ -506,7 +501,7 @@ async def chat_completions(request: Request):
     use_success_sound = (
         settings.assistant.sounds_enabled
         and not is_error_response
-        and _is_default_action_response(result.speech)
+        and not result.speech.strip()
     )
     use_error_sound = settings.assistant.sounds_enabled and is_error_response
     use_terminal_sound = use_success_sound or use_error_sound
