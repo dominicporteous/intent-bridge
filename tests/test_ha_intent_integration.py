@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -176,6 +177,139 @@ async def test_intent_executor_posts_official_call_and_extracts_speech():
         },
     }
     assert result.speech == "Turned off the kitchen lights"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("call", "speech_slots", "expected"),
+    [
+        (
+            OhfIntentCall("HassGetCurrentTime", {}),
+            {"time": "14:01:22.158666"},
+            "The time is 2:01 PM.",
+        ),
+        (
+            OhfIntentCall("HassGetCurrentDate", {}),
+            {"date": "2026-08-20"},
+            "Today is Thursday, 20 August 2026.",
+        ),
+        (
+            OhfIntentCall("HassCancelAllTimers", {}),
+            {"canceled": 2, "area": "Kitchen"},
+            "Cancelled 2 timers in Kitchen.",
+        ),
+        (
+            OhfIntentCall("HassTimerStatus", {}),
+            {
+                "timers": [
+                    {
+                        "name": "Pasta",
+                        "is_active": True,
+                        "rounded_hours_left": 0,
+                        "rounded_minutes_left": 5,
+                        "rounded_seconds_left": 0,
+                    }
+                ]
+            },
+            "Pasta has 5 minutes remaining.",
+        ),
+        (
+            OhfIntentCall("HassShoppingListCompleteItem", {"item": "milk"}),
+            {"completed_items": [{"name": "Milk"}]},
+            "Completed Milk on the shopping list.",
+        ),
+        (
+            OhfIntentCall("HassMediaSearchAndPlay", {"search_query": "Space Oddity"}),
+            {"media": {"title": "Space Oddity"}},
+            "Playing Space Oddity.",
+        ),
+    ],
+)
+async def test_intent_executor_renders_known_speech_slots_without_llm(
+    monkeypatch, call, speech_slots, expected
+):
+    def handle(request: httpx.Request) -> httpx.Response:
+        assert request.url.path.endswith("/api/intent/handle")
+        return httpx.Response(
+            200,
+            json={
+                "speech": {},
+                "response_type": "action_done",
+                "speech_slots": speech_slots,
+                "data": {"targets": [], "success": [], "failed": []},
+            },
+        )
+
+    async def no_llm(*_args, **_kwargs):
+        pytest.fail("Known Home Assistant speech_slots must not invoke an LLM")
+
+    monkeypatch.setattr(executor_module, "Runner", SimpleNamespace(run=no_llm))
+    monkeypatch.setattr(runtime, "fallback_agent", object())
+    monkeypatch.setattr(runtime, "advanced_agent", None)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+        result = await executor.execute(call)
+
+    assert result.speech == expected
+
+
+@pytest.mark.asyncio
+async def test_intent_executor_recovers_deterministically_from_malformed_known_speech_slots(
+    monkeypatch, caplog
+):
+    def handle(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "speech": {},
+                "response_type": "action_done",
+                "speech_slots": {"time": "not-a-time"},
+                "data": {"targets": [], "success": [], "failed": []},
+            },
+        )
+
+    async def no_llm(*_args, **_kwargs):
+        pytest.fail("Malformed built-in speech_slots must use deterministic recovery")
+
+    monkeypatch.setattr(executor_module, "Runner", SimpleNamespace(run=no_llm))
+    monkeypatch.setattr(runtime, "fallback_agent", object())
+    monkeypatch.setattr(runtime, "advanced_agent", None)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+        result = await executor.execute(OhfIntentCall("HassGetCurrentTime", {}))
+
+    assert result.speech == "I couldn't read the current time."
+    assert "speech_slots rendered with deterministic recovery" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_intent_executor_logs_unknown_speech_slot_policy_before_llm_fallback(
+    monkeypatch, caplog
+):
+    def handle(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "speech": {},
+                "response_type": "action_done",
+                "speech_slots": {"custom_result": "value"},
+                "data": {"targets": [], "success": [], "failed": []},
+            },
+        )
+
+    async def llm_fallback(_agent, request: str):
+        assert "CustomIntent" in request
+        return SimpleNamespace(final_output="Custom response")
+
+    monkeypatch.setattr(executor_module, "Runner", SimpleNamespace(run=llm_fallback))
+    monkeypatch.setattr(runtime, "fallback_agent", object())
+    monkeypatch.setattr(runtime, "advanced_agent", None)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+        result = await executor.execute(OhfIntentCall("CustomIntent", {}))
+
+    assert result.speech == "Custom response"
+    assert "policy=state_summary_then_llm_fallback" in caplog.text
 
 
 @pytest.mark.asyncio

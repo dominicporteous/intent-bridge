@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Callable, Mapping
+from datetime import date, time
 from typing import Any
 
 import httpx
@@ -27,6 +28,229 @@ _EXACT_TARGET_SERVICE_BY_INTENT = {
     "HassVacuumStart": "start",
     "HassVacuumReturnToBase": "return_to_base",
 }
+
+# ``/api/intent/handle`` returns these values for the caller to render.  The
+# Home Assistant conversation agent normally applies the matching response
+# template, but that does not happen on the named-intent endpoint used here.
+# Keep the set deliberately narrow and aligned with the upstream Core
+# handlers. Unknown custom intents retain the existing recovery path below.
+_SPEECH_SLOT_INTENTS = frozenset(
+    {
+        "HassGetCurrentDate",
+        "HassGetCurrentTime",
+        "HassCancelAllTimers",
+        "HassTimerStatus",
+        "HassMediaSearchAndPlay",
+        "HassShoppingListCompleteItem",
+    }
+)
+_UNKNOWN_SPEECH_SLOTS_POLICY = "state_summary_then_llm_fallback"
+
+
+def _speech_slots_from_response(body: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    """Return structured response-template values, if Home Assistant supplied them."""
+
+    speech_slots = body.get("speech_slots")
+    return speech_slots if isinstance(speech_slots, Mapping) else None
+
+
+def _spoken_text(value: object, *, limit: int = 96) -> str:
+    """Normalise a slot value before including it in a spoken response."""
+
+    if not isinstance(value, str):
+        return ""
+    text = " ".join(value.split())
+    return text[:limit].rstrip()
+
+
+def _whole_number(value: object) -> int | None:
+    """Parse a non-negative integer without accepting booleans or fractions."""
+
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value >= 0 else None
+    if isinstance(value, str) and value.strip().isdigit():
+        return int(value.strip())
+    return None
+
+
+def _join_spoken_items(items: list[str]) -> str:
+    """Join a short list naturally and keep TTS responses bounded."""
+
+    if len(items) == 1:
+        return items[0]
+    if len(items) == 2:
+        return f"{items[0]} and {items[1]}"
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
+
+
+def _format_duration(hours: int, minutes: int, seconds: int) -> str:
+    parts: list[str] = []
+    for value, unit in ((hours, "hour"), (minutes, "minute"), (seconds, "second")):
+        if value:
+            parts.append(f"{value} {unit}{'' if value == 1 else 's'}")
+    return _join_spoken_items(parts) if parts else "0 seconds"
+
+
+def _timer_duration(status: Mapping[str, Any]) -> str | None:
+    """Format the lower-precision timer feedback supplied by Home Assistant."""
+
+    rounded = tuple(
+        _whole_number(status.get(key))
+        for key in (
+            "rounded_hours_left",
+            "rounded_minutes_left",
+            "rounded_seconds_left",
+        )
+    )
+    if all(value is not None for value in rounded):
+        hours, minutes, seconds = rounded
+        assert hours is not None and minutes is not None and seconds is not None
+        return _format_duration(hours, minutes, seconds)
+
+    total_seconds = _whole_number(status.get("total_seconds_left"))
+    if total_seconds is None:
+        return None
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return _format_duration(hours, minutes, seconds)
+
+
+def _render_timer_status(speech_slots: Mapping[str, Any]) -> tuple[str, str | None]:
+    statuses = speech_slots.get("timers")
+    if not isinstance(statuses, list):
+        return "I couldn't read the timer status.", "timers was not a list"
+    if not statuses:
+        return "There are no active timers.", None
+
+    summaries: list[str] = []
+    malformed = False
+    for status in statuses[:3]:
+        if not isinstance(status, Mapping):
+            malformed = True
+            continue
+        duration = _timer_duration(status)
+        if duration is None:
+            malformed = True
+            continue
+        name = _spoken_text(status.get("name"))
+        subject = name or "The timer"
+        if duration == "0 seconds":
+            summaries.append(f"{subject} has finished.")
+        elif status.get("is_active") is False:
+            summaries.append(f"{subject} is paused with {duration} remaining.")
+        else:
+            summaries.append(f"{subject} has {duration} remaining.")
+
+    if not summaries:
+        return "I couldn't read the timer status.", "timer entries were malformed"
+    if len(statuses) > 3:
+        summaries.append(f"and {len(statuses) - 3} more")
+    reason = "some timer entries were malformed" if malformed else None
+    return " ".join(summaries), reason
+
+
+def _render_shopping_completion(speech_slots: Mapping[str, Any]) -> tuple[str, str | None]:
+    completed_items = speech_slots.get("completed_items")
+    if not isinstance(completed_items, list):
+        return "I couldn't read the shopping-list update.", "completed_items was not a list"
+    if not completed_items:
+        return "I couldn't find that item on the shopping list.", None
+
+    item_names: list[str] = []
+    for item in completed_items[:3]:
+        if isinstance(item, Mapping):
+            name = _spoken_text(item.get("name"))
+        else:
+            name = _spoken_text(item)
+        if name:
+            item_names.append(name)
+    if not item_names:
+        return "I completed the shopping-list item.", "completed item names were missing"
+    if len(completed_items) > 3:
+        item_names.append(f"{len(completed_items) - 3} more")
+    return f"Completed {_join_spoken_items(item_names)} on the shopping list.", None
+
+
+def _render_speech_slots(
+    intent_name: str,
+    speech_slots: Mapping[str, Any],
+    call_data: Mapping[str, Any],
+) -> tuple[str | None, str | None]:
+    """Render the Core named-intent slot responses without involving an LLM.
+
+    Returns ``(speech, reason)``. ``speech`` is ``None`` only when the intent
+    has no registered deterministic renderer. A non-empty reason records a
+    deterministic recovery from malformed data.
+    """
+
+    if intent_name not in _SPEECH_SLOT_INTENTS:
+        return None, None
+
+    if intent_name == "HassGetCurrentTime":
+        value = _spoken_text(speech_slots.get("time"))
+        try:
+            current_time = time.fromisoformat(value)
+        except ValueError:
+            return "I couldn't read the current time.", "time was not ISO formatted"
+        hour = current_time.hour % 12 or 12
+        period = "AM" if current_time.hour < 12 else "PM"
+        return f"The time is {hour}:{current_time.minute:02d} {period}.", None
+
+    if intent_name == "HassGetCurrentDate":
+        value = _spoken_text(speech_slots.get("date"))
+        try:
+            current_date = date.fromisoformat(value)
+        except ValueError:
+            return "I couldn't read the current date.", "date was not ISO formatted"
+        weekday = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+        month = (
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        )
+        return (
+            f"Today is {weekday[current_date.weekday()]}, {current_date.day} "
+            f"{month[current_date.month - 1]} {current_date.year}.",
+            None,
+        )
+
+    if intent_name == "HassCancelAllTimers":
+        canceled = _whole_number(speech_slots.get("canceled"))
+        if canceled is None:
+            return "I couldn't read how many timers were cancelled.", "canceled was not an integer"
+        if canceled == 0:
+            return "There were no timers to cancel.", None
+        area = _spoken_text(speech_slots.get("area"), limit=64)
+        suffix = f" in {area}" if area else ""
+        return f"Cancelled {canceled} timer{'' if canceled == 1 else 's'}{suffix}.", None
+
+    if intent_name == "HassTimerStatus":
+        return _render_timer_status(speech_slots)
+
+    if intent_name == "HassShoppingListCompleteItem":
+        return _render_shopping_completion(speech_slots)
+
+    # HassMediaSearchAndPlay returns a BrowseMedia dictionary. The title is
+    # normally always present, but preserve an action confirmation if a media
+    # integration provides an incomplete result.
+    media = speech_slots.get("media")
+    if not isinstance(media, Mapping):
+        return "Playing the selected media.", "media was not a mapping"
+    title = _spoken_text(media.get("title")) or _spoken_text(call_data.get("search_query"))
+    if not title:
+        return "Playing the selected media.", "media title was missing"
+    return f"Playing {title}.", None
 
 
 def _contains_internal_match_failure(speech: str) -> bool:
@@ -485,6 +709,32 @@ class HomeAssistantIntentExecutor:
         body = _intent_response_body(body)
 
         speech = _speech_from_response(body)
+        speech_slots = _speech_slots_from_response(body) if not speech else None
+        unrendered_speech_slots = False
+        if speech_slots:
+            rendered_speech, recovery_reason = _render_speech_slots(
+                call.intent_name,
+                speech_slots,
+                call.data,
+            )
+            if rendered_speech:
+                speech = rendered_speech
+                if recovery_reason:
+                    log.warning(
+                        "Home Assistant speech_slots rendered with deterministic recovery "
+                        "intent=%s keys=%s reason=%s",
+                        call.intent_name,
+                        sorted(str(key) for key in speech_slots),
+                        recovery_reason,
+                    )
+                else:
+                    log.info(
+                        "Home Assistant speech_slots rendered deterministically intent=%s keys=%s",
+                        call.intent_name,
+                        sorted(str(key) for key in speech_slots),
+                    )
+            else:
+                unrendered_speech_slots = True
         action_succeeded = False
         if speech and _contains_internal_match_failure(speech):
             entity_id = call.data.get("entity_id")
@@ -645,6 +895,14 @@ class HomeAssistantIntentExecutor:
             if not speech and not cached_entity_found:
                 speech = await _summary_from_rest()
             if not speech:
+                if unrendered_speech_slots:
+                    log.warning(
+                        "Home Assistant speech_slots have no deterministic renderer "
+                        "intent=%s keys=%s policy=%s",
+                        call.intent_name,
+                        sorted(str(key) for key in speech_slots or {}),
+                        _UNKNOWN_SPEECH_SLOTS_POLICY,
+                    )
                 speech = await _delegate_to_voice_agents()
 
             if not speech:
