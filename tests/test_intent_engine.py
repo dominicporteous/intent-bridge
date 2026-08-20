@@ -406,6 +406,30 @@ async def test_bare_tv_target_uses_the_named_entity_fallback():
 
 
 @pytest.mark.asyncio
+
+async def test_target_evidence_rejects_labels_without_content_words():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("sensor.today", "Today", (), "sensor"),
+            CatalogEntity("binary_sensor.in", "In", (), "binary_sensor"),
+            CatalogEntity("sensor.this_morning", "This Morning", (), "sensor"),
+        )
+    )
+
+    for text in ("today", "in", "this morning"):
+        evidence = surface_target_evidence(
+            text,
+            catalog,
+            intent_name="HassGetState",
+        )
+
+        assert evidence.entities == ()
+        assert evidence.source == "none"
+
+
+@pytest.mark.asyncio
+
+
 async def test_missing_origin_for_context_relative_target_returns_clarification():
     executor = RecordingExecutor()
     engine = DeterministicIntentEngine(

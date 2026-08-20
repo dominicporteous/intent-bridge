@@ -890,6 +890,43 @@ def test_elliptical_query_without_unique_topology_evidence_does_not_execute(cata
     assert plan.response is not None
 
 
+
+@pytest.fixture
+def incidental_label_catalog() -> CatalogSnapshot:
+    """Catalog labels whose individual fragments are not valid targets."""
+    return CatalogSnapshot(
+        entities=(
+            _entity("sensor.electricity_cost_today", "Electricity Cost Today", "utility"),
+            _entity("sensor.electricity_usage_today", "Electricity Usage Today", "utility"),
+            _entity("sensor.gas_cost_today", "Gas Cost Today", "utility"),
+            _entity("binary_sensor.dom_in_game", "Dom In Game", "utility"),
+            _entity("sensor.dom_in_party", "Dom In Party", "utility"),
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    (
+        "give me the headlines for today",
+        "give me the championship result in 2002",
+    ),
+)
+def test_low_information_label_fragments_cannot_establish_a_target(
+    incidental_label_catalog, text
+):
+    with pytest.raises(RouteDeclined, match="No admissible deterministic target evidence"):
+        NaturalLanguageIntentPlanner().plan(text, incidental_label_catalog)
+
+
+def test_complete_sensor_label_remains_admissible_target_evidence(incidental_label_catalog):
+    step = NaturalLanguageIntentPlanner().plan(
+        "what is the electricity cost today", incidental_label_catalog
+    ).steps[0]
+
+    assert step.operation == "HassGetState"
+    assert step.entity_ids == ("sensor.electricity_cost_today",)
+
 def test_ambiguous_or_invalid_requests_never_widen_scope(catalog):
     planner = NaturalLanguageIntentPlanner()
 

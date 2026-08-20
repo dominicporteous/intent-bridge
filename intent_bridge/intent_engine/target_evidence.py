@@ -13,6 +13,31 @@ _LABEL_TARGET_INTENTS = frozenset({"HassGetState", "HassTurnOn", "HassTurnOff"})
 _POWER_INTENTS = frozenset({"HassTurnOn", "HassTurnOff"})
 _NON_PRIMARY_ENTITY_CATEGORIES = frozenset({"config", "diagnostic"})
 
+# A catalog label is not automatically useful evidence that the speaker named a
+# device. Entity names frequently contain grammatical glue (``in``), deictic
+# words (``there``), and date/status suffixes (``today``). Those words carry
+# meaning in a sentence, but cannot independently identify a Home Assistant
+# target. A label must contain a content-bearing word: ``electricity cost
+# today`` is useful evidence, while ``today`` or ``this morning`` is not.
+_LOW_INFORMATION_SINGLE_WORD_LABELS = frozenset(
+    {
+        # Articles, pronouns, conjunctions, auxiliaries, and prepositions.
+        "a", "an", "and", "are", "as", "at", "be", "been", "being", "but", "by",
+        "did", "do", "does", "for", "from", "had", "has", "have", "he", "her", "hers",
+        "him", "his", "i", "if", "in", "into", "is", "it", "its", "me", "my", "nor",
+        "of", "on", "or", "our", "ours", "she", "so", "than", "that", "the", "their",
+        "theirs", "them", "then", "there", "these", "they", "this", "those", "to", "too",
+        "up", "us", "was", "we", "were", "what", "when", "where", "which", "who", "why",
+        "will", "with", "would", "you", "your", "yours",
+        # Relative and calendar time vocabulary. These are valid parts of a
+        # complete label, but not a target by themselves.
+        "afternoon", "april", "august", "december", "evening", "february", "friday", "january",
+        "july", "june", "monday", "morning", "march", "may", "midnight", "noon", "november",
+        "now", "october", "saturday", "september", "sunday", "thursday", "today", "tomorrow",
+        "tonight", "tuesday", "wednesday", "yesterday",
+    }
+)
+
 
 def _normal(value: object) -> str:
     return normalize_search_text(value)
@@ -20,6 +45,22 @@ def _normal(value: object) -> str:
 
 def _contains_phrase(text: str, phrase: str) -> bool:
     return bool(phrase and re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text))
+
+def is_admissible_target_label(label: str | None) -> bool:
+    """Return whether a catalog label can independently identify a target.
+
+    This is an admission check on catalog evidence, not an utterance classifier.
+    It consequently applies consistently to grammar resolution and the
+    natural-language planner without reserving any user-request phrases.
+    """
+    normalized = _normal(label)
+    if not normalized:
+        return False
+    words = normalized.split()
+    return any(
+        not word.isdecimal() and word not in _LOW_INFORMATION_SINGLE_WORD_LABELS
+        for word in words
+    )
 
 
 def _area_words(area: CatalogArea) -> frozenset[str]:
@@ -163,6 +204,8 @@ def _label_phrase_evidence(
     matches: list[tuple[int, str, CatalogEntity]] = []
     for entity in candidates:
         for label in label_for_entity(entity, catalog):
+            if not is_admissible_target_label(label):
+                continue
             if ignore_plural_labels and label.endswith("s"):
                 continue
             if _contains_phrase(text, label):
@@ -303,4 +346,9 @@ def surface_target_evidence(
     )
 
 
-__all__ = ["CatalogTargetEvidence", "power_target_evidence", "surface_target_evidence"]
+__all__ = [
+    "CatalogTargetEvidence",
+    "is_admissible_target_label",
+    "power_target_evidence",
+    "surface_target_evidence",
+]

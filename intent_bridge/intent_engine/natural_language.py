@@ -45,7 +45,10 @@ from intent_bridge.intent_engine.semantics import (
     COVER_SUBTYPE_FORMS as _COVER_SUBTYPE_FORMS,
 )
 from intent_bridge.intent_engine.semantics import DOMAIN_ALIASES as _DOMAIN_ALIASES
-from intent_bridge.intent_engine.target_evidence import surface_target_evidence
+from intent_bridge.intent_engine.target_evidence import (
+    is_admissible_target_label,
+    surface_target_evidence,
+)
 
 _DOMAIN_WORDS = frozenset(word for phrase, _ in _DOMAIN_ALIASES for word in phrase.split())
 _COLORS = (
@@ -1046,7 +1049,13 @@ def _distinctive_tokens(entity: CatalogEntity, catalog: CatalogSnapshot) -> froz
         }
     )
     return frozenset(
-        token for token in tokens if len(token) >= 2 and token not in _GENERIC_ENTITY_MATCH_TOKENS
+        token
+        for token in tokens
+        if (
+            len(token) >= 2
+            and token not in _GENERIC_ENTITY_MATCH_TOKENS
+            and is_admissible_target_label(token)
+        )
     )
 
 
@@ -1059,6 +1068,8 @@ def _has_distinctive_mention(
 
 
 def _fuzzy_phrase(text: str, phrase: str) -> bool:
+    if not is_admissible_target_label(phrase):
+        return False
     phrase_words = phrase.split()
     if len("".join(phrase_words)) < 7:
         return False
@@ -1114,7 +1125,11 @@ def _named_entities(
                 (
                     item
                     for item in phrases
-                    if not _is_generic_entity_phrase(item) and _contains_phrase(text, item)
+                    if (
+                        not _is_generic_entity_phrase(item)
+                        and is_admissible_target_label(item)
+                        and _contains_phrase(text, item)
+                    )
                 ),
                 None,
             )
@@ -1166,7 +1181,11 @@ def _named_entities(
                     (
                         item
                         for item in phrases
-                        if not _is_generic_entity_phrase(item) and _contains_phrase(text, item)
+                        if (
+                            not _is_generic_entity_phrase(item)
+                            and is_admissible_target_label(item)
+                            and _contains_phrase(text, item)
+                        )
                     ),
                     None,
                 )
@@ -1993,13 +2012,14 @@ def _resolve_targets(
             return targets
 
     if domain is None:
-        # This case is for when no entities are found and no domain is explicitly mentioned.
-        # This is still an ambiguous situation, so we raise _AmbiguousTarget.
+        # No entity, area, floor, or domain supplied admissible target evidence.
+        # Do not turn an ordinary information request into a Home Assistant
+        # clarification solely because a catalog contains incidental words.
         LOGGER.info(
-            "TARGET RESOLUTION ambiguous reason=no_domain_or_named_entity text=%r",
+            "TARGET RESOLUTION declined reason=no_admissible_target_evidence text=%r",
             text,
         )
-        raise _AmbiguousTarget
+        raise RouteDeclined("No admissible deterministic target evidence")
     if areas:
         targets = tuple(
             target
