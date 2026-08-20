@@ -84,6 +84,9 @@ def test_require_success():
 
 
 def test_handle_events_updates_cache_and_invalidates_metadata(client):
+    changes = []
+    listener = changes.append
+    client.add_catalog_cache_listener(listener)
     client._handle_event({"event": "bad"})
     client._handle_event({"event": {"event_type": "state_changed", "data": {}}})
     client._handle_event(
@@ -104,6 +107,8 @@ def test_handle_events_updates_cache_and_invalidates_metadata(client):
     client._handle_event({"event": {"event_type": "service_registered", "data": {}}})
     client._handle_event({"event": {"event_type": "entity_registry_updated", "data": {}}})
     assert client._services_loaded_at == client._registries_loaded_at == 0
+    assert changes == ["state", "state", "registry"]
+    client.remove_catalog_cache_listener(listener)
 
 
 @pytest.mark.asyncio

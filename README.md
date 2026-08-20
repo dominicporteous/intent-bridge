@@ -121,6 +121,16 @@ conversation request. Compound commands and deliberately materialised exact
 entity targets stay on the named-intent route so an utterance is never replayed
 or widened accidentally.
 
+The deterministic entity catalog is also built outside the request path. After
+the initial full snapshot, WebSocket state and registry changes schedule a
+debounced replacement snapshot; a complete rebuild also runs every 60 seconds.
+Each publication is rebuilt from all cached states and registries rather than
+incrementally patched, so deletions, renames, moves, and availability changes
+cannot accumulate catalog drift. Tune the behaviour with
+`INTENT_BRIDGE_HA_CATALOG_REFRESH_SECONDS`,
+`INTENT_BRIDGE_HA_CATALOG_EVENT_DEBOUNCE_SECONDS`, and
+`INTENT_BRIDGE_HA_CATALOG_MINIMUM_REFRESH_SECONDS`.
+
 Assistant feedback is configured through the transport-neutral
 `INTENT_BRIDGE_ASSISTANT_*` namespace. LED feedback uses
 `ASSISTANT_LED_ENABLED`, `ASSISTANT_LED_DOMAINS`, `ASSISTANT_LED_COLOR`,

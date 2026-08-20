@@ -164,7 +164,15 @@ class DeterministicIntentEngine:
     def plan(self, request: VoiceRequest) -> IntentPlan:
         """Recognize and resolve a request without executing any operations."""
 
-        catalog = self._catalog_provider.snapshot()
+        return self.plan_with_catalog(request, self._catalog_provider.snapshot())
+
+    def plan_with_catalog(
+        self,
+        request: VoiceRequest,
+        catalog: CatalogSnapshot,
+    ) -> IntentPlan:
+        """Plan against one caller-supplied immutable catalog snapshot."""
+
         structural_automation = bool(_AUTOMATION_REQUEST_RE.search(request.text))
         clauses = (request.text,) if structural_automation else split_compound_request(request.text)
         LOGGER.info(

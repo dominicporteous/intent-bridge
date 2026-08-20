@@ -4,6 +4,7 @@ import asyncio
 import difflib
 import json
 import time
+from collections.abc import Callable
 from typing import Any
 
 import websockets
@@ -43,6 +44,7 @@ class HomeAssistantWebSocket:
         self._registries_loaded_at = 0.0
         self._service_refresh_lock = asyncio.Lock()
         self._registry_refresh_lock = asyncio.Lock()
+        self._catalog_cache_listeners: set[Callable[[str], None]] = set()
 
         self.connected_at: float | None = None
         self.reconnect_count = 0
@@ -132,6 +134,7 @@ class HomeAssistantWebSocket:
 
             try:
                 await self._initialise_connection_caches()
+                self._notify_catalog_cache_change("connection")
                 self.ready.set()
                 log.info(
                     "HA WebSocket ready states=%d service_domains=%d entities=%d",
@@ -186,6 +189,7 @@ class HomeAssistantWebSocket:
             else:
                 self.states.pop(entity_id, None)
             self.state_event_count += 1
+            self._notify_catalog_cache_change("state")
             return
 
         if event_type in {"service_registered", "service_removed"}:
@@ -198,6 +202,24 @@ class HomeAssistantWebSocket:
             "area_registry_updated",
         }:
             self._registries_loaded_at = 0.0
+            self._notify_catalog_cache_change("registry")
+
+    def add_catalog_cache_listener(self, listener: Callable[[str], None]) -> None:
+        """Register a cheap synchronous callback for live catalog source changes."""
+
+        self._catalog_cache_listeners.add(listener)
+
+    def remove_catalog_cache_listener(self, listener: Callable[[str], None]) -> None:
+        self._catalog_cache_listeners.discard(listener)
+
+    def _notify_catalog_cache_change(self, change: str) -> None:
+        """Notify observers without allowing one observer to break the reader loop."""
+
+        for listener in tuple(self._catalog_cache_listeners):
+            try:
+                listener(change)
+            except Exception:
+                log.exception("HA catalog cache listener failed change=%s", change)
 
     def _fail_pending(self, exc: Exception) -> None:
         for request_id, future in list(self._pending.items()):

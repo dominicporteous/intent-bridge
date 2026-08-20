@@ -157,6 +157,36 @@ async def test_deterministic_route_ambiguity_escalation_is_configurable():
 
 
 @pytest.mark.asyncio
+async def test_conversational_route_plans_against_its_single_snapshot_when_supported():
+    catalog = CatalogSnapshot()
+
+    class Engine:
+        catalog_snapshots = 0
+        received_catalog = None
+
+        def catalog_snapshot(self):
+            self.catalog_snapshots += 1
+            return catalog
+
+        def plan_with_catalog(self, _request, supplied_catalog):
+            self.received_catalog = supplied_catalog
+            return IntentPlan(response="Handled.")
+
+        def plan(self, _request):
+            raise AssertionError("route should not request a second catalog snapshot")
+
+        async def execute_plan(self, _request, plan):
+            return plan.response
+
+    engine = Engine()
+    route = ConversationalDeterministicVoiceRoute(engine)
+
+    assert await route.handle(request()) == "Handled."
+    assert engine.catalog_snapshots == 1
+    assert engine.received_catalog is catalog
+
+
+@pytest.mark.asyncio
 async def test_pipeline_accepts_empty_speech_but_rejects_missing_results():
     async def empty(_request):
         return "  "

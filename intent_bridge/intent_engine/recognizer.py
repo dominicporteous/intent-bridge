@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from typing import Any
 
@@ -10,6 +11,10 @@ from hassil import TextSlotList, recognize_all
 from intent_bridge.core.text import normalize_search_text
 from intent_bridge.intent_engine.grammar import LoadedIntentGrammar
 from intent_bridge.intent_engine.models import CatalogSnapshot, IntentMatch, SlotValue
+
+_CURRENT_TIME_QUERY_RE = re.compile(
+    r"^(?:what time is it(?: (?:right )?now)?|what is the (?:current )?time)$"
+)
 
 
 def _deduplicated_aliases(*values: str) -> tuple[str, ...]:
@@ -105,6 +110,16 @@ class HassilIntentRecognizer:
         catalog: CatalogSnapshot,
         origin_context: Mapping[str, object] | None = None,
     ) -> tuple[IntentMatch, ...]:
+        # These exact built-in OHF time forms do not carry slots or depend on
+        # topology. Avoid rebuilding thousands of dynamic entity names and
+        # traversing the general grammar for a targetless clock request.
+        normalized = normalize_search_text(text)
+        if (
+            self._grammar.language.casefold().startswith("en")
+            and _CURRENT_TIME_QUERY_RE.fullmatch(normalized)
+        ):
+            return (IntentMatch(intent_name="HassGetCurrentTime"),)
+
         matches: list[IntentMatch] = []
         seen: set[tuple[Any, ...]] = set()
         results = recognize_all(

@@ -253,6 +253,15 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
                 state_confirm_timeout_seconds=_number(
                     environ, "HA_STATE_CONFIRM_TIMEOUT_SECONDS", 1.0, minimum=0.0
                 ),
+                catalog_refresh_seconds=_number(
+                    environ, "HA_CATALOG_REFRESH_SECONDS", 60.0, minimum=0.1
+                ),
+                catalog_event_debounce_seconds=_number(
+                    environ, "HA_CATALOG_EVENT_DEBOUNCE_SECONDS", 0.5, minimum=0.0
+                ),
+                catalog_minimum_refresh_seconds=_number(
+                    environ, "HA_CATALOG_MINIMUM_REFRESH_SECONDS", 1.0, minimum=0.0
+                ),
             ),
             advanced=HomeAssistantAdvancedSettings(
                 enabled=_boolean(environ, "HA_ADVANCED_ENABLED", True),

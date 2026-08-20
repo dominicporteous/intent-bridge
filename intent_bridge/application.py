@@ -47,7 +47,10 @@ from intent_bridge.home_assistant.advanced import (
     make_ha_mcp_server,
 )
 from intent_bridge.home_assistant.client import HomeAssistantWebSocket
-from intent_bridge.home_assistant.intent_catalog import HomeAssistantCatalogProvider
+from intent_bridge.home_assistant.intent_catalog import (
+    HomeAssistantCatalogProvider,
+    HomeAssistantCatalogPublisher,
+)
 from intent_bridge.home_assistant.intent_executor import HomeAssistantIntentExecutor
 from intent_bridge.informational import InformationalVoiceRoute
 from intent_bridge.intent_engine.engine import DeterministicIntentEngine
@@ -108,6 +111,18 @@ async def lifespan(app: FastAPI):
                 settings.home_assistant.base_url, settings.home_assistant.access_token
             )
             await runtime.ha_ws.start()
+            publisher = HomeAssistantCatalogPublisher(
+                runtime.ha_ws,
+                refresh_seconds=settings.home_assistant.websocket.catalog_refresh_seconds,
+                event_debounce_seconds=(
+                    settings.home_assistant.websocket.catalog_event_debounce_seconds
+                ),
+                minimum_refresh_seconds=(
+                    settings.home_assistant.websocket.catalog_minimum_refresh_seconds
+                ),
+            )
+            await publisher.start()
+            runtime.ha_catalog_publisher = publisher
         except Exception:
             log.exception("Failed to initialise direct Home Assistant WebSocket")
     elif settings.home_assistant.websocket.enabled:
@@ -296,6 +311,14 @@ async def lifespan(app: FastAPI):
         except Exception:
             log.exception("Error stopping assistant feedback")
 
+        if runtime.ha_catalog_publisher is not None:
+            publisher = runtime.ha_catalog_publisher
+            runtime.ha_catalog_publisher = None
+            try:
+                await publisher.stop()
+            except Exception:
+                log.exception("Error stopping HA catalog publisher")
+
         if runtime.ha_ws is not None:
             try:
                 await runtime.ha_ws.stop()
@@ -364,7 +387,10 @@ def build_voice_pipeline(
     )
     deterministic_engine = DeterministicIntentEngine(
         intent_recognizer,
-        HomeAssistantCatalogProvider(lambda: runtime.ha_ws),
+        HomeAssistantCatalogProvider(
+            lambda: runtime.ha_ws,
+            publisher_provider=lambda: runtime.ha_catalog_publisher,
+        ),
         MusicAssistantIntentExecutor(
             home_assistant_intent_executor,
             native_playback_available=lambda: bool(
@@ -587,6 +613,7 @@ async def models():
 async def health():
     ws_ready = bool(runtime.ha_ws and runtime.ha_ws.ready.is_set())
     ha_instance_config = getattr(runtime.ha_ws, "config", {}) or {}
+    catalog_publisher = runtime.ha_catalog_publisher
 
     ma_manager = runtime.music_assistant
     ma_client = ma_manager.client if ma_manager is not None else None
@@ -682,6 +709,25 @@ async def health():
         if runtime.ha_ws is not None
         else 0,
         "ha_ws_area_registry_cached": len(runtime.ha_ws.areas) if runtime.ha_ws is not None else 0,
+        "ha_catalog_snapshot_ready": bool(
+            catalog_publisher is not None and catalog_publisher.snapshot() is not None
+        ),
+        "ha_catalog_snapshot_generation": (
+            catalog_publisher.generation if catalog_publisher is not None else 0
+        ),
+        "ha_catalog_snapshot_age_seconds": (
+            catalog_publisher.age_seconds if catalog_publisher is not None else None
+        ),
+        "ha_catalog_snapshot_build_failures": (
+            catalog_publisher.build_failures if catalog_publisher is not None else 0
+        ),
+        "ha_catalog_refresh_seconds": settings.home_assistant.websocket.catalog_refresh_seconds,
+        "ha_catalog_event_debounce_seconds": (
+            settings.home_assistant.websocket.catalog_event_debounce_seconds
+        ),
+        "ha_catalog_minimum_refresh_seconds": (
+            settings.home_assistant.websocket.catalog_minimum_refresh_seconds
+        ),
         "ha_instance_config_ready": bool(ha_instance_config),
         "ha_instance_time_zone": ha_instance_config.get("time_zone"),
         "ha_instance_language": ha_instance_config.get("language"),

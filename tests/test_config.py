@@ -25,6 +25,9 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_MCP_CONNECT_TIMEOUT_SECONDS": "12",
             "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "4",
             "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "9",
+            "INTENT_BRIDGE_HA_CATALOG_REFRESH_SECONDS": "45",
+            "INTENT_BRIDGE_HA_CATALOG_EVENT_DEBOUNCE_SECONDS": "0.25",
+            "INTENT_BRIDGE_HA_CATALOG_MINIMUM_REFRESH_SECONDS": "2",
             "INTENT_BRIDGE_HA_ADVANCED_ARGS": "-m tool --flag 'two words'",
             "INTENT_BRIDGE_HA_ADVANCED_PINNED_TOOLS": "one,two",
             "INTENT_BRIDGE_HA_STATE_CHANGING_SERVICES": "turn_on,custom_action",
@@ -57,6 +60,9 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.mcp.connect_timeout_seconds == 12
     assert settings.home_assistant.search_default_limit == 4
     assert settings.home_assistant.search_max_limit == 9
+    assert settings.home_assistant.websocket.catalog_refresh_seconds == 45
+    assert settings.home_assistant.websocket.catalog_event_debounce_seconds == 0.25
+    assert settings.home_assistant.websocket.catalog_minimum_refresh_seconds == 2
     assert settings.home_assistant.advanced.args[-1] == "two words"
     assert settings.home_assistant.advanced.pinned_tools == ("one", "two")
     assert settings.home_assistant.ignored_entity_domains == ("update",)

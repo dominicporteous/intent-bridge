@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from intent_bridge.core.text import normalize_search_text
@@ -20,6 +25,7 @@ _TEMPERATURE_UNITS = frozenset(
     {"c", "celsius", "f", "fahrenheit", "k", "kelvin"}
 )
 _TEMPERATURE_NAME_HINTS = frozenset({"temp", "temperature", "thermometer"})
+LOGGER = logging.getLogger(__name__)
 
 
 def _measurement_quantity(value: object) -> str:
@@ -144,6 +150,46 @@ class CachedHomeAssistant(Protocol):
     entity_registry: dict[str, dict[str, Any]]
     devices: dict[str, dict[str, Any]]
     areas: dict[str, dict[str, Any]]
+
+
+class CatalogCacheChangeSource(CachedHomeAssistant, Protocol):
+    """Live HA cache with synchronous change notifications for catalog publication."""
+
+    def add_catalog_cache_listener(self, listener: Callable[[str], None]) -> None: ...
+
+    def remove_catalog_cache_listener(self, listener: Callable[[str], None]) -> None: ...
+
+    async def refresh_registries(self, *, force: bool = False) -> None: ...
+
+
+@dataclass(slots=True)
+class _CatalogSourceCopy:
+    """A stable shallow copy of HA cache maps for an off-loop full rebuild.
+
+    The WebSocket client replaces state and registry entries rather than mutating
+    their nested mappings. Copying the four top-level dictionaries on the event
+    loop therefore gives a coherent source set to the worker without holding a
+    lock or iterating a map that the reader task may change.
+    """
+
+    states: dict[str, dict[str, Any]]
+    entity_registry: dict[str, dict[str, Any]]
+    devices: dict[str, dict[str, Any]]
+    areas: dict[str, dict[str, Any]]
+    floors: dict[str, dict[str, Any]]
+
+
+def _copy_catalog_source(client: CachedHomeAssistant) -> _CatalogSourceCopy:
+    """Capture every catalog input; never patch a previously published catalog."""
+
+    raw_floors = getattr(client, "floors", {})
+    return _CatalogSourceCopy(
+        states=dict(client.states),
+        entity_registry=dict(client.entity_registry),
+        devices=dict(client.devices),
+        areas=dict(client.areas),
+        floors=dict(raw_floors) if isinstance(raw_floors, dict) else {},
+    )
 
 
 def _clean_aliases(values: list[object], canonical: str) -> tuple[str, ...]:
@@ -298,17 +344,190 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
     )
 
 
-class HomeAssistantCatalogProvider:
-    """Take a fresh immutable snapshot from a reconnecting cache on each request."""
+class HomeAssistantCatalogPublisher:
+    """Publish complete immutable catalog snapshots without request-path rebuilds.
 
-    def __init__(self, client_provider) -> None:
+    Change events never mutate an existing ``CatalogSnapshot``. They only wake
+    this publisher, which captures *all* of the WebSocket cache maps and builds
+    a replacement snapshot. That deliberately trades a bounded background
+    rebuild for immunity to incremental-update drift.
+    """
+
+    def __init__(
+        self,
+        client: CatalogCacheChangeSource,
+        *,
+        refresh_seconds: float = 60.0,
+        event_debounce_seconds: float = 0.5,
+        minimum_refresh_seconds: float = 1.0,
+    ) -> None:
+        if refresh_seconds <= 0:
+            raise ValueError("refresh_seconds must be greater than zero")
+        if event_debounce_seconds < 0:
+            raise ValueError("event_debounce_seconds must not be negative")
+        if minimum_refresh_seconds < 0:
+            raise ValueError("minimum_refresh_seconds must not be negative")
+
+        self.client = client
+        self._refresh_seconds = refresh_seconds
+        self._event_debounce_seconds = event_debounce_seconds
+        self._minimum_refresh_seconds = minimum_refresh_seconds
+        self._changed = asyncio.Event()
+        self._registry_refresh_needed = False
+        self._task: asyncio.Task[None] | None = None
+        self._snapshot: CatalogSnapshot | None = None
+        self._published_at: float | None = None
+        self._last_refresh_started_at = 0.0
+        self._generation = 0
+        self._build_failures = 0
+        self._stopping = False
+
+    @property
+    def generation(self) -> int:
+        return self._generation
+
+    @property
+    def age_seconds(self) -> float | None:
+        if self._published_at is None:
+            return None
+        return max(0.0, time.monotonic() - self._published_at)
+
+    @property
+    def build_failures(self) -> int:
+        return self._build_failures
+
+    def snapshot(self) -> CatalogSnapshot | None:
+        """Return the last whole snapshot; readers never observe a partial build."""
+
+        return self._snapshot
+
+    async def start(self) -> None:
+        """Publish an initial snapshot, then retain it in a coalescing worker."""
+
+        if self._task is not None:
+            return
+        self._stopping = False
+        self.client.add_catalog_cache_listener(self._on_cache_change)
+        await self._publish("startup")
+        self._task = asyncio.create_task(
+            self._run(),
+            name="ha-catalog-publisher",
+        )
+
+    async def stop(self) -> None:
+        """Stop publication and detach from the HA client before it is closed."""
+
+        self._stopping = True
+        self.client.remove_catalog_cache_listener(self._on_cache_change)
+        task = self._task
+        self._task = None
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
+
+    def _on_cache_change(self, change: str) -> None:
+        """Schedule a replacement snapshot; this must remain reader-loop cheap."""
+
+        if self._stopping:
+            return
+        if change == "registry":
+            # A registry event only includes an ID/action. Fetch the complete
+            # registry before the next complete catalog build so renames,
+            # reassignments, removals, and area/device moves cannot drift.
+            self._registry_refresh_needed = True
+        self._changed.set()
+
+    async def _run(self) -> None:
+        while True:
+            event_triggered = False
+            try:
+                await asyncio.wait_for(self._changed.wait(), timeout=self._refresh_seconds)
+                event_triggered = True
+            except TimeoutError:
+                pass
+
+            self._changed.clear()
+            if event_triggered and self._event_debounce_seconds:
+                await asyncio.sleep(self._event_debounce_seconds)
+                # All arrivals during the debounce interval are included by
+                # this rebuild. A later arrival will set the event again and
+                # cause exactly one follow-up full rebuild.
+                self._changed.clear()
+
+            remaining = self._minimum_refresh_seconds - (
+                time.monotonic() - self._last_refresh_started_at
+            )
+            if remaining > 0:
+                await asyncio.sleep(remaining)
+
+            refresh_registry = self._registry_refresh_needed
+            self._registry_refresh_needed = False
+            if refresh_registry:
+                try:
+                    await self.client.refresh_registries(force=True)
+                except asyncio.CancelledError:
+                    raise
+                except Exception:
+                    # The last good registry cache remains usable. The next
+                    # periodic/event rebuild retries from a full source copy.
+                    LOGGER.exception("HA catalog registry refresh failed before rebuild")
+
+            await self._publish("event" if event_triggered else "periodic")
+
+    async def _publish(self, reason: str) -> None:
+        self._last_refresh_started_at = time.monotonic()
+        try:
+            source = _copy_catalog_source(self.client)
+            # ``snapshot_from_client`` performs CPU-bound normalisation for
+            # every entity. Keep it off the request path and away from the
+            # WebSocket reader; ``source`` is a stable complete input set.
+            snapshot = await asyncio.to_thread(snapshot_from_client, source)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            self._build_failures += 1
+            LOGGER.exception("HA catalog snapshot rebuild failed reason=%s", reason)
+            return
+
+        self._snapshot = snapshot
+        self._published_at = time.monotonic()
+        self._generation += 1
+        LOGGER.debug(
+            "HA catalog snapshot published generation=%d reason=%s entities=%d areas=%d floors=%d",
+            self._generation,
+            reason,
+            len(snapshot.entities),
+            len(snapshot.areas),
+            len(snapshot.floors),
+        )
+
+
+class HomeAssistantCatalogProvider:
+    """Serve a background snapshot when its source matches the active HA cache."""
+
+    def __init__(self, client_provider, *, publisher_provider: Callable[[], Any | None] | None = None) -> None:
         self._client_provider = client_provider
+        self._publisher_provider = publisher_provider
 
     def snapshot(self) -> CatalogSnapshot:
         client = self._client_provider()
         if client is None:
             return CatalogSnapshot()
+        if self._publisher_provider is not None:
+            publisher = self._publisher_provider()
+            if getattr(publisher, "client", None) is client:
+                snapshot = publisher.snapshot()
+                if snapshot is not None:
+                    return snapshot
         return snapshot_from_client(client)
 
 
-__all__ = ["CachedHomeAssistant", "HomeAssistantCatalogProvider", "snapshot_from_client"]
+__all__ = [
+    "CachedHomeAssistant",
+    "HomeAssistantCatalogProvider",
+    "HomeAssistantCatalogPublisher",
+    "snapshot_from_client",
+]

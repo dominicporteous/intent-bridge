@@ -431,6 +431,25 @@ def test_recognizer_deduplicates_results_and_honours_candidate_limit(monkeypatch
     ]
 
 
+def test_recognizer_fast_paths_targetless_current_time_without_dynamic_catalog(monkeypatch):
+    grammar = LoadedIntentGrammar(
+        intents=object(),
+        language="en",
+        custom_files=(),
+        provenance=(),
+    )
+
+    def should_not_run(*_args, **_kwargs):
+        raise AssertionError("general HassIL recognition should not run for an exact clock query")
+
+    monkeypatch.setattr(recognizer_module, "recognize_all", should_not_run)
+    recognizer = HassilIntentRecognizer(grammar)
+
+    assert recognizer.recognize("What time is it?", _catalog()) == (
+        IntentMatch(intent_name="HassGetCurrentTime"),
+    )
+
+
 def test_resolution_lookup_helpers_cover_metadata_aliases_and_ambiguity():
     catalog = _catalog()
     no_slots = _match("HassTurnOn")

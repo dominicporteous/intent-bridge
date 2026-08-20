@@ -39,10 +39,13 @@ class _ConversationPlanner:
         catalog: CatalogSnapshot,
         origin_context: dict[str, object] | None = None,
     ) -> IntentPlan:
-        del catalog
-        return self.engine.plan(
-            replace(self.request, text=text, origin_context=origin_context)
-        )
+        request = replace(self.request, text=text, origin_context=origin_context)
+        plan_with_catalog = getattr(self.engine, "plan_with_catalog", None)
+        if callable(plan_with_catalog):
+            return plan_with_catalog(request, catalog)
+        # Retain compatibility with injected test/extension engines that only
+        # expose the original ``plan(request)`` protocol.
+        return self.engine.plan(request)
 
 
 @dataclass(frozen=True, slots=True)

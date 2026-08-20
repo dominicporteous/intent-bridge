@@ -69,6 +69,9 @@ class HomeAssistantWebSocketSettings:
     service_cache_ttl_seconds: float = 600.0
     registry_cache_ttl_seconds: float = 600.0
     state_confirm_timeout_seconds: float = 1.0
+    catalog_refresh_seconds: float = 60.0
+    catalog_event_debounce_seconds: float = 0.5
+    catalog_minimum_refresh_seconds: float = 1.0
 
 
 @dataclass(slots=True)

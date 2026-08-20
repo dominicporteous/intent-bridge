@@ -20,6 +20,7 @@ class RuntimeState:
 
     event_loop: asyncio.AbstractEventLoop | None = None
     ha_ws: Any | None = None
+    ha_catalog_publisher: Any | None = None
     music_assistant: Any | None = None
     advanced_agent: Any | None = None
     informational_agent: Any | None = None
@@ -52,6 +53,7 @@ class RuntimeState:
 
     def clear_integrations(self) -> None:
         self.ha_ws = None
+        self.ha_catalog_publisher = None
         self.music_assistant = None
         self.advanced_agent = None
         self.informational_agent = None
