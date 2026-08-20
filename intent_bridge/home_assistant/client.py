@@ -12,6 +12,7 @@ import websockets
 from intent_bridge.config import log, settings
 from intent_bridge.core.text import normalize_search_text as _normalise_search_text
 from intent_bridge.home_assistant import catalog as ha_catalog
+from intent_bridge.indicators.topology import is_indicator_control
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.execution import (
     _ha_websocket_url,
@@ -525,8 +526,6 @@ class HomeAssistantWebSocket:
                 searchable_parts.append(_normalise_search_text(entity_id))
 
             searchable = " ".join(searchable_parts)
-            identity_text = " ".join(identity_parts)
-            device_text = _normalise_search_text(ctx.get("device_name"))
             entity_area = _normalise_search_text(ctx.get("area_name"))
             entity_area_id = _normalise_search_text(ctx.get("area_id"))
 
@@ -614,21 +613,7 @@ class HomeAssistantWebSocket:
                     "backlight",
                 }
                 if not (query_tokens & explicit_indicator_words):
-                    indicator_text = " ".join(p for p in (identity_text, device_text) if p)
-                    indicator_phrases = (
-                        "led ring",
-                        "ring led",
-                        "indicator",
-                        "status led",
-                        "status light",
-                        "notification led",
-                        "notification light",
-                        "backlight",
-                    )
-                    indicator_like = any(
-                        phrase in indicator_text for phrase in indicator_phrases
-                    ) or ("voice" in indicator_text and "led" in indicator_text)
-                    if indicator_like:
+                    if is_indicator_control(self, entity_id):
                         score -= 90.0
                         reasons.append("indicator_light_penalty")
 

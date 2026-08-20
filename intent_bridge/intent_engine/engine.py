@@ -29,6 +29,7 @@ from intent_bridge.intent_engine.ports import (
     IntentRecognizer,
 )
 from intent_bridge.intent_engine.resolution import ResolvedCandidate, resolve_candidate
+from intent_bridge.intent_engine.target_evidence import surface_target_evidence
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.execution import _reset_voice_tool_run_state
 
@@ -303,7 +304,47 @@ class DeterministicIntentEngine:
 
         origin_area = _origin_area(request.origin_context)
         if any(_requires_origin_area(candidate) for candidate in matches) and not origin_area:
-            return IntentPlan(response="Which area should I use?")
+            # A grammar's broad spoken-domain slot (``lamp`` -> ``light``)
+            # must not hide stronger catalog-name evidence. Resolve a unique
+            # label or preserve its candidates for clarification before asking
+            # for a room for a genuinely generic request.
+            label_evidence = tuple(
+                (
+                    candidate,
+                    surface_target_evidence(
+                        request.text,
+                        catalog,
+                        intent_name=candidate.intent_name,
+                    ),
+                )
+                for candidate in matches
+                if _requires_origin_area(candidate)
+            )
+            ambiguous_labels = tuple(
+                (candidate, evidence)
+                for candidate, evidence in label_evidence
+                if evidence.is_ambiguous
+            )
+            if ambiguous_labels:
+                candidate_ids = tuple(
+                    sorted(
+                        {
+                            entity_id
+                            for _, evidence in ambiguous_labels
+                            for entity_id in evidence.candidate_entity_ids
+                        }
+                    )
+                )
+                return IntentPlan(
+                    response=self._ambiguity_response,
+                    ambiguity_candidate_entity_ids=candidate_ids,
+                    ambiguity_missing_constraint="single target",
+                    ambiguity_call=_call_for_match(
+                        ambiguous_labels[0][0], request.origin_context
+                    ),
+                )
+            if not any(evidence.is_unique for _, evidence in label_evidence):
+                return IntentPlan(response="Which area should I use?")
 
         resolved = [
             resolve_candidate(candidate, catalog, request.origin_context, text=request.text)
@@ -316,12 +357,44 @@ class DeterministicIntentEngine:
                 {
                     "intent": candidate.match.intent_name,
                     "entity_ids": tuple(sorted(candidate.entity_ids)),
+                    "ambiguity_candidate_entity_ids": tuple(
+                        sorted(candidate.ambiguity_candidate_entity_ids)
+                    ),
                     "semantic_key": candidate.semantic_key,
                     "specificity": candidate.specificity,
                 }
                 for candidate in resolved
             ),
         )
+        grammar_ambiguities = tuple(
+            candidate
+            for candidate in resolved
+            if candidate.ambiguity_candidate_entity_ids
+        )
+        if grammar_ambiguities:
+            candidate_ids = tuple(
+                sorted(
+                    {
+                        entity_id
+                        for candidate in grammar_ambiguities
+                        for entity_id in candidate.ambiguity_candidate_entity_ids
+                    }
+                )
+            )
+            LOGGER.info(
+                "INTENT PLAN ambiguous reason=catalog_target_evidence text=%r candidates=%s",
+                request.text,
+                candidate_ids,
+            )
+            return IntentPlan(
+                response=self._ambiguity_response,
+                ambiguity_candidate_entity_ids=candidate_ids,
+                ambiguity_missing_constraint="single target",
+                ambiguity_call=_call_for_match(
+                    grammar_ambiguities[0].match,
+                    request.origin_context,
+                ),
+            )
         resolved = [
             candidate
             for candidate in resolved
@@ -437,7 +510,12 @@ class DeterministicIntentEngine:
                 next(iter(domains)),
                 step.entity_ids,
             )
-            return IntentPlan(response=self._ambiguity_response)
+            return IntentPlan(
+                response=self._ambiguity_response,
+                ambiguity_candidate_entity_ids=step.entity_ids,
+                ambiguity_missing_constraint="single target",
+                ambiguity_call=step.call,
+            )
         return plan
 
     def _try_bounded_coordination_fallback(
@@ -503,7 +581,10 @@ class DeterministicIntentEngine:
                 return outcome.plan
             if isinstance(outcome, AmbiguousTarget):
                 return IntentPlan(
-                    response=self._ambiguity_response
+                    response=self._ambiguity_response,
+                    ambiguity_candidate_entity_ids=outcome.candidates,
+                    ambiguity_missing_constraint=outcome.missing_constraint,
+                    ambiguity_call=outcome.call,
                 )
             # Unsupported/incomplete/capability/no-target outcomes are declines
             # here, allowing the next recognizer or the external voice fallback.

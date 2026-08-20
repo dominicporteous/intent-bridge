@@ -110,6 +110,60 @@ def test_singular_area_target_requires_clarification_when_multiple_entities_exis
     assert plan.response == "I found more than one possible target. Please be more specific."
 
 
+@pytest.fixture
+def lamp_switch_catalog() -> CatalogSnapshot:
+    return CatalogSnapshot(
+        areas=(
+            CatalogArea("bedroom", "Bedroom"),
+            CatalogArea("living", "Living Room"),
+        ),
+        entities=(
+            _entity("switch.bedroom_lamp", "bedroom_lamp", "bedroom"),
+            _entity("switch.livingroom_lamp", "livingroom_lamp", "living"),
+            _entity("light.bedroom_ceiling", "Bedroom Ceiling", "bedroom"),
+            _entity("light.livingroom_ceiling", "Living Room Ceiling", "living"),
+        ),
+    )
+
+
+def test_unscoped_lamp_switches_trigger_a_deterministic_clarification(lamp_switch_catalog):
+    planner = NaturalLanguageIntentPlanner()
+
+    plan = planner.plan("turn the lamp off", lamp_switch_catalog)
+
+    assert plan.steps == ()
+    assert plan.response == "I found more than one possible target. Please be more specific."
+    assert isinstance(planner.resolve("turn the lamp off", lamp_switch_catalog), AmbiguousTarget)
+
+
+def test_area_scoped_lamp_prefers_the_semantically_matching_switch(lamp_switch_catalog):
+    step = NaturalLanguageIntentPlanner().plan(
+        "turn the bedroom lamp off", lamp_switch_catalog
+    ).steps[0]
+
+    assert step.operation == "HassTurnOff"
+    assert step.entity_ids == ("switch.bedroom_lamp",)
+    assert step.call.data == {
+        "name": "bedroom_lamp",
+        "entity_id": "switch.bedroom_lamp",
+    }
+
+
+def test_origin_area_scopes_a_generic_lamp_to_the_matching_switch(lamp_switch_catalog):
+    step = NaturalLanguageIntentPlanner().plan(
+        "turn the lamp off",
+        lamp_switch_catalog,
+        {"area_id": "bedroom", "area_name": "Bedroom"},
+    ).steps[0]
+
+    assert step.operation == "HassTurnOff"
+    assert step.entity_ids == ("switch.bedroom_lamp",)
+    assert step.call.data == {
+        "name": "bedroom_lamp",
+        "entity_id": "switch.bedroom_lamp",
+    }
+
+
 def test_named_entity_is_more_specific_than_area(catalog):
     plan = NaturalLanguageIntentPlanner().plan(
         "Could you switch the kitchen ceiling light on?", catalog

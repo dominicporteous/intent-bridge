@@ -350,6 +350,32 @@ def test_dialogue_session_exposes_and_resolves_clarification(catalog):
     assert second.plan.steps[0].entity_ids == ("light.kitchen_ceiling",)
 
 
+def test_dialogue_uses_immutable_ambiguity_candidates_without_reclassifying_target_type(catalog):
+    lamp_catalog = replace(
+        catalog,
+        entities=(
+            *catalog.entities,
+            _entity("switch.bedroom_lamp", "Bedroom Lamp", "bedroom"),
+            _entity("switch.living_lamp", "Living Room Lamp", "living"),
+        ),
+        areas=(*catalog.areas, CatalogArea("bedroom", "Bedroom")),
+    )
+    session = PlanningSession(NaturalLanguageIntentPlanner())
+
+    first = session.plan_turn("Turn the lamp off", lamp_catalog)
+    second = session.plan_turn("The living room one", lamp_catalog)
+
+    assert first.plan.steps == ()
+    assert first.state.pending is not None
+    assert first.state.pending.candidate_entity_ids == (
+        "switch.bedroom_lamp",
+        "switch.living_lamp",
+    )
+    assert first.state.pending.original_predicate == "HassTurnOff"
+    assert second.plan.steps[0].operation == "HassTurnOff"
+    assert second.plan.steps[0].entity_ids == ("switch.living_lamp",)
+
+
 def test_pending_clarification_retains_complete_property_operation(catalog):
     session = PlanningSession(
         _QueuedPlanner(

@@ -40,7 +40,12 @@ class IntentPlannerChain:
         if isinstance(outcome, Resolved):
             return outcome.plan
         if isinstance(outcome, AmbiguousTarget):
-            return IntentPlan(response="I found more than one possible target. Please be more specific.")
+            return IntentPlan(
+                response="I found more than one possible target. Please be more specific.",
+                ambiguity_candidate_entity_ids=outcome.candidates,
+                ambiguity_missing_constraint=outcome.missing_constraint,
+                ambiguity_call=outcome.call,
+            )
         reason = getattr(outcome, "reason", None)
         raise RouteDeclined(str(reason or outcome))
 

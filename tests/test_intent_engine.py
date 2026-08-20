@@ -19,6 +19,7 @@ from intent_bridge.intent_engine.models import (
 from intent_bridge.intent_engine.natural_language import NaturalLanguageIntentPlanner
 from intent_bridge.intent_engine.recognizer import HassilIntentRecognizer
 from intent_bridge.intent_engine.route import DeterministicVoiceRoute
+from intent_bridge.intent_engine.target_evidence import surface_target_evidence
 
 
 def request(text: str, *, area_name: str | None = None) -> VoiceRequest:
@@ -245,6 +246,134 @@ async def test_light_power_grammar_can_target_a_uniquely_named_switch_lamp():
         "name": "Living Room Lamp",
         "entity_id": "switch.living_room_lamp",
     }
+
+
+def test_light_power_grammar_retains_unscoped_label_candidates_for_clarification():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("switch.bedroom_lamp", "Bedroom Lamp", (), "switch", "bedroom"),
+            CatalogEntity("switch.living_lamp", "Living Room Lamp", (), "switch", "living"),
+        ),
+        areas=(
+            CatalogArea("bedroom", "Bedroom"),
+            CatalogArea("living", "Living Room"),
+        ),
+    )
+    engine = DeterministicIntentEngine(
+        StaticRecognizer((match("HassTurnOff", domain="light"),)),
+        StaticCatalog(catalog),
+        RecordingExecutor(),
+    )
+
+    plan = engine.plan(request("turn the lamp off"))
+
+    assert plan.steps == ()
+    assert plan.response is not None
+    assert plan.ambiguity_candidate_entity_ids == (
+        "switch.bedroom_lamp",
+        "switch.living_lamp",
+    )
+    assert plan.ambiguity_call == OhfIntentCall("HassTurnOff", {"domain": "light"})
+
+
+def test_grammar_area_label_ignores_non_actionable_lamp_helpers_before_selecting_switch():
+    supports_power = frozenset({"HassTurnOn", "HassTurnOff"})
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity(
+                "light.bedroom_light",
+                "Bedroom Light",
+                ("Bedroom Lamp",),
+                "light",
+                "bedroom",
+                supported_intents=supports_power,
+            ),
+            CatalogEntity(
+                "switch.bedroom_lamp",
+                "Bedroom Lamp",
+                (),
+                "switch",
+                "bedroom",
+                supported_intents=supports_power,
+            ),
+            CatalogEntity(
+                "number.bedroom_lamp_countdown",
+                "Bedroom Lamp Countdown",
+                ("Bedroom Lamp",),
+                "number",
+                "bedroom",
+                supported_intents=frozenset(),
+            ),
+            CatalogEntity(
+                "sensor.bedroom_lamp_power",
+                "Bedroom Lamp Power",
+                ("Bedroom Lamp",),
+                "sensor",
+                "bedroom",
+                supported_intents=frozenset(),
+            ),
+            CatalogEntity(
+                "select.bedroom_lamp_power_behavior",
+                "Bedroom Lamp Power Behaviour",
+                ("Bedroom Lamp",),
+                "select",
+                "bedroom",
+                supported_intents=frozenset(),
+            ),
+            CatalogEntity(
+                "switch.bedroom_lamp_metering",
+                "Bedroom Lamp Metering",
+                ("Bedroom Lamp",),
+                "switch",
+                "bedroom",
+                supported_intents=supports_power,
+                entity_category="config",
+            ),
+        ),
+        areas=(CatalogArea("bedroom", "Bedroom"),),
+    )
+    engine = DeterministicIntentEngine(
+        StaticRecognizer(
+            (
+                match(
+                    "HassTurnOff",
+                    domain="light",
+                    area=("Bedroom", {"area_id": "bedroom"}),
+                ),
+            )
+        ),
+        StaticCatalog(catalog),
+        RecordingExecutor(),
+    )
+
+    plan = engine.plan(request("turn the lamp off", area_name="Bedroom"))
+
+    assert plan.response is None
+    assert plan.steps[0].entity_ids == ("switch.bedroom_lamp",)
+    assert plan.steps[0].call.data == {
+        "name": "Bedroom Lamp",
+        "entity_id": "switch.bedroom_lamp",
+    }
+
+
+def test_target_evidence_matches_a_catalog_label_inside_a_punctuated_command():
+    catalog = CatalogSnapshot(
+        entities=(
+            CatalogEntity("switch.bedroom_lamp", "Bedroom Lamp", (), "switch", "bedroom"),
+        ),
+        areas=(CatalogArea("bedroom", "Bedroom"),),
+    )
+
+    evidence = surface_target_evidence(
+        "Could you please turn the lamp off?!",
+        catalog,
+        intent_name="HassTurnOff",
+        area_ids=("bedroom",),
+    )
+
+    assert evidence.source == "primary_relative_label"
+    assert evidence.label == "lamp"
+    assert evidence.candidate_entity_ids == ("switch.bedroom_lamp",)
 
 
 @pytest.mark.asyncio

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
@@ -14,6 +15,10 @@ from intent_bridge.intent_engine.models import (
     IntentMatch,
     SlotValue,
 )
+from intent_bridge.intent_engine.semantics import COVER_DEVICE_CLASS_FORMS, plural_domain_forms
+from intent_bridge.intent_engine.target_evidence import surface_target_evidence
+
+LOGGER = logging.getLogger(__name__)
 
 _TARGET_SLOT_NAMES = frozenset(
     {"name", "area", "floor", "domain", "device_class", "entity_id"}
@@ -59,6 +64,7 @@ class ResolvedCandidate:
     entity_ids: frozenset[str]
     semantic_key: tuple[Any, ...]
     specificity: int
+    ambiguity_candidate_entity_ids: frozenset[str] = frozenset()
 
 
 def _area_id(match: IntentMatch, catalog: CatalogSnapshot) -> str | None:
@@ -118,39 +124,6 @@ def _matching_named_entities(match: IntentMatch, catalog: CatalogSnapshot) -> li
     return []
 
 
-def _surface_target_phrases(
-    entity: CatalogEntity,
-    catalog: CatalogSnapshot,
-) -> frozenset[str]:
-    """Return full and area-relative catalog labels for spoken target matching."""
-
-    labels = {
-        entity.name,
-        *entity.aliases,
-        entity.entity_id.split(".", 1)[-1].replace("_", " "),
-    }
-    area = next((area for area in catalog.areas if area.area_id == entity.area_id), None)
-    area_words: set[str] = set()
-    if area is not None:
-        for area_label in (area.name, area.area_id, *area.aliases):
-            normalized_area = _normal(area_label)
-            area_words.update(normalized_area.split())
-            area_words.add(normalized_area.replace(" ", ""))
-
-    phrases: set[str] = set()
-    for label in labels:
-        normalized_label = _normal(label)
-        if not normalized_label:
-            continue
-        phrases.add(normalized_label)
-        relative_label = " ".join(
-            word for word in normalized_label.split() if word not in area_words
-        )
-        if relative_label:
-            phrases.add(relative_label)
-    return frozenset(phrases)
-
-
 def _contains_surface_phrase(text: str, phrase: str) -> bool:
     return bool(re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text))
 
@@ -158,63 +131,7 @@ def _contains_surface_phrase(text: str, phrase: str) -> bool:
 def _has_plural_domain_target(text: str, domain: str) -> bool:
     """Keep plural domain words as group requests, not abbreviated names."""
 
-    plural_forms = {
-        "cover": ("blinds", "covers", "curtains", "shades", "shutters"),
-        "fan": ("fans",),
-        "light": ("lights", "lamps"),
-        "lock": ("locks", "deadbolts"),
-        "media_player": ("media players", "speakers", "televisions", "tvs"),
-        "switch": ("switches",),
-    }.get(domain, ())
-    return any(_contains_surface_phrase(text, form) for form in plural_forms)
-
-
-def _surface_target_domains(intent_name: str, domain: str) -> frozenset[str]:
-    """Return domains that can satisfy an exact spoken target for an intent."""
-
-
-    if intent_name in {"HassTurnOn", "HassTurnOff"} and domain == "light":
-        return frozenset({"light", "switch"})
-    return frozenset({domain})
-
-
-def _surface_named_entity(
-    text: str | None,
-    catalog: CatalogSnapshot,
-    domains: frozenset[str],
-    area_ids: frozenset[str] | None,
-) -> CatalogEntity | None:
-    """Find one catalog entity named by the surface target phrase.
-
-    Packaged OHF grammar intentionally treats terms such as ``lamp`` as the
-    ``light`` domain.  A unique label within the requested/origin area is more
-    specific than that broad domain target, but ties remain unresolved so the
-    normal clarification path can handle them safely.
-    """
-
-    normalized_text = _normal(text)
-    if not normalized_text:
-        return None
-    candidates = [
-        entity
-        for entity in catalog.selectable_entities
-        if _normal(entity.domain) in domains
-        and (area_ids is None or entity.area_id in area_ids)
-    ]
-    matched: list[tuple[int, CatalogEntity]] = []
-    for entity in candidates:
-        phrase_lengths = [
-            len(phrase.split())
-            for phrase in _surface_target_phrases(entity, catalog)
-            if _contains_surface_phrase(normalized_text, phrase)
-        ]
-        if phrase_lengths:
-            matched.append((max(phrase_lengths), entity))
-    if not matched:
-        return None
-    best_length = max(length for length, _ in matched)
-    winners = [entity for length, entity in matched if length == best_length]
-    return winners[0] if len(winners) == 1 else None
+    return any(_contains_surface_phrase(text, form) for form in plural_domain_forms(domain))
 
 
 def _with_surface_name(match: IntentMatch, entity: CatalogEntity) -> IntentMatch:
@@ -253,18 +170,7 @@ def _matches_device_class(entity: CatalogEntity, wanted: str) -> bool:
     actual = _normal(entity.device_class)
     if actual:
         return actual == wanted
-    forms = {
-        "awning": ("awning", "awnings"),
-        "blind": ("blind", "blinds"),
-        "curtain": ("curtain", "curtains", "drape", "drapes"),
-        "damper": ("damper", "dampers"),
-        "door": ("door", "doors"),
-        "garage": ("garage door", "garage doors"),
-        "gate": ("gate", "gates"),
-        "shade": ("shade", "shades"),
-        "shutter": ("shutter", "shutters"),
-        "window": ("window", "windows"),
-    }.get(wanted, (wanted,))
+    forms = COVER_DEVICE_CLASS_FORMS.get(wanted, (wanted,))
     labels = (_normal(entity.name), *(_normal(alias) for alias in entity.aliases))
     return any(
         re.search(rf"(?<!\w){re.escape(form)}(?!\w)", label) for form in forms for label in labels
@@ -324,20 +230,38 @@ def resolve_candidate(
     )
     if not named_entities and not has_explicit_name and domain and not has_unresolved_explicit_topology:
         normalized_text = _normal(text)
-        if (
-            not _has_plural_domain_target(normalized_text, domain)
-            and (
-                surface_entity := _surface_named_entity(
-                    text,
-                    catalog,
-                    _surface_target_domains(match.intent_name, domain),
-                    surface_area_ids,
-                )
+        if not _has_plural_domain_target(normalized_text, domain):
+            evidence = surface_target_evidence(
+                text,
+                catalog,
+                intent_name=match.intent_name,
+                area_ids=surface_area_ids or (),
             )
-        ):
-            match = _with_surface_name(match, surface_entity)
-            named_entities = [surface_entity]
-            has_explicit_name = True
+            LOGGER.info(
+                "INTENT RESOLUTION catalog_label_evidence intent=%s text=%r area_ids=%s "
+                "source=%s label=%r candidates=%s",
+                match.intent_name,
+                text,
+                tuple(sorted(surface_area_ids or ())),
+                evidence.source,
+                evidence.label,
+                evidence.candidate_entity_ids,
+            )
+            if evidence.is_ambiguous:
+                return ResolvedCandidate(
+                    match=match,
+                    entity_ids=frozenset(),
+                    semantic_key=(
+                        match.intent_name,
+                        ("ambiguous_target", evidence.candidate_entity_ids),
+                    ),
+                    specificity=4,
+                    ambiguity_candidate_entity_ids=frozenset(evidence.candidate_entity_ids),
+                )
+            if evidence.is_unique:
+                match = _with_surface_name(match, evidence.entities[0])
+                named_entities = [evidence.entities[0]]
+                has_explicit_name = True
 
     if len(named_entities) == 1:
         entities = named_entities

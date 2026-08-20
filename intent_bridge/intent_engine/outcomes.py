@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from intent_bridge.intent_engine.models import IntentPlan
+from intent_bridge.intent_engine.models import IntentPlan, OhfIntentCall
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,6 +16,7 @@ class Resolved:
 class AmbiguousTarget:
     candidates: tuple[str, ...] = ()
     missing_constraint: str = "target"
+    call: OhfIntentCall | None = None
 
 
 @dataclass(frozen=True, slots=True)

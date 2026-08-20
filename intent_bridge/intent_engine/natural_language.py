@@ -41,71 +41,12 @@ from intent_bridge.intent_engine.outcomes import (
     Resolved,
     UnsupportedOperation,
 )
-
-_DOMAIN_ALIASES: tuple[tuple[str, str], ...] = (
-    ("robot vacuum cleaners", "vacuum"),
-    ("robot vacuum cleaner", "vacuum"),
-    ("robot vacuums", "vacuum"),
-    ("robot vacuum", "vacuum"),
-    ("vacuum cleaners", "vacuum"),
-    ("vacuum cleaner", "vacuum"),
-    ("vacuums", "vacuum"),
-    ("vacuum", "vacuum"),
-    ("weather", "weather"),
-    ("temperature sensors", "sensor"),
-    ("temperature sensor", "sensor"),
-    ("media players", "media_player"),
-    ("media player", "media_player"),
-    ("garage doors", "cover"),
-    ("garage door", "cover"),
-    ("thermostats", "climate"),
-    ("thermostat", "climate"),
-    ("climate controls", "climate"),
-    ("climate control", "climate"),
-    ("climates", "climate"),
-    ("climate", "climate"),
-    ("temperatures", "climate"),
-    ("temperature", "climate"),
-    ("temp", "climate"),
-    ("curtains", "cover"),
-    ("curtain", "cover"),
-    ("shutters", "cover"),
-    ("shutter", "cover"),
-    ("shades", "cover"),
-    ("shade", "cover"),
-    ("blinds", "cover"),
-    ("blind", "cover"),
-    ("covers", "cover"),
-    ("cover", "cover"),
-    ("speakers", "media_player"),
-    ("speaker", "media_player"),
-    ("televisions", "media_player"),
-    ("television", "media_player"),
-    ("lighting", "light"),
-    ("windows", "cover"),
-    ("window", "cover"),
-    ("lights", "light"),
-    ("light", "light"),
-    ("lamps", "light"),
-    ("lamp", "light"),
-    ("fans", "fan"),
-    ("fan", "fan"),
-    ("switches", "switch"),
-    ("switch", "switch"),
-    ("locks", "lock"),
-    ("lock", "lock"),
-    ("scenes", "scene"),
-    ("scene", "scene"),
-    ("scripts", "script"),
-    ("script", "script"),
-    ("tvs", "media_player"),
-    ("tv", "media_player"),
-    ("sensors", "sensor"),
-    ("sensor", "sensor"),
-    ("illumination", "light"),
-    ("deadbolts", "lock"),
-    ("deadbolt", "lock"),
+from intent_bridge.intent_engine.semantics import (
+    COVER_SUBTYPE_FORMS as _COVER_SUBTYPE_FORMS,
 )
+from intent_bridge.intent_engine.semantics import DOMAIN_ALIASES as _DOMAIN_ALIASES
+from intent_bridge.intent_engine.target_evidence import surface_target_evidence
+
 _DOMAIN_WORDS = frozenset(word for phrase, _ in _DOMAIN_ALIASES for word in phrase.split())
 _COLORS = (
     "warm white",
@@ -219,28 +160,6 @@ _POLITE_RE = re.compile(
     re.IGNORECASE,
 )
 _PRONOUN_RE = re.compile(r"\b(?:it|its|them|their|theirs|they|those|these|that|there)\b")
-_COVER_SUBTYPE_FORMS: Mapping[str, tuple[str, ...]] = {
-    "window_covering": (
-        "blind",
-        "blinds",
-        "curtain",
-        "curtains",
-        "drape",
-        "drapes",
-        "shade",
-        "shades",
-        "shutter",
-        "shutters",
-        "window",
-        "windows",
-    ),
-    "garage_door": ("garage door", "garage doors"),
-    "awning": ("awning", "awnings"),
-    "damper": ("damper", "dampers"),
-    "gate": ("gate", "gates"),
-}
-
-
 @dataclass(frozen=True, slots=True)
 class _Operation:
     intent_name: str
@@ -304,7 +223,14 @@ class _TargetSet:
 
 
 class _AmbiguousTarget(Exception):
-    pass
+    def __init__(
+        self,
+        candidate_entity_ids: Sequence[str] = (),
+        missing_constraint: str = "target",
+    ) -> None:
+        self.candidate_entity_ids = tuple(dict.fromkeys(candidate_entity_ids))
+        self.missing_constraint = missing_constraint
+        super().__init__(missing_constraint)
 
 
 class _CapabilityMismatch(Exception):
@@ -378,24 +304,6 @@ def _is_generic_entity_phrase(phrase: str) -> bool:
 
 def _is_on_off_action(text: str) -> bool:
     return bool(_ON_OFF_ACTION_RE.search(text))
-
-
-def _is_power_control_entity(entity: CatalogEntity) -> bool:
-    if entity.domain != "switch":
-        return False
-    normalized_name = _normal(entity.name)
-    normalized_id_tail = _normal(entity.entity_id.split(".", 1)[1])
-    return "power" in normalized_name or "power" in normalized_id_tail
-
-
-def _prefer_power_switch_hits(
-    text: str,
-    hits: list[tuple[CatalogEntity, str]],
-) -> list[tuple[CatalogEntity, str]]:
-    if not _is_on_off_action(text):
-        return hits
-    power_hits = [hit for hit in hits if _is_power_control_entity(hit[0])]
-    return power_hits or hits
 
 
 def _clean_clause(text: str) -> str:
@@ -1014,8 +922,6 @@ def _classify(text: str, contextual_domain: str | None = None) -> _Operation | N
 def _domain_compatible(entity: CatalogEntity, domain: str | None) -> bool:
     if domain is None or entity.domain == domain:
         return True
-    if domain == "fan" and entity.domain == "switch":
-        return "fan" in _normal(entity.name)
     if domain == "sensor" and entity.domain == "binary_sensor":
         return True
     return False
@@ -1083,9 +989,28 @@ def _mentioned_floors(text: str, catalog: CatalogSnapshot) -> tuple[CatalogFloor
 def _entity_phrases(entity: CatalogEntity, catalog: CatalogSnapshot) -> tuple[str, ...]:
     phrases = {entity.name, entity.entity_id, entity.entity_id.split(".", 1)[-1], *entity.aliases}
     area = next((area for area in catalog.areas if area.area_id == entity.area_id), None)
+    area_labels: set[str] = set()
     if area is not None:
         phrases.add(f"{area.name} {entity.name}")
-    return tuple(sorted((_normal(phrase) for phrase in phrases if phrase), key=len, reverse=True))
+        area_labels = {
+            _normal(label)
+            for label in (area.name, area.area_id, *area.aliases)
+            if _normal(label)
+        }
+    # An entity-id tail that is only the room name is topology metadata, not a
+    # spoken entity label. Treating it as a name makes every request mentioning
+    # that room accidentally target e.g. ``climate.living``.
+    return tuple(
+        sorted(
+            (
+                normalized
+                for phrase in phrases
+                if (normalized := _normal(phrase)) and normalized not in area_labels
+            ),
+            key=len,
+            reverse=True,
+        )
+    )
 
 
 def _distinctive_tokens(entity: CatalogEntity, catalog: CatalogSnapshot) -> frozenset[str]:
@@ -1166,6 +1091,8 @@ def _named_entities(
     domain: str | None,
     areas: Sequence[CatalogArea],
     ignored_entity_domains: frozenset[str],
+    *,
+    allow_cross_domain_labels: bool = False,
 ) -> tuple[tuple[CatalogEntity, bool], ...]:
     area_ids = {area.area_id for area in areas}
     candidates: list[tuple[CatalogEntity, tuple[str, ...]]] = []
@@ -1219,6 +1146,51 @@ def _named_entities(
             if (phrase := next((item for item in phrases if _fuzzy_phrase(text, item)), None))
             is not None
         ]
+    if not hits and domain is not None and allow_cross_domain_labels:
+        # A catalog label can describe a capability implemented by another
+        # domain (for example a fan exposed as a switch). Consult that
+        # evidence only after compatible targets fail, and never fuzz-match a
+        # cross-domain candidate or an area-only fragment.
+        cross_candidates = [
+            (entity, _entity_phrases(entity, catalog))
+            for entity in catalog.selectable_entities
+            if entity.domain.casefold() not in ignored_entity_domains
+            and not _domain_compatible(entity, domain)
+            and (not area_ids or entity.area_id in area_ids)
+        ]
+        hits = [
+            (entity, phrase)
+            for entity, phrases in cross_candidates
+            if (
+                phrase := next(
+                    (
+                        item
+                        for item in phrases
+                        if not _is_generic_entity_phrase(item) and _contains_phrase(text, item)
+                    ),
+                    None,
+                )
+            )
+            is not None
+        ]
+        if not hits:
+            hits = [
+                (entity, token)
+                for entity, _ in cross_candidates
+                if (
+                    token := next(
+                        (
+                            item
+                            for item in sorted(
+                                _distinctive_tokens(entity, catalog), key=len, reverse=True
+                            )
+                            if _contains_phrase(text, item)
+                        ),
+                        None,
+                    )
+                )
+                is not None
+            ]
     if not hits:
         return ()
 
@@ -1257,8 +1229,6 @@ def _named_entities(
             for score, entity, phrase in scored_hits
             if score == best_score
         ]
-
-    hits = _prefer_power_switch_hits(text, hits)
 
     by_phrase: dict[str, list[CatalogEntity]] = {}
     for entity, phrase in hits:
@@ -1575,7 +1545,6 @@ def singular_generic_target(text: str, domain: str) -> bool:
 
 _DOMAIN_POLYMORPHIC_INTENTS = frozenset({"HassGetState", "HassTurnOff", "HassTurnOn"})
 
-
 def _resolve_target_member(
     member: _TargetMember,
     operation: _Operation,
@@ -1608,17 +1577,29 @@ def _resolve_target_member(
     )
     cover_subtype = _cover_subtype(text) if domain == "cover" else None
 
-    # A polymorphic power/state predicate must not use the domain inferred
-    # from a different conjunct to filter an explicitly named member. Resolve
-    # unrestricted names first; retain the operation domain only as the
-    # fallback for generic area/floor phrases such as ``kitchen lights``.
-    name_domain = None if polymorphic and mentioned_domain is None else domain
+    # Power/state operations are polymorphic: a catalog label is stronger
+    # evidence than the entity's implementation domain.  Keep the spoken
+    # domain only for generic area/floor fallback such as ``kitchen lights``.
+    name_domain = domain
+    if polymorphic and domain not in {"binary_sensor", "sensor"}:
+        label_evidence = surface_target_evidence(
+            text,
+            catalog,
+            intent_name=operation.intent_name,
+            area_ids=(area.area_id for area in member_areas),
+            ignored_entity_domains=ignored_entity_domains,
+        )
+        if label_evidence.is_ambiguous:
+            raise _AmbiguousTarget(label_evidence.candidate_entity_ids)
+        if label_evidence.is_unique:
+            return (_target_for_entity(label_evidence.entities[0]),)
     named = _named_entities(
         text,
         catalog,
         name_domain,
         member_areas,
         ignored_entity_domains,
+        allow_cross_domain_labels=polymorphic,
     )
     if any(ambiguous for _, ambiguous in named):
         raise _AmbiguousTarget
@@ -1640,6 +1621,7 @@ def _resolve_target_member(
             name_domain,
             member_areas,
             ignored_entity_domains,
+            allow_cross_domain_labels=polymorphic,
         )
         if any(ambiguous for _, ambiguous in named):
             raise _AmbiguousTarget
@@ -1694,6 +1676,7 @@ def _resolve_target_set(
     shared_floors = _mentioned_floors(full_text, catalog)
     targets: list[_Target] = []
     for member in target_set.members:
+        member_ambiguity: _AmbiguousTarget | None = None
         try:
             resolved = _resolve_target_member(
                 member,
@@ -1703,8 +1686,9 @@ def _resolve_target_set(
                 shared_floors,
                 ignored_entity_domains,
             )
-        except _AmbiguousTarget:
+        except _AmbiguousTarget as exc:
             resolved = ()
+            member_ambiguity = exc
         if not resolved:
             resolved = _resolve_elliptical_coordinated_member(
                 member,
@@ -1713,9 +1697,10 @@ def _resolve_target_set(
                 ignored_entity_domains,
                 full_text,
                 targets,
+                member_ambiguity.candidate_entity_ids if member_ambiguity else (),
             )
         if not resolved:
-            raise _AmbiguousTarget
+            raise member_ambiguity or _AmbiguousTarget()
         targets.extend(resolved)
     unique: list[_Target] = []
     seen: set[tuple[str, ...]] = set()
@@ -1733,6 +1718,7 @@ def _resolve_elliptical_coordinated_member(
     ignored_entity_domains: frozenset[str],
     full_text: str,
     resolved_targets: Sequence[_Target],
+    ambiguity_candidate_entity_ids: Sequence[str] = (),
 ) -> tuple[_Target, ...]:
     """Resolve an ambiguous abbreviated conjunct only with unique evidence.
 
@@ -1751,13 +1737,14 @@ def _resolve_elliptical_coordinated_member(
         if polymorphic and mentioned_domain is not None
         else operation.domain or mentioned_domain
     )
-    name_domain = None if polymorphic and mentioned_domain is None else domain
+    name_domain = domain
     named = _named_entities(
         text,
         catalog,
         name_domain,
         member_areas,
         ignored_entity_domains,
+        allow_cross_domain_labels=polymorphic,
     )
     candidates = tuple(entity for entity, ambiguous in named if ambiguous)
     if not candidates and _is_generic_coordinated_member(text, domain):
@@ -1781,6 +1768,17 @@ def _resolve_elliptical_coordinated_member(
     )
     resolved_area_ids = {entity.area_id for entity in resolved_entities if entity.area_id}
 
+    if polymorphic and len(resolved_area_ids) == 1:
+        label_evidence = surface_target_evidence(
+            text,
+            catalog,
+            intent_name=operation.intent_name,
+            area_ids=resolved_area_ids,
+            ignored_entity_domains=ignored_entity_domains,
+        )
+        if label_evidence.is_unique:
+            return (_target_for_entity(label_evidence.entities[0]),)
+
     scored: list[tuple[int, CatalogEntity]] = []
     for entity in candidates:
         score = 20 * len(_distinctive_tokens(entity, catalog) & sibling_words)
@@ -1792,7 +1790,11 @@ def _resolve_elliptical_coordinated_member(
         # If the catalog contains exactly one compatible entity, no sibling
         # evidence is needed.  Never apply this fallback when there are two
         # possible devices: an unscoped ``fan`` must still clarify.
-        return (_target_for_entity(candidates[0]),) if len(candidates) == 1 else ()
+        return (
+            (_target_for_entity(candidates[0]),)
+            if len(candidates) == 1 and not ambiguity_candidate_entity_ids
+            else ()
+        )
     best_score = max(score for score, _ in scored)
     winners = tuple(entity for score, entity in scored if score == best_score)
     return (_target_for_entity(winners[0]),) if len(winners) == 1 else ()
@@ -1879,8 +1881,38 @@ def _resolve_targets(
         LOGGER.info("Coordinated target set resolved: %s", _format_targets(coordinated_targets))
         return coordinated_targets
 
+    name_domain = domain
+    label_areas = areas
+    if not label_areas and (origin_area := _origin_area(context, catalog)) is not None:
+        label_areas = (origin_area,)
+    if (
+        operation.intent_name in _DOMAIN_POLYMORPHIC_INTENTS
+        and domain not in {"binary_sensor", "sensor"}
+    ):
+        label_evidence = surface_target_evidence(
+            text,
+            catalog,
+            intent_name=operation.intent_name,
+            area_ids=(area.area_id for area in label_areas),
+            ignored_entity_domains=ignored_entity_domains,
+        )
+        if label_evidence.is_ambiguous:
+            LOGGER.info(
+                "TARGET RESOLUTION ambiguous reason=catalog_label_matches text=%r domain=%r",
+                text,
+                domain,
+            )
+            raise _AmbiguousTarget(label_evidence.candidate_entity_ids)
+        if label_evidence.is_unique:
+            return (_target_for_entity(label_evidence.entities[0]),)
+
     entity_hits = _named_entities(
-        text, catalog, domain, areas, ignored_entity_domains
+        text,
+        catalog,
+        name_domain,
+        areas,
+        ignored_entity_domains,
+        allow_cross_domain_labels=operation.intent_name in _DOMAIN_POLYMORPHIC_INTENTS,
     )
     if entity_hits:
         unambiguous_entities = tuple(entity for entity, ambiguous in entity_hits if not ambiguous)
@@ -2152,14 +2184,20 @@ class NaturalLanguageIntentPlanner:
                     previous_targets,
                     self._ignored_entity_domains,
                 )
-            except _AmbiguousTarget:
+            except _AmbiguousTarget as exc:
                 LOGGER.info(
-                    "NATURAL PLAN ambiguous clause=%r intent=%s domain=%r",
+                    "NATURAL PLAN ambiguous clause=%r intent=%s domain=%r candidates=%s",
                     clause,
                     operation.intent_name,
                     operation.domain,
+                    exc.candidate_entity_ids,
                 )
-                return IntentPlan(response=self._ambiguity_response)
+                return IntentPlan(
+                    response=self._ambiguity_response,
+                    ambiguity_candidate_entity_ids=exc.candidate_entity_ids,
+                    ambiguity_missing_constraint=exc.missing_constraint,
+                    ambiguity_call=OhfIntentCall(operation.intent_name, dict(operation.slots)),
+                )
             except _CapabilityMismatch as exc:
                 if _typed:
                     raise RouteDeclined(f"Capability mismatch: {exc}") from exc
@@ -2253,7 +2291,11 @@ class NaturalLanguageIntentPlanner:
                 )
             return UnsupportedOperation(reason)
         if plan.response == self._ambiguity_response:
-            return AmbiguousTarget()
+            return AmbiguousTarget(
+                plan.ambiguity_candidate_entity_ids,
+                plan.ambiguity_missing_constraint,
+                plan.ambiguity_call,
+            )
         if plan.steps:
             return Resolved(plan)
         return UnsupportedOperation("Planner produced no executable result")

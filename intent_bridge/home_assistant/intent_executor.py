@@ -14,6 +14,7 @@ from agents import Runner
 from intent_bridge.config import settings
 from intent_bridge.core.voice import RouteDeclined
 from intent_bridge.home_assistant.advanced import run_advanced_agent
+from intent_bridge.home_assistant.intent_services import exact_target_service
 from intent_bridge.intent_engine.models import ExecutionResult, OhfIntentCall
 from intent_bridge.runtime.dependencies import runtime
 from intent_bridge.runtime.execution import voice_tool_run_state
@@ -23,11 +24,6 @@ log = logging.getLogger(__name__)
 # Kept as a module-level seam so deployments/tests can replace advanced HA
 # resolution without patching the agent harness itself.
 ha_advanced = run_advanced_agent
-
-_EXACT_TARGET_SERVICE_BY_INTENT = {
-    "HassVacuumStart": "start",
-    "HassVacuumReturnToBase": "return_to_base",
-}
 
 # ``/api/intent/handle`` returns these values for the caller to render.  The
 # Home Assistant conversation agent normally applies the matching response
@@ -289,21 +285,6 @@ def _contains_internal_match_failure(speech: str) -> bool:
         )
     )
 
-
-def _exact_target_service(call: OhfIntentCall, entity_id: str) -> str | None:
-    service = _EXACT_TARGET_SERVICE_BY_INTENT.get(call.intent_name)
-    if service:
-        return service
-    domain = entity_id.split(".", 1)[0]
-    if call.intent_name == "HassTurnOn":
-        return {"cover": "open_cover", "lock": "lock", "vacuum": "start"}.get(
-            domain, "turn_on"
-        )
-    if call.intent_name == "HassTurnOff":
-        return {"cover": "close_cover", "lock": "unlock", "vacuum": "stop"}.get(
-            domain, "turn_off"
-        )
-    return None
 
 def _error_detail(response: httpx.Response) -> str:
     try:
@@ -779,7 +760,7 @@ class HomeAssistantIntentExecutor:
         if speech and _contains_internal_match_failure(speech):
             entity_id = call.data.get("entity_id")
             entity_id = entity_id.strip() if isinstance(entity_id, str) else ""
-            service = _exact_target_service(call, entity_id) if entity_id else None
+            service = exact_target_service(call.intent_name, entity_id) if entity_id else None
             ha_ws = runtime.ha_ws
             if service and ha_ws is not None:
                 domain = entity_id.split(".", 1)[0]

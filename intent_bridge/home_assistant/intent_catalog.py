@@ -11,6 +11,7 @@ from typing import Any, Protocol
 
 from intent_bridge.core.text import normalize_search_text
 from intent_bridge.home_assistant.catalog import entity_context
+from intent_bridge.home_assistant.intent_services import power_intents_supported_by_domain
 from intent_bridge.indicators.topology import is_indicator_control
 from intent_bridge.intent_engine.models import (
     CatalogArea,
@@ -167,7 +168,7 @@ class _CatalogSourceCopy:
     """A stable shallow copy of HA cache maps for an off-loop full rebuild.
 
     The WebSocket client replaces state and registry entries rather than mutating
-    their nested mappings. Copying the four top-level dictionaries on the event
+    their nested mappings. Copying the top-level cache dictionaries on the event
     loop therefore gives a coherent source set to the worker without holding a
     lock or iterating a map that the reader task may change.
     """
@@ -177,18 +178,21 @@ class _CatalogSourceCopy:
     devices: dict[str, dict[str, Any]]
     areas: dict[str, dict[str, Any]]
     floors: dict[str, dict[str, Any]]
+    services: dict[str, Any] | None
 
 
 def _copy_catalog_source(client: CachedHomeAssistant) -> _CatalogSourceCopy:
     """Capture every catalog input; never patch a previously published catalog."""
 
     raw_floors = getattr(client, "floors", {})
+    raw_services = getattr(client, "services", None)
     return _CatalogSourceCopy(
         states=dict(client.states),
         entity_registry=dict(client.entity_registry),
         devices=dict(client.devices),
         areas=dict(client.areas),
         floors=dict(raw_floors) if isinstance(raw_floors, dict) else {},
+        services=dict(raw_services) if isinstance(raw_services, dict) else None,
     )
 
 
@@ -226,6 +230,8 @@ def _state_is_available(state: object) -> bool:
 
 
 def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
+    raw_services = getattr(client, "services", None)
+    services = raw_services if isinstance(raw_services, dict) else None
     areas: list[CatalogArea] = []
     for area_id, raw_area in sorted(client.areas.items()):
         if not isinstance(raw_area, dict):
@@ -325,6 +331,10 @@ def snapshot_from_client(client: CachedHomeAssistant) -> CatalogSnapshot:
                     attributes,
                     entity_id=entity_id,
                     entity_name=canonical_name,
+                ),
+                supported_intents=power_intents_supported_by_domain(
+                    entity_id.split(".", 1)[0],
+                    services,
                 ),
                 entity_category=(
                     str(registry["ec"]) if registry.get("ec") not in (None, "") else None

@@ -27,6 +27,11 @@ from intent_bridge.intent_engine.models import (
     semantic_effect_for_call,
 )
 from intent_bridge.intent_engine.ports import IntentPlanner
+from intent_bridge.intent_engine.semantics import (
+    DOMAIN_REFERENCE_WORDS as _DOMAIN_REFERENCE_WORDS,
+)
+from intent_bridge.intent_engine.semantics import referenced_domain
+from intent_bridge.intent_engine.target_evidence import surface_target_evidence
 
 LOGGER = logging.getLogger(__name__)
 
@@ -85,6 +90,10 @@ _GENERIC_ENTITY_WORDS = frozenset(
 
 def _normal(text: object) -> str:
     return normalize_search_text(text)
+
+
+def _contains_phrase(text: str, phrase: str) -> bool:
+    return bool(phrase and re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", text))
 
 
 def _number(value: str) -> int | float | None:
@@ -179,23 +188,6 @@ def _mentioned_entities(
         for entity in entities
         if scores[entity.entity_id] >= threshold
     )
-
-
-_DOMAIN_REFERENCE_WORDS: dict[str, frozenset[str]] = {
-    "climate": frozenset(
-        {"ac", "air", "climate", "conditioner", "thermostat", "temperature"}
-    ),
-    "cover": frozenset(
-        {"blind", "blinds", "cover", "covers", "curtain", "curtains", "door", "doors"}
-    ),
-    "fan": frozenset({"fan", "fans", "ventilation"}),
-    "light": frozenset({"lamp", "lamps", "light", "lights", "lighting"}),
-    "lock": frozenset({"lock", "locks"}),
-    "media_player": frozenset({"player", "projector", "speaker", "stereo", "tv"}),
-    # "switch" is normally a control verb ("switch the light on"), so named
-    # switch entities are resolved from their own descriptors instead.
-    "switch": frozenset(),
-}
 
 
 def _action_entities(
@@ -904,13 +896,21 @@ def _automation_actions(
     on_state = bool(re.search(r"\b(on|start|starts|activate|come on|comes on)\b", normal))
     off_state = bool(re.search(r"\b(off|kill|shut off|shuts off)\b", normal))
     if on_state or off_state:
-        for domain in ("light", "switch", "fan", "media_player"):
-            if domain == "light" and (brightness is not None or all_lights):
-                continue
-            entities = _action_entities(text, catalog, domain)
-            for entity in entities:
+        intent_name = "HassTurnOff" if off_state and not on_state else "HassTurnOn"
+        evidence = surface_target_evidence(text, catalog, intent_name=intent_name)
+        if evidence.is_unique:
+            entity = evidence.entities[0]
+            if entity.domain in {"light", "switch", "fan", "media_player"}:
                 state = "off" if off_state and not on_state else "on"
-                add(f"{domain}.turn_{state}", entity=entity)
+                add(f"{entity.domain}.turn_{state}", entity=entity)
+        elif not evidence.is_ambiguous:
+            for domain in ("light", "switch", "fan", "media_player"):
+                if domain == "light" and (brightness is not None or all_lights):
+                    continue
+                entities = _action_entities(text, catalog, domain)
+                for entity in entities:
+                    state = "off" if off_state and not on_state else "on"
+                    add(f"{domain}.turn_{state}", entity=entity)
 
     def position(item: Mapping[str, Any]) -> int:
         if entity_id := item.get("entity_id"):
@@ -1261,70 +1261,79 @@ def _pending_from_request(
     text: str,
     catalog: CatalogSnapshot,
     response: str,
+    *,
+    candidate_entity_ids: Sequence[str] = (),
+    ambiguity_call: OhfIntentCall | None = None,
+    missing_constraint: str = "single target",
 ) -> PendingClarification | None:
     """Capture an ambiguous command as an immutable pre-execution frame."""
 
     normal = _normal(text)
-    domain_patterns = (
-        ("light", r"\b(?:lamps?|lights?|lighting)\b"),
-        ("cover", r"\b(?:blinds?|curtains?|covers?|garage doors?)\b"),
-        ("fan", r"\b(?:fans?|ventilation)\b"),
-        ("climate", r"\b(?:thermostats?|climate|temperature)\b"),
-        ("media_player", r"\b(?:tvs?|televisions?|speakers?|stereos?|players?)\b"),
-        ("lock", r"\b(?:locks?|doors?)\b"),
-        ("switch", r"\b(?:switches?)\b"),
+    by_id = {entity.entity_id: entity for entity in catalog.selectable_entities}
+    candidates = tuple(
+        by_id[entity_id]
+        for entity_id in dict.fromkeys(candidate_entity_ids)
+        if entity_id in by_id
     )
-    domain = next(
-        (candidate for candidate, pattern in domain_patterns if re.search(pattern, normal)),
-        None,
-    )
-    if domain is None:
-        return None
-    candidates = _mentioned_entities(
-        text, catalog, domains=frozenset({domain}), all_ties=True
-    )
-    if len(candidates) < 2:
-        return None
-
-    number = _first_number(text)
-    data: dict[str, Any] = {}
-    if number is not None:
-        property_operation = {
-            "light": ("HassLightSet", "brightness"),
-            "cover": ("HassSetPosition", "position"),
-            "fan": ("HassFanSetSpeed", "percentage"),
-            "climate": ("HassClimateSetTemperature", "temperature"),
-            "media_player": ("HassSetVolume", "volume_level"),
-        }.get(domain)
-        if property_operation is None:
+    if candidates:
+        if len(candidates) < 2 or ambiguity_call is None:
             return None
-        intent, slot = property_operation
-        data[slot] = number
-    elif re.search(r"\b(off|deactivate|disable)\b", normal):
-        intent = "HassTurnOff"
-    elif re.search(r"\b(on|activate|enable)\b", normal):
-        intent = "HassTurnOn"
-    elif re.search(r"\b(open|raise)\b", normal) and domain == "cover":
-        intent = "HassTurnOn"
-    elif re.search(r"\b(close|closed|shut|lower)\b", normal) and domain == "cover":
-        intent = "HassTurnOff"
-    elif re.search(r"\bunlock\b", normal) and domain == "lock":
-        intent = "HassTurnOff"
-    elif re.search(r"\block\b", normal) and domain == "lock":
-        intent = "HassTurnOn"
-    elif re.search(r"\b(?:brightness|bright|level|state|status)\b", normal):
-        # Keep an ambiguous read-only target alive for a property-setting
-        # follow-up such as ``Kitchen light brightness level?`` -> ``Make it
-        # 27``.  The first turn is intentionally not executed; the second
-        # turn supplies the missing value while retaining the candidate set.
-        intent = "HassGetState"
+        call = ambiguity_call
+        intent = call.intent_name
+        data = dict(call.data)
+        candidate_domains = {entity.domain for entity in candidates}
+        domain = next(iter(candidate_domains)) if len(candidate_domains) == 1 else None
     else:
-        return None
+        # Compatibility path for older planners which only returned prose.
+        # New deterministic ambiguity results always supply immutable IDs and
+        # an already-classified call above.
+        domain = referenced_domain(normal, _contains_phrase)
+        if domain is None:
+            return None
+        candidates = _mentioned_entities(
+            text, catalog, domains=frozenset({domain}), all_ties=True
+        )
+        if len(candidates) < 2:
+            return None
 
-    call = OhfIntentCall(intent, data)
+        number = _first_number(text)
+        data: dict[str, Any] = {}
+        if number is not None:
+            property_operation = {
+                "light": ("HassLightSet", "brightness"),
+                "cover": ("HassSetPosition", "position"),
+                "fan": ("HassFanSetSpeed", "percentage"),
+                "climate": ("HassClimateSetTemperature", "temperature"),
+                "media_player": ("HassSetVolume", "volume_level"),
+            }.get(domain)
+            if property_operation is None:
+                return None
+            intent, slot = property_operation
+            data[slot] = number
+        elif re.search(r"\b(off|deactivate|disable)\b", normal):
+            intent = "HassTurnOff"
+        elif re.search(r"\b(on|activate|enable)\b", normal):
+            intent = "HassTurnOn"
+        elif re.search(r"\b(open|raise)\b", normal) and domain == "cover":
+            intent = "HassTurnOn"
+        elif re.search(r"\b(close|closed|shut|lower)\b", normal) and domain == "cover":
+            intent = "HassTurnOff"
+        elif re.search(r"\bunlock\b", normal) and domain == "lock":
+            intent = "HassTurnOff"
+        elif re.search(r"\block\b", normal) and domain == "lock":
+            intent = "HassTurnOn"
+        elif re.search(r"\b(?:brightness|bright|level|state|status)\b", normal):
+            # Keep an ambiguous read-only target alive for a property-setting
+            # follow-up such as ``Kitchen light brightness level?`` -> ``Make
+            # it 27``.  The first turn is intentionally not executed.
+            intent = "HassGetState"
+        else:
+            return None
+        call = OhfIntentCall(intent, data)
+
     effect = semantic_effect_for_call(call)
     area_ids = tuple(dict.fromkeys(entity.area_id for entity in candidates if entity.area_id))
-    constraints: dict[str, Any] = {"domain": domain}
+    constraints: dict[str, Any] = {"domain": domain} if domain else {}
     if len(area_ids) == 1:
         constraints["area_id"] = area_ids[0]
     frame = DiscourseOperationFrame(
@@ -1344,7 +1353,9 @@ def _pending_from_request(
         requested_effect=effect,
         target_constraints=constraints,
         intended_cardinality=ReferentCardinality.SINGULAR,
-        required_constraint="single target",
+        required_constraint=(
+            missing_constraint if ambiguity_call is not None and candidate_entity_ids else "single target"
+        ),
         source_clause=text.strip(),
     )
 
@@ -1420,7 +1431,14 @@ def _resolve_pending(
     if len(winners) != 1:
         return None
     entity = winners[0]
-    data = {**pending.data, "name": entity.name}
+    data = {
+        key: value
+        for key, value in pending.data.items()
+        if key not in {"area", "domain", "entity_id", "floor", "name"}
+    }
+    data["name"] = entity.name
+    if "entity_id" in pending.data:
+        data["entity_id"] = entity.entity_id
     call = OhfIntentCall(pending.original_predicate, data)
     return IntentPlan(
         steps=(
@@ -1587,7 +1605,16 @@ class PlanningSession:
         plan = self._planner.plan(text, catalog, origin_context)
         if plan.steps:
             next_state = _state_from_plan(plan, text, self.state)
-        elif plan.response and (pending := _pending_from_request(text, catalog, plan.response)):
+        elif plan.response and (
+            pending := _pending_from_request(
+                text,
+                catalog,
+                plan.response,
+                candidate_entity_ids=plan.ambiguity_candidate_entity_ids,
+                ambiguity_call=plan.ambiguity_call,
+                missing_constraint=plan.ambiguity_missing_constraint,
+            )
+        ):
             assert pending.original_frame is not None
             frame = replace(
                 pending.original_frame,

@@ -66,6 +66,9 @@ class CatalogEntity:
     is_indicator: bool = False
     is_enabled: bool = True
     is_available: bool = True
+    # Populated by the provider from its live capability registry. ``None``
+    # deliberately means unknown so hand-built/legacy catalogs remain usable.
+    supported_intents: frozenset[str] | None = None
 
     @property
     def is_selectable(self) -> bool:
@@ -183,6 +186,16 @@ class IntentPlan:
 
     steps: tuple[PlannedIntent, ...] = ()
     response: str | None = None
+    # Ambiguity is part of planning state, not merely user-facing speech.  The
+    # conversation layer uses these immutable IDs to resolve a follow-up such
+    # as "the bedroom one" without reparsing the original command through a
+    # separate lexical heuristic.
+    ambiguity_candidate_entity_ids: tuple[str, ...] = ()
+    ambiguity_missing_constraint: str = "target"
+    # Keep the already-classified operation with an ambiguity.  A dialogue
+    # follow-up should select from these candidates, not reclassify the first
+    # utterance from scratch.
+    ambiguity_call: OhfIntentCall | None = None
 
 
 @dataclass(frozen=True, slots=True)

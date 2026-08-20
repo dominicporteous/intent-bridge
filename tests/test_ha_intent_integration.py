@@ -78,6 +78,32 @@ def test_catalog_snapshot_normalizes_state_and_registry_aliases():
     assert resolved.match.slots["entity_id"].value == "light.kitchen_ceiling"
 
 
+def test_catalog_snapshot_derives_power_capabilities_from_live_services():
+    class Client:
+        states = {
+            "switch.lamp": {"state": "on", "attributes": {}},
+            "number.lamp_countdown": {"state": "10", "attributes": {}},
+        }
+        entity_registry = {
+            "switch.lamp": {"ei": "switch.lamp"},
+            "number.lamp_countdown": {"ei": "number.lamp_countdown"},
+        }
+        devices = {}
+        areas = {}
+        floors = {}
+        services = {
+            "switch": {"turn_on": {}, "turn_off": {}},
+            "number": {"set_value": {}},
+        }
+
+    entities = {entity.entity_id: entity for entity in snapshot_from_client(Client()).entities}
+
+    assert entities["switch.lamp"].supported_intents == frozenset(
+        {"HassTurnOn", "HassTurnOff"}
+    )
+    assert entities["number.lamp_countdown"].supported_intents == frozenset()
+
+
 def test_catalog_selection_excludes_disabled_and_unavailable_entities():
     class Client:
         states = {
