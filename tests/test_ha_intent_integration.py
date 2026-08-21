@@ -29,6 +29,19 @@ _AUDITED_AREA_INDEPENDENT_CONVERSATION_INTENTS = frozenset(
     }
 )
 
+_AUDITED_TIMER_INTENTS = frozenset(
+    {
+        "HassStartTimer",
+        "HassCancelAllTimers",
+        "HassIncreaseTimer",
+        "HassDecreaseTimer",
+        "HassCancelTimer",
+        "HassPauseTimer",
+        "HassUnpauseTimer",
+        "HassTimerStatus",
+    }
+)
+
 
 def test_catalog_snapshot_normalizes_state_and_registry_aliases():
     class Client:
@@ -225,6 +238,10 @@ def test_area_independent_conversation_intents_match_the_audited_core_allow_list
     )
 
 
+def test_timer_intents_match_the_audited_core_allow_list():
+    assert executor_module._TIMER_INTENTS == _AUDITED_TIMER_INTENTS
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("call", "speech_slots", "expected"),
@@ -409,6 +426,53 @@ async def test_intent_executor_uses_persistent_websocket_before_http():
             "assist_satellite.office",
             4.5,
         )
+    ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("intent_name", "data"),
+    [
+        ("HassStartTimer", {"minutes": 5}),
+        ("HassCancelAllTimers", {}),
+        ("HassCancelTimer", {"name": "Tea"}),
+        ("HassIncreaseTimer", {"name": "Tea", "minutes": 1}),
+        ("HassDecreaseTimer", {"name": "Tea", "minutes": 1}),
+        ("HassPauseTimer", {"name": "Tea"}),
+        ("HassUnpauseTimer", {"name": "Tea"}),
+        ("HassTimerStatus", {}),
+    ],
+)
+async def test_intent_executor_targets_timer_intents_at_calling_device_over_http(
+    intent_name, data
+):
+    seen: list[dict[str, object]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={"speech": {"plain": {"speech": "Timer command completed."}}},
+        )
+
+    _reset_voice_tool_run_state(
+        "Create a five minute timer",
+        {"device_id": "kitchen-voice-device"},
+        # This models an exact named-intent dispatch, including one from a
+        # compound command that cannot safely replay the whole utterance.
+        allow_conversation_websocket=False,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+        result = await executor.execute(OhfIntentCall(intent_name, data))
+
+    assert result.speech == "Timer command completed."
+    assert seen == [
+        {
+            "name": intent_name,
+            "data": data,
+            "device_id": "kitchen-voice-device",
+        }
     ]
 
 

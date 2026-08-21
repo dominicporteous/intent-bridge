@@ -68,6 +68,22 @@ _AREA_INDEPENDENT_CONVERSATION_INTENTS = frozenset(
         "HassShoppingListLastItems",
     }
 )
+# Native Assist timers are owned by the device that created them. The
+# WebSocket conversation path carries that context already, but named-intent
+# HTTP dispatch requires it as a top-level field. Keep the whole timer family
+# together so follow-up commands resolve against the caller's timers too.
+_TIMER_INTENTS = frozenset(
+    {
+        "HassStartTimer",
+        "HassCancelAllTimers",
+        "HassCancelTimer",
+        "HassIncreaseTimer",
+        "HassDecreaseTimer",
+        "HassPauseTimer",
+        "HassUnpauseTimer",
+        "HassTimerStatus",
+    }
+)
 
 
 def _speech_slots_from_response(body: Mapping[str, Any]) -> Mapping[str, Any] | None:
@@ -748,6 +764,17 @@ class HomeAssistantIntentExecutor:
         if call.intent_name == _TRIGGER_AUTOMATION_INTENT:
             return await self._trigger_automation(headers, call)
         payload = {"name": call.intent_name, "data": dict(call.data)}
+        calling_device_id = voice_tool_run_state.origin_device_id
+        if call.intent_name in _TIMER_INTENTS and isinstance(calling_device_id, str):
+            calling_device_id = calling_device_id.strip()
+            if calling_device_id:
+                payload["device_id"] = calling_device_id
+                log.info(
+                    "Targeting Home Assistant timer intent at calling device "
+                    "intent=%s device_id=%s",
+                    call.intent_name,
+                    calling_device_id,
+                )
 
         log.info(
             "Executing Home Assistant intent intent=%s data=%s",
