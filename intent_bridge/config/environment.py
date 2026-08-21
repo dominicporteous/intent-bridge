@@ -295,6 +295,9 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
                 ),
             ),
             schema_auto_repair_enabled=_boolean(environ, "HA_SCHEMA_AUTO_REPAIR_ENABLED", True),
+            trigger_discovered_automations=_boolean(
+                environ, "HA_TRIGGER_DISCOVERED_AUTOMATIONS_ENABLED", True
+            ),
             search_default_limit=ha_search_default,
             search_max_limit=ha_search_max,
             penalize_indicator_lights=_boolean(environ, "HA_PENALIZE_INDICATOR_LIGHTS", True),

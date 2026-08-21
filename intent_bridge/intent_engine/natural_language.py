@@ -1389,8 +1389,16 @@ def _elliptical_query(
     text: str,
     catalog: CatalogSnapshot,
     ignored_entity_domains: frozenset[str],
+    *,
+    trigger_discovered_automations: bool,
 ) -> _Operation | None:
-    """Treat a unique topology label with no operation as a read-only request."""
+    """Resolve a unique topology label with no explicit operation.
+
+    Bare automation names intentionally differ from other entity labels: when
+    enabled, they mean run the named automation rather than report whether its
+    triggers are enabled. Explicit state questions continue through the normal
+    query classifier above.
+    """
 
     try:
         entities = _named_entities(
@@ -1405,6 +1413,8 @@ def _elliptical_query(
     if len(entities) == 1:
         entity, ambiguous = entities[0]
         if not ambiguous and _has_distinctive_mention(text, entity, catalog):
+            if entity.domain == "automation" and trigger_discovered_automations:
+                return _Operation("IntentBridgeTriggerAutomation", {}, entity.domain)
             return _Operation("HassGetState", {}, entity.domain)
 
     # A bare area-plus-domain phrase can still be an unambiguous elliptical
@@ -2126,6 +2136,7 @@ class NaturalLanguageIntentPlanner:
             "I found more than one possible target. Please be more specific."
         ),
         ignored_entity_domains: tuple[str, ...] | None = None,
+        trigger_discovered_automations: bool | None = None,
     ) -> None:
         self._ambiguity_response = ambiguity_response
         self._measurement_planner = MeasurementIntentPlanner(ambiguity_response=ambiguity_response)
@@ -2140,6 +2151,11 @@ class NaturalLanguageIntentPlanner:
                 if domain
             )
             or DEFAULT_IGNORED_ENTITY_DOMAINS
+        )
+        self._trigger_discovered_automations = (
+            settings.home_assistant.trigger_discovered_automations
+            if trigger_discovered_automations is None
+            else trigger_discovered_automations
         )
 
     def plan(
@@ -2192,6 +2208,7 @@ class NaturalLanguageIntentPlanner:
                         clause,
                         catalog,
                         self._ignored_entity_domains,
+                        trigger_discovered_automations=self._trigger_discovered_automations,
                     )
             if operation is None:
                 raise RouteDeclined(f"No deterministic operation matched: {clause}")

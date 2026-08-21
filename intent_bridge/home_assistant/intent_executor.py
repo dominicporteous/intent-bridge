@@ -41,6 +41,7 @@ _SPEECH_SLOT_INTENTS = frozenset(
     }
 )
 _UNKNOWN_SPEECH_SLOTS_POLICY = "state_summary_then_llm_fallback"
+_TRIGGER_AUTOMATION_INTENT = "IntentBridgeTriggerAutomation"
 
 # These Core intents do not use an inferred source area to resolve their
 # result. ``HassBroadcast`` additionally observes the invoking *device*, but
@@ -552,6 +553,45 @@ class HomeAssistantIntentExecutor:
         self._client = client
         self._websocket_provider = websocket_provider
 
+    async def _trigger_automation(
+        self,
+        headers: Mapping[str, str],
+        call: OhfIntentCall,
+    ) -> ExecutionResult:
+        """Run one resolved automation through HA's automation.trigger service."""
+
+        entity_id = call.data.get("entity_id")
+        if not isinstance(entity_id, str) or not entity_id.startswith("automation."):
+            raise RouteDeclined("Automation trigger requires a resolved automation entity")
+
+        url = f"{self._base_url}/api/services/automation/trigger"
+        payload = {"entity_id": entity_id}
+        log.info("Triggering Home Assistant automation entity=%s", entity_id)
+        if self._client is not None:
+            response = await self._client.post(
+                url,
+                headers=dict(headers),
+                json=payload,
+                timeout=self._timeout,
+            )
+        else:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    url,
+                    headers=dict(headers),
+                    json=payload,
+                    timeout=self._timeout,
+                )
+        if not response.is_success:
+            raise RuntimeError(
+                "Home Assistant automation trigger failed: " + _error_detail(response)
+            )
+        log.info("Home Assistant automation trigger succeeded entity=%s", entity_id)
+        return ExecutionResult(
+            speech=settings.api.action_confirmation,
+            response={"entity_id": entity_id, "service": "automation.trigger"},
+        )
+
     async def _execute_via_conversation_websocket(
         self,
         call: OhfIntentCall,
@@ -705,6 +745,8 @@ class HomeAssistantIntentExecutor:
             "Authorization": f"Bearer {self._access_token}",
             "Content-Type": "application/json",
         }
+        if call.intent_name == _TRIGGER_AUTOMATION_INTENT:
+            return await self._trigger_automation(headers, call)
         payload = {"name": call.intent_name, "data": dict(call.data)}
 
         log.info(

@@ -140,6 +140,8 @@ def semantic_effect_for_call(call: OhfIntentCall) -> SemanticEffect:
             intent == "HassTurnOn",
             explicit_power_transition=True,
         )
+    if intent == "IntentBridgeTriggerAutomation":
+        return SemanticEffect("command", "automation", "trigger")
     property_by_intent = {
         "HassClimateSetTemperature": "temperature",
         "HassFanSetSpeed": "percentage",

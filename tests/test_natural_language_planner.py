@@ -200,6 +200,47 @@ def test_shared_query_predicate_distributes_over_cross_domain_targets(catalog):
     assert {step.operation for step in plan.steps} == {"HassGetState"}
 
 
+def test_bare_discovered_automation_runs_its_actions():
+    catalog = CatalogSnapshot(
+        entities=(_entity("automation.goodnight", "Goodnight", "bedroom"),)
+    )
+
+    step = NaturalLanguageIntentPlanner(trigger_discovered_automations=True).plan(
+        "Goodnight", catalog
+    ).steps[0]
+
+    assert step.operation == "IntentBridgeTriggerAutomation"
+    assert step.entity_ids == ("automation.goodnight",)
+    assert step.call.data == {
+        "name": "Goodnight",
+        "entity_id": "automation.goodnight",
+    }
+
+
+def test_bare_discovered_automation_can_retain_the_state_query_behavior():
+    catalog = CatalogSnapshot(
+        entities=(_entity("automation.goodnight", "Goodnight", "bedroom"),)
+    )
+
+    step = NaturalLanguageIntentPlanner(trigger_discovered_automations=False).plan(
+        "Goodnight", catalog
+    ).steps[0]
+
+    assert step.operation == "HassGetState"
+
+
+def test_explicit_automation_state_question_remains_a_query():
+    catalog = CatalogSnapshot(
+        entities=(_entity("automation.goodnight", "Goodnight", "bedroom"),)
+    )
+
+    step = NaturalLanguageIntentPlanner(trigger_discovered_automations=True).plan(
+        "Is Goodnight on?", catalog
+    ).steps[0]
+
+    assert step.operation == "HassGetState"
+
+
 @pytest.mark.parametrize(
     ("text", "operation"),
     [

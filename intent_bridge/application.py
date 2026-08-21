@@ -404,7 +404,11 @@ def build_voice_pipeline(
         preferred_planner=IntentPlannerChain(
             (MeasurementIntentPlanner(), SupplementalIntentPlanner())
         ),
-        fallback_planner=NaturalLanguageIntentPlanner(),
+        fallback_planner=NaturalLanguageIntentPlanner(
+            trigger_discovered_automations=(
+                settings.home_assistant.trigger_discovered_automations
+            )
+        ),
         step_observer=step_observer,
         default_response=settings.api.action_confirmation,
     )

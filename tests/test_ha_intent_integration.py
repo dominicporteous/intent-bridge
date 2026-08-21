@@ -621,6 +621,35 @@ async def test_intent_executor_prefers_websocket_state_for_summary(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_trigger_automation_intent_runs_the_resolved_automation(monkeypatch):
+    seen = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        assert request.url.path == "/api/services/automation/trigger"
+        assert request.headers["Authorization"] == "Bearer secret"
+        assert json.loads(request.content) == {"entity_id": "automation.goodnight"}
+        return httpx.Response(200, json=[])
+
+    monkeypatch.setattr(settings.api, "action_confirmation", "Done.")
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+        result = await executor.execute(
+            OhfIntentCall(
+                "IntentBridgeTriggerAutomation",
+                {"entity_id": "automation.goodnight", "name": "Goodnight"},
+            )
+        )
+
+    assert len(seen) == 1
+    assert result.speech == "Done."
+    assert result.response == {
+        "entity_id": "automation.goodnight",
+        "service": "automation.trigger",
+    }
+
+
+@pytest.mark.asyncio
 async def test_action_done_does_not_speak_stale_websocket_state(monkeypatch):
     class FakeReady:
         def is_set(self) -> bool:

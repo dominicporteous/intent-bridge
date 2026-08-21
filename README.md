@@ -107,6 +107,13 @@ fast-start operation without an LLM turn or Home Assistant's media-search intent
 Set it to `false` to retain Home Assistant intent handling for media searches.
 Playback controls such as pause and resume are unaffected.
 
+`INTENT_BRIDGE_HA_TRIGGER_DISCOVERED_AUTOMATIONS_ENABLED` defaults to `true`.
+When a bare request uniquely matches a Home Assistant automation (for example,
+"Goodnight"), Intent Bridge runs that automation through
+`automation.trigger` instead of reporting whether it is enabled. Explicit
+state questions still report status. Set it to `false` to retain the former
+read-only behavior for bare automation names.
+
 `INTENT_BRIDGE_VOICE_FAILURE_RESPONSE` configures the final non-action response
 used when every safe planning route declines or is unavailable. The default is
 `Sorry, I couldn't handle that request.` This keeps ordinary no-match failures

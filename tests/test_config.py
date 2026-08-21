@@ -29,6 +29,7 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_HA_CATALOG_REFRESH_SECONDS": "45",
             "INTENT_BRIDGE_HA_CATALOG_EVENT_DEBOUNCE_SECONDS": "0.25",
             "INTENT_BRIDGE_HA_CATALOG_MINIMUM_REFRESH_SECONDS": "2",
+            "INTENT_BRIDGE_HA_TRIGGER_DISCOVERED_AUTOMATIONS_ENABLED": "off",
             "INTENT_BRIDGE_HA_ADVANCED_ARGS": "-m tool --flag 'two words'",
             "INTENT_BRIDGE_HA_ADVANCED_PINNED_TOOLS": "one,two",
             "INTENT_BRIDGE_HA_STATE_CHANGING_SERVICES": "turn_on,custom_action",
@@ -65,6 +66,7 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.home_assistant.websocket.catalog_refresh_seconds == 45
     assert settings.home_assistant.websocket.catalog_event_debounce_seconds == 0.25
     assert settings.home_assistant.websocket.catalog_minimum_refresh_seconds == 2
+    assert settings.home_assistant.trigger_discovered_automations is False
     assert settings.home_assistant.advanced.args[-1] == "two words"
     assert settings.home_assistant.advanced.pinned_tools == ("one", "two")
     assert settings.home_assistant.ignored_entity_domains == ("update",)
@@ -92,6 +94,7 @@ def test_deterministic_sentence_settings_have_safe_defaults():
     assert settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
     assert blank_path_settings.deterministic.custom_sentences_path == Path("custom_sentences/en")
     assert settings.llm.ambiguous_target_fallback_enabled is True
+    assert settings.home_assistant.trigger_discovered_automations is True
     assert settings.music_assistant.prefer_native_playback is True
     assert settings.api.timezone_explicit is False
     assert settings.api.locale_explicit is False

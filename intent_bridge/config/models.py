@@ -102,6 +102,7 @@ class HomeAssistantSettings:
     )
     advanced: HomeAssistantAdvancedSettings = field(default_factory=HomeAssistantAdvancedSettings)
     schema_auto_repair_enabled: bool = True
+    trigger_discovered_automations: bool = True
     search_default_limit: int = 8
     search_max_limit: int = 20
     penalize_indicator_lights: bool = True
