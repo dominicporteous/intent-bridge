@@ -14,6 +14,7 @@ from agents import Runner
 from intent_bridge.config import settings
 from intent_bridge.core.voice import RouteDeclined
 from intent_bridge.home_assistant.advanced import run_advanced_agent
+from intent_bridge.home_assistant.catalog import unique_assist_satellite_device
 from intent_bridge.home_assistant.intent_services import exact_target_service
 from intent_bridge.intent_engine.models import ExecutionResult, OhfIntentCall
 from intent_bridge.runtime.dependencies import runtime
@@ -550,6 +551,61 @@ def _summarise_intent_entity_state(state: Mapping[str, Any]) -> str:
 
     return f"{friendly_name} is {state_text}{(' ' + unit) if unit else ''}"
 
+async def _timer_target_device_id() -> str | None:
+    """Resolve the calling device for a native timer without guessing a room."""
+    calling_device_id = voice_tool_run_state.origin_device_id
+    if isinstance(calling_device_id, str) and (calling_device_id := calling_device_id.strip()):
+        return calling_device_id
+
+    origin_device_name = voice_tool_run_state.origin_device_name
+    origin_device_name = (
+        origin_device_name.strip() if isinstance(origin_device_name, str) else None
+    ) or None
+    origin_area_id = voice_tool_run_state.origin_area_id
+    origin_area_id = origin_area_id.strip() if isinstance(origin_area_id, str) else None
+    origin_area_name = voice_tool_run_state.origin_area_name
+    origin_area_name = origin_area_name.strip() if isinstance(origin_area_name, str) else None
+    if not any((origin_device_name, origin_area_id, origin_area_name)):
+        return None
+
+    ha_ws = runtime.ha_ws
+    if ha_ws is None:
+        return None
+    try:
+        await ha_ws.refresh_registries()
+        resolved_origin = ha_ws.resolve_device_origin(
+            device_name=origin_device_name,
+            area_id=origin_area_id,
+            area_name=origin_area_name,
+        )
+        resolved_device_id = resolved_origin.get("device_id")
+        if isinstance(resolved_device_id, str) and (resolved_device_id := resolved_device_id.strip()):
+            return resolved_device_id
+
+        resolved_area_id, _ = ha_ws.resolve_area_reference(
+            area_id=origin_area_id or resolved_origin.get("area_id"),
+            area_name=origin_area_name or resolved_origin.get("area_name"),
+        )
+        satellite = unique_assist_satellite_device(ha_ws, area_id=resolved_area_id)
+    except Exception as exc:
+        log.warning("TIMER TARGET resolution failed: %s", exc)
+        return None
+
+    if satellite is None:
+        log.info(
+            "TIMER TARGET skipped: no unique assist satellite in origin area area_id=%r",
+            resolved_area_id,
+        )
+        return None
+    log.info(
+        "TIMER TARGET inferred from sole assist satellite area_id=%s satellite=%s device_id=%s",
+        resolved_area_id,
+        satellite.entity_id,
+        satellite.device_id,
+    )
+    return satellite.device_id
+
+
 
 class HomeAssistantIntentExecutor:
     def __init__(
@@ -764,9 +820,8 @@ class HomeAssistantIntentExecutor:
         if call.intent_name == _TRIGGER_AUTOMATION_INTENT:
             return await self._trigger_automation(headers, call)
         payload = {"name": call.intent_name, "data": dict(call.data)}
-        calling_device_id = voice_tool_run_state.origin_device_id
-        if call.intent_name in _TIMER_INTENTS and isinstance(calling_device_id, str):
-            calling_device_id = calling_device_id.strip()
+        if call.intent_name in _TIMER_INTENTS:
+            calling_device_id = await _timer_target_device_id()
             if calling_device_id:
                 payload["device_id"] = calling_device_id
                 log.info(

@@ -475,6 +475,65 @@ async def test_intent_executor_targets_timer_intents_at_calling_device_over_http
         }
     ]
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("satellite_count", "expected_device_id"),
+    [(1, "office-voice"), (2, None)],
+)
+async def test_intent_executor_uses_sole_origin_area_satellite_for_timers(
+    satellite_count, expected_device_id
+):
+    states = {"assist_satellite.office": {"state": "idle", "attributes": {}}}
+    registry = {"assist_satellite.office": {"di": "office-voice", "ai": "office"}}
+    devices = {"office-voice": {"name": "Office Voice", "area_id": "office"}}
+    if satellite_count == 2:
+        states["assist_satellite.office_tablet"] = {"state": "idle", "attributes": {}}
+        registry["assist_satellite.office_tablet"] = {"di": "office-tablet", "ai": "office"}
+        devices["office-tablet"] = {"name": "Office Tablet", "area_id": "office"}
+
+    async def refresh_registries() -> None:
+        return None
+
+    ha_ws = SimpleNamespace(
+        states=states,
+        entity_registry=registry,
+        devices=devices,
+        refresh_registries=refresh_registries,
+        resolve_device_origin=lambda **_kwargs: {
+            "device_id": None,
+            "area_id": "office",
+            "area_name": "Office",
+        },
+        resolve_area_reference=lambda **_kwargs: ("office", "Office"),
+    )
+    seen: list[dict[str, object]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={"speech": {"plain": {"speech": "Timer command completed."}}},
+        )
+
+    _reset_voice_tool_run_state(
+        "Set a 60 second timer",
+        {"area_id": "office", "area_name": "Office", "source": "ha_system_prompt"},
+        allow_conversation_websocket=False,
+    )
+    with runtime.override(ha_ws=ha_ws):
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+            executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+            result = await executor.execute(OhfIntentCall("HassStartTimer", {"seconds": 60}))
+
+    assert result.speech == "Timer command completed."
+    assert seen[0]["name"] == "HassStartTimer"
+    assert seen[0]["data"] == {"seconds": 60}
+    if expected_device_id is None:
+        assert "device_id" not in seen[0]
+    else:
+        assert seen[0]["device_id"] == expected_device_id
+
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(

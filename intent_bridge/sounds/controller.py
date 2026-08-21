@@ -5,6 +5,7 @@ from typing import Any
 
 from intent_bridge.config import log, settings
 from intent_bridge.core.text import normalize_search_text
+from intent_bridge.home_assistant.catalog import unique_assist_satellite_device
 from intent_bridge.home_assistant.client import _require_ha_ws
 from intent_bridge.indicators.topology import (
     connected_satellite_device_scope,
@@ -80,6 +81,16 @@ async def resolve_assistant_sound_target(
         ]
         if len(satellites) == 1:
             satellite_entity_id = satellites[0]
+
+    if satellite_entity_id is None:
+        satellite = unique_assist_satellite_device(
+            client,
+            area_id=origin_area_id or resolved_origin.get("area_id"),
+        )
+        if satellite is not None:
+            satellite_entity_id = satellite.entity_id
+            anchor_device_id = satellite.device_id
+            match_reason = "sole_assist_satellite_in_origin_area"
 
     if satellite_entity_id is None:
         resolved_area_id, resolved_area_name = client.resolve_area_reference(

@@ -1,5 +1,6 @@
 """Pure queries over Home Assistant's cached entity and registry catalog."""
 
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from intent_bridge.core.text import normalize_search_text as _normalise_search_text
@@ -10,6 +11,12 @@ class HomeAssistantCatalog(Protocol):
     entity_registry: dict[str, dict[str, Any]]
     devices: dict[str, dict[str, Any]]
     areas: dict[str, dict[str, Any]]
+
+
+@dataclass(frozen=True, slots=True)
+class AssistSatelliteDevice:
+    entity_id: str
+    device_id: str
 
 
 def entity_context(
@@ -128,6 +135,44 @@ def resolve_device_origin(
     }
 
 
+def unique_assist_satellite_device(
+    catalog: HomeAssistantCatalog,
+    *,
+    area_id: str | None,
+) -> AssistSatelliteDevice | None:
+    """Return the owning device of the sole Assist satellite in an area."""
+    if not isinstance(area_id, str) or not (area_id := area_id.strip()):
+        return None
+
+    satellites: list[str] = []
+    for entity_id in catalog.states:
+        if not entity_id.startswith("assist_satellite."):
+            continue
+        registry = catalog.entity_registry.get(entity_id, {})
+        if not isinstance(registry, dict):
+            continue
+        device_id = registry.get("di")
+        device = catalog.devices.get(device_id, {}) if isinstance(device_id, str) else {}
+        satellite_area_id = registry.get("ai")
+        if not satellite_area_id and isinstance(device, dict):
+            satellite_area_id = device.get("area_id")
+        if satellite_area_id == area_id:
+            satellites.append(entity_id)
+
+    if len(satellites) != 1:
+        return None
+
+    entity_id = satellites[0]
+    registry = catalog.entity_registry.get(entity_id, {})
+    device_id = registry.get("di") if isinstance(registry, dict) else None
+    if not isinstance(device_id, str) or not device_id.strip():
+        return None
+    device_id = device_id.strip()
+    if not isinstance(catalog.devices.get(device_id), dict):
+        return None
+    return AssistSatelliteDevice(entity_id=entity_id, device_id=device_id)
+
+
 def area_mentioned_in_text(catalog: HomeAssistantCatalog, text: str) -> tuple[str, str] | None:
     haystack = f" {_normalise_search_text(text)} "
     matches: list[tuple[str, str]] = []
@@ -152,10 +197,12 @@ def entities_in_area(catalog: HomeAssistantCatalog, domain: str, area_id: str) -
 
 
 __all__ = [
+    "AssistSatelliteDevice",
     "HomeAssistantCatalog",
     "area_mentioned_in_text",
     "entities_in_area",
     "entity_context",
     "resolve_area_reference",
     "resolve_device_origin",
+    "unique_assist_satellite_device",
 ]
