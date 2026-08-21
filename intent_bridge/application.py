@@ -74,6 +74,7 @@ from intent_bridge.mcp_config import (
     load_mcp_servers,
     mcp_agent_instructions,
 )
+from intent_bridge.mcp_recovery import McpReconnectCoordinator, ReconnectingMcpServer
 from intent_bridge.music_assistant.client import (
     NativeMusicAssistant,
 )
@@ -182,7 +183,9 @@ async def lifespan(app: FastAPI):
                 )
         except Exception:
             configured_mcp = ()
-            log.exception("Failed to load custom MCP configuration path=%s", settings.mcp.config_path)
+            log.exception(
+                "Failed to load custom MCP configuration path=%s", settings.mcp.config_path
+            )
 
     if settings.llm.enabled and not missing and settings.home_assistant.advanced.enabled:
         try:
@@ -258,7 +261,14 @@ async def lifespan(app: FastAPI):
         else:
             try:
                 music_tools_enabled = runtime.music_assistant is not None
-                custom_mcp_servers = tuple(item.server for item in active_custom_mcp)
+                coordinator = McpReconnectCoordinator(
+                    runtime.mcp_manager,
+                    initial_backoff_seconds=settings.mcp.reconnect_initial_backoff_seconds,
+                    max_backoff_seconds=settings.mcp.reconnect_max_backoff_seconds,
+                )
+                custom_mcp_servers = tuple(
+                    ReconnectingMcpServer(item.server, coordinator) for item in active_custom_mcp
+                )
                 custom_mcp_instructions = mcp_agent_instructions(active_custom_mcp)
                 runtime.informational_agent = make_informational_agent(
                     mcp_servers=custom_mcp_servers,
@@ -405,9 +415,7 @@ def build_voice_pipeline(
             (MeasurementIntentPlanner(), SupplementalIntentPlanner())
         ),
         fallback_planner=NaturalLanguageIntentPlanner(
-            trigger_discovered_automations=(
-                settings.home_assistant.trigger_discovered_automations
-            )
+            trigger_discovered_automations=(settings.home_assistant.trigger_discovered_automations)
         ),
         step_observer=step_observer,
         default_response=settings.api.action_confirmation,
@@ -417,9 +425,7 @@ def build_voice_pipeline(
         routes.append(
             ConversationalDeterministicVoiceRoute(
                 deterministic_engine,
-                ambiguous_target_fallback_enabled=(
-                    settings.llm.ambiguous_target_fallback_enabled
-                ),
+                ambiguous_target_fallback_enabled=(settings.llm.ambiguous_target_fallback_enabled),
             )
         )
     routes.append(
@@ -532,9 +538,7 @@ async def chat_completions(request: Request):
 
     is_error_response = result.route == "voice-error-response"
     use_success_sound = (
-        settings.assistant.sounds_enabled
-        and not is_error_response
-        and not result.speech.strip()
+        settings.assistant.sounds_enabled and not is_error_response and not result.speech.strip()
     )
     use_error_sound = settings.assistant.sounds_enabled and is_error_response
     use_terminal_sound = use_success_sound or use_error_sound
@@ -636,9 +640,7 @@ async def health():
         "deterministic_default_response": settings.deterministic.default_response,
         "deterministic_error_phrases": list(settings.deterministic.error_phrases),
         "llm_enabled": settings.llm.enabled,
-        "llm_ambiguous_target_fallback_enabled": (
-            settings.llm.ambiguous_target_fallback_enabled
-        ),
+        "llm_ambiguous_target_fallback_enabled": (settings.llm.ambiguous_target_fallback_enabled),
         "voice_failure_response": settings.api.voice_failure_response,
         "base_url": settings.api.base_url or None,
         "assistant_led_enabled": settings.assistant.led_enabled,
@@ -657,9 +659,7 @@ async def health():
         "informational_llm_ready": runtime.informational_agent is not None,
         "llm_model": settings.llm.model or None,
         "music_assistant_enabled": settings.music_assistant.enabled,
-        "music_assistant_prefer_native_playback": (
-            settings.music_assistant.prefer_native_playback
-        ),
+        "music_assistant_prefer_native_playback": (settings.music_assistant.prefer_native_playback),
         "music_assistant_transport": "native_websocket",
         "music_assistant_client_package_available": MusicAssistantClient is not None,
         "music_assistant_client_import_error": MUSIC_ASSISTANT_CLIENT_IMPORT_ERROR,
@@ -767,6 +767,8 @@ async def health():
         "ha_advanced_tool_search": settings.home_assistant.advanced.tool_search_enabled,
         "ha_advanced_pinned_tools": settings.home_assistant.advanced.pinned_tools,
         "mcp_client_session_timeout_seconds": settings.mcp.client_session_timeout_seconds,
+        "mcp_reconnect_initial_backoff_seconds": settings.mcp.reconnect_initial_backoff_seconds,
+        "mcp_reconnect_max_backoff_seconds": settings.mcp.reconnect_max_backoff_seconds,
         "mcp_active_servers": (
             [server.name for server in runtime.mcp_manager.active_servers]
             if runtime.mcp_manager is not None

@@ -24,6 +24,8 @@ def test_canonical_environment_maps_to_typed_domains():
             "INTENT_BRIDGE_MCP_CONFIG_PATH": "config/mcp.json",
             "INTENT_BRIDGE_MCP_CONNECT_TIMEOUT_SECONDS": "12",
             "INTENT_BRIDGE_MCP_CLIENT_SESSION_TIMEOUT_SECONDS": "45",
+            "INTENT_BRIDGE_MCP_RECONNECT_INITIAL_BACKOFF_SECONDS": "2.5",
+            "INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS": "30",
             "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT": "4",
             "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "9",
             "INTENT_BRIDGE_HA_CATALOG_REFRESH_SECONDS": "45",
@@ -61,6 +63,8 @@ def test_canonical_environment_maps_to_typed_domains():
     assert settings.mcp.config_path == Path("config/mcp.json")
     assert settings.mcp.connect_timeout_seconds == 12
     assert settings.mcp.client_session_timeout_seconds == 45
+    assert settings.mcp.reconnect_initial_backoff_seconds == 2.5
+    assert settings.mcp.reconnect_max_backoff_seconds == 30
     assert settings.home_assistant.search_default_limit == 4
     assert settings.home_assistant.search_max_limit == 9
     assert settings.home_assistant.websocket.catalog_refresh_seconds == 45
@@ -77,9 +81,7 @@ def test_canonical_environment_maps_to_typed_domains():
 
 
 def test_home_assistant_ignored_entity_domains_can_be_configured_by_env():
-    settings = load_settings(
-        {"INTENT_BRIDGE_HA_IGNORED_ENTITY_DOMAINS": "update,select"}
-    )
+    settings = load_settings({"INTENT_BRIDGE_HA_IGNORED_ENTITY_DOMAINS": "update,select"})
 
     assert settings.home_assistant.ignored_entity_domains == ("update", "select")
 
@@ -99,6 +101,7 @@ def test_deterministic_sentence_settings_have_safe_defaults():
     assert settings.api.timezone_explicit is False
     assert settings.api.locale_explicit is False
     assert settings.api.location_explicit is False
+
 
 def test_env_example_contains_only_canonical_valid_configuration():
     environment = {
@@ -121,6 +124,13 @@ def test_env_example_contains_only_canonical_valid_configuration():
                 "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT": "5",
             },
             "HA_SEARCH_MAX_LIMIT",
+        ),
+        (
+            {
+                "INTENT_BRIDGE_MCP_RECONNECT_INITIAL_BACKOFF_SECONDS": "10",
+                "INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS": "5",
+            },
+            "MCP_RECONNECT_MAX_BACKOFF_SECONDS",
         ),
         (
             {

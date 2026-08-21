@@ -120,8 +120,7 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             )
     if sounds_enabled and not base_url:
         raise ConfigurationError(
-            "INTENT_BRIDGE_BASE_URL is required when "
-            "INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED is true"
+            "INTENT_BRIDGE_BASE_URL is required when INTENT_BRIDGE_ASSISTANT_SOUNDS_ENABLED is true"
         )
 
     ha_search_default = _integer(environ, "HA_SEARCH_DEFAULT_LIMIT", 8, minimum=1)
@@ -130,6 +129,18 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
         raise ConfigurationError(
             "INTENT_BRIDGE_HA_SEARCH_MAX_LIMIT must be greater than or equal to "
             "INTENT_BRIDGE_HA_SEARCH_DEFAULT_LIMIT"
+        )
+
+    mcp_reconnect_initial_backoff = _number(
+        environ, "MCP_RECONNECT_INITIAL_BACKOFF_SECONDS", 1.0, minimum=0.1
+    )
+    mcp_reconnect_max_backoff = _number(
+        environ, "MCP_RECONNECT_MAX_BACKOFF_SECONDS", 60.0, minimum=0.1
+    )
+    if mcp_reconnect_max_backoff < mcp_reconnect_initial_backoff:
+        raise ConfigurationError(
+            "INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS must be greater than or equal to "
+            "INTENT_BRIDGE_MCP_RECONNECT_INITIAL_BACKOFF_SECONDS"
         )
 
     play_ack_timeout = _number(environ, "MA_PLAY_ACK_TIMEOUT_SECONDS", 2.0, minimum=0.1)
@@ -224,6 +235,8 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
             client_session_timeout_seconds=_number(
                 environ, "MCP_CLIENT_SESSION_TIMEOUT_SECONDS", 120.0, minimum=0.1
             ),
+            reconnect_initial_backoff_seconds=mcp_reconnect_initial_backoff,
+            reconnect_max_backoff_seconds=mcp_reconnect_max_backoff,
         ),
         voice_origin=VoiceOriginSettings(
             enabled=_boolean(environ, "VOICE_ORIGIN_ENABLED", True),
@@ -346,8 +359,7 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
         assistant=AssistantSettings(
             led_enabled=_boolean(environ, "ASSISTANT_LED_ENABLED", True),
             led_domains=tuple(
-                item.casefold()
-                for item in _csv(environ, "ASSISTANT_LED_DOMAINS", "light,switch")
+                item.casefold() for item in _csv(environ, "ASSISTANT_LED_DOMAINS", "light,switch")
             ),
             led_color=_text(environ, "ASSISTANT_LED_COLOR", "green"),
             led_effect=_text(environ, "ASSISTANT_LED_EFFECT", "pulse"),

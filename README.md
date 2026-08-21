@@ -218,7 +218,10 @@ copies and makes integration replacement explicit in tests.
 Copy `mcp.json.example` to `mcp.json` to expose additional MCP tools directly
 to the LLM fallback. The file is optional and `mcp.json` is gitignored because
 server headers or environment values may contain credentials. Its path can be
-changed with `INTENT_BRIDGE_MCP_CONFIG_PATH`.
+changed with `INTENT_BRIDGE_MCP_CONFIG_PATH`. Closed custom MCP transports
+use a per-server exponential reconnect backoff. Tune it with
+`INTENT_BRIDGE_MCP_RECONNECT_INITIAL_BACKOFF_SECONDS` (default `1`) and
+`INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS` (default `60`).
 
 Each entry under `mcpServers` accepts `name`, `description`, and `isActive`.
 Supported transports are `streamableHttp` and `sse` with `baseUrl` and optional

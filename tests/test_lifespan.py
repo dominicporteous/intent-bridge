@@ -29,7 +29,9 @@ async def test_lifespan_full_integrations(monkeypatch):
     monkeypatch.setattr(settings.home_assistant, "access_token", "token")
     monkeypatch.setattr(settings.music_assistant, "enabled", True)
     monkeypatch.setattr(settings.home_assistant.advanced, "enabled", True)
-    monkeypatch.setattr(settings.mcp, "config_path", settings.mcp.config_path.parent / "missing.json")
+    monkeypatch.setattr(
+        settings.mcp, "config_path", settings.mcp.config_path.parent / "missing.json"
+    )
     monkeypatch.setattr(application, "validate_fallback_config", lambda: [])
     monkeypatch.setattr(application, "validate_music_assistant_config", lambda: [])
     monkeypatch.setattr(application, "MusicAssistantClient", object())
@@ -104,8 +106,16 @@ async def test_lifespan_exposes_active_custom_mcp_to_fallback(monkeypatch, tmp_p
     monkeypatch.setattr(settings.home_assistant.advanced, "enabled", False)
     monkeypatch.setattr(settings.music_assistant, "enabled", False)
     monkeypatch.setattr(settings.mcp, "config_path", tmp_path / "mcp.json")
+    monkeypatch.setattr(settings.mcp, "reconnect_initial_backoff_seconds", 2.5)
+    monkeypatch.setattr(settings.mcp, "reconnect_max_backoff_seconds", 30)
     monkeypatch.setattr(application, "validate_fallback_config", lambda: [])
-    server = SimpleNamespace(name="Web Search MCP")
+    server = SimpleNamespace(
+        name="Web Search MCP",
+        use_structured_content=False,
+        tool_meta_resolver=None,
+        custom_data_extractor=None,
+        cached_tools=None,
+    )
     configured = application.ConfiguredMcpServer("web_search", "Search the web", server)
 
     def load_servers(path, *, client_session_timeout_seconds):
@@ -145,10 +155,14 @@ async def test_lifespan_exposes_active_custom_mcp_to_fallback(monkeypatch, tmp_p
     async with application.lifespan(application.app):
         assert runtime.fallback_agent == "fallback"
         assert runtime.informational_agent == "information"
-        assert captured["mcp_servers"] == (server,)
-        assert informational["mcp_servers"] == (server,)
+        (fallback_server,) = captured["mcp_servers"]
+        (informational_server,) = informational["mcp_servers"]
+        assert isinstance(fallback_server, application.ReconnectingMcpServer)
+        assert fallback_server._server is server
+        assert fallback_server._coordinator._initial_backoff_seconds == 2.5
+        assert fallback_server._coordinator._max_backoff_seconds == 30
+        assert informational_server is fallback_server
         assert "Web Search MCP: Search the web" in captured["mcp_instructions"]
-
 
 
 @pytest.mark.asyncio

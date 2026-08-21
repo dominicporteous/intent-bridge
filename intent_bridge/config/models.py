@@ -51,6 +51,8 @@ class McpSettings:
     connect_timeout_seconds: float = 30.0
     cleanup_timeout_seconds: float = 10.0
     client_session_timeout_seconds: float = 120.0
+    reconnect_initial_backoff_seconds: float = 1.0
+    reconnect_max_backoff_seconds: float = 60.0
 
 
 @dataclass(slots=True)
