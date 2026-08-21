@@ -33,6 +33,7 @@ class HomeAssistantWebSocket:
         self._send_lock = asyncio.Lock()
         self._request_id = 0
         self._pending: dict[int, asyncio.Future[dict[str, Any]]] = {}
+        self._event_streams: dict[int, asyncio.Queue[dict[str, Any] | Exception]] = {}
 
         self.states: dict[str, dict[str, Any]] = {}
         self.config: dict[str, Any] = {}
@@ -147,7 +148,9 @@ class HomeAssistantWebSocket:
             finally:
                 self.ready.clear()
                 self._ws = None
-                self._fail_pending(ConnectionError("Home Assistant WebSocket connection closed"))
+                disconnect_error = ConnectionError("Home Assistant WebSocket connection closed")
+                self._fail_pending(disconnect_error)
+                self._fail_event_streams(disconnect_error)
 
     async def _reader_loop(self, ws) -> None:
         async for raw in ws:
@@ -167,9 +170,13 @@ class HomeAssistantWebSocket:
                 continue
 
             if message_type == "event":
+                if isinstance(message_id, int):
+                    event_stream = self._event_streams.get(message_id)
+                    if event_stream is not None:
+                        event_stream.put_nowait(message)
+                        continue
                 self._handle_event(message)
                 continue
-
     def _handle_event(self, message: dict[str, Any]) -> None:
         event = message.get("event")
         if not isinstance(event, dict):
@@ -228,6 +235,11 @@ class HomeAssistantWebSocket:
                 future.set_exception(exc)
             self._pending.pop(request_id, None)
 
+    def _fail_event_streams(self, exc: Exception) -> None:
+        for request_id, event_stream in list(self._event_streams.items()):
+            event_stream.put_nowait(exc)
+            self._event_streams.pop(request_id, None)
+
     async def _send_current(
         self,
         payload: dict[str, Any],
@@ -260,6 +272,45 @@ class HomeAssistantWebSocket:
             self._pending.pop(request_id, None)
             raise
 
+    async def _subscribe_current(
+        self,
+        payload: dict[str, Any],
+        *,
+        timeout: float | None = None,
+    ) -> tuple[int, dict[str, Any], asyncio.Queue[dict[str, Any] | Exception]]:
+        """Send a command that streams follow-up events under its request ID."""
+
+        ws = self._ws
+        if ws is None:
+            raise ConnectionError("Home Assistant WebSocket is not connected")
+
+        loop = asyncio.get_running_loop()
+        async with self._send_lock:
+            self._request_id += 1
+            request_id = self._request_id
+            message = {"id": request_id, **payload}
+            future: asyncio.Future[dict[str, Any]] = loop.create_future()
+            event_stream: asyncio.Queue[dict[str, Any] | Exception] = asyncio.Queue()
+            self._pending[request_id] = future
+            self._event_streams[request_id] = event_stream
+            try:
+                await ws.send(json.dumps(message))
+            except Exception:
+                self._pending.pop(request_id, None)
+                self._event_streams.pop(request_id, None)
+                raise
+
+        try:
+            reply = await asyncio.wait_for(
+                future,
+                timeout=timeout or settings.home_assistant.websocket.command_timeout_seconds,
+            )
+        except Exception:
+            self._pending.pop(request_id, None)
+            self._event_streams.pop(request_id, None)
+            raise
+        return request_id, reply, event_stream
+
     async def command(
         self,
         payload: dict[str, Any],
@@ -281,7 +332,6 @@ class HomeAssistantWebSocket:
                     raise
                 await asyncio.sleep(0)
         raise RuntimeError("Home Assistant WebSocket command failed")
-
     async def process_conversation(
         self,
         text: str,
@@ -306,6 +356,88 @@ class HomeAssistantWebSocket:
         if device_id:
             payload["device_id"] = device_id
         return await self.command(payload, timeout=timeout)
+
+    async def process_assist_pipeline(
+        self,
+        text: str,
+        *,
+        device_id: str,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
+        """Run text through Assist's intent stage with its physical device context.
+
+        Older Home Assistant releases accepted ``device_id`` on
+        ``assist_pipeline/run`` before they accepted it on
+        ``conversation/process``. Timers need this context to locate the timer
+        handler registered by an Assist satellite.
+        """
+
+        if not device_id:
+            raise ValueError("Assist pipeline processing requires a device ID")
+
+        command_timeout = timeout or settings.home_assistant.websocket.command_timeout_seconds
+        await asyncio.wait_for(self.ready.wait(), timeout=command_timeout)
+        request_id, reply, event_stream = await self._subscribe_current(
+            {
+                "type": "assist_pipeline/run",
+                "start_stage": "intent",
+                "end_stage": "intent",
+                "input": {"text": text},
+                # Force HA's deterministic conversation agent. The preferred
+                # pipeline may itself point back at this bridge.
+                "pipeline": "conversation.home_assistant",
+                "device_id": device_id,
+            },
+            timeout=command_timeout,
+        )
+        if reply.get("success") is not True:
+            self._event_streams.pop(request_id, None)
+            return reply
+
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + command_timeout
+        try:
+            while True:
+                remaining = deadline - loop.time()
+                if remaining <= 0:
+                    raise TimeoutError("Timed out waiting for Home Assistant Assist pipeline")
+                event_message = await asyncio.wait_for(event_stream.get(), timeout=remaining)
+                if isinstance(event_message, Exception):
+                    raise event_message
+
+                event = event_message.get("event")
+                if not isinstance(event, dict):
+                    continue
+                event_type = event.get("type")
+                event_data = event.get("data")
+                if event_type == "intent-end" and isinstance(event_data, dict):
+                    intent_output = event_data.get("intent_output")
+                    if isinstance(intent_output, dict):
+                        return {"success": True, "result": intent_output}
+                    return {
+                        "success": False,
+                        "error": {
+                            "code": "invalid_result",
+                            "message": "Assist pipeline returned no intent output",
+                        },
+                    }
+                if event_type == "error":
+                    return {
+                        "success": False,
+                        "error": event_data
+                        if isinstance(event_data, dict)
+                        else {"code": "pipeline_error", "message": "Assist pipeline failed"},
+                    }
+                if event_type == "run-end":
+                    return {
+                        "success": False,
+                        "error": {
+                            "code": "missing_intent_result",
+                            "message": "Assist pipeline ended without an intent result",
+                        },
+                    }
+        finally:
+            self._event_streams.pop(request_id, None)
 
     @staticmethod
     def _require_success(message: dict[str, Any], operation: str) -> Any:

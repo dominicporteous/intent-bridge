@@ -235,6 +235,55 @@ async def test_process_conversation_uses_the_existing_websocket_command(client):
 
 
 @pytest.mark.asyncio
+
+@pytest.mark.asyncio
+async def test_process_assist_pipeline_returns_the_intent_event(client):
+    client.ready.set()
+    event_stream: asyncio.Queue[dict[str, object] | Exception] = asyncio.Queue()
+    event_stream.put_nowait(
+        {
+            "type": "event",
+            "id": 7,
+            "event": {
+                "type": "intent-end",
+                "data": {
+                    "intent_output": {
+                        "conversation_id": "timer-conversation",
+                        "response": {"response_type": "action_done"},
+                    }
+                },
+            },
+        }
+    )
+    client._subscribe_current = AsyncMock(
+        return_value=(7, {"success": True}, event_stream)
+    )
+
+    reply = await client.process_assist_pipeline(
+        "set a 60 second timer",
+        device_id="office-voice",
+        timeout=4.5,
+    )
+
+    assert reply == {
+        "success": True,
+        "result": {
+            "conversation_id": "timer-conversation",
+            "response": {"response_type": "action_done"},
+        },
+    }
+    client._subscribe_current.assert_awaited_once_with(
+        {
+            "type": "assist_pipeline/run",
+            "start_stage": "intent",
+            "end_stage": "intent",
+            "input": {"text": "set a 60 second timer"},
+            "pipeline": "conversation.home_assistant",
+            "device_id": "office-voice",
+        },
+        timeout=4.5,
+    )
+
 async def test_refresh_services_and_registries(client, monkeypatch):
     client.command = AsyncMock(
         side_effect=[

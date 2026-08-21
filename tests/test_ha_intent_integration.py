@@ -522,6 +522,54 @@ async def test_intent_executor_targets_timer_calling_device_over_websocket():
 
 
 @pytest.mark.asyncio
+async def test_intent_executor_targets_timer_calling_device_through_assist_pipeline():
+    seen = []
+
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_assist_pipeline(self, text, *, device_id, timeout):
+            seen.append((text, device_id, timeout))
+            return {
+                "success": True,
+                "result": {
+                    "response": {
+                        "response_type": "action_done",
+                        "speech": {"plain": {"speech": "Timer started."}},
+                        "data": {"success": [], "failed": []},
+                    }
+                },
+            }
+
+        async def process_conversation(self, *_args, **_kwargs):
+            pytest.fail("Timer should use the device-aware Assist pipeline")
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        pytest.fail(f"Timer with a calling device must not use HTTP: {request.url}")
+
+    _reset_voice_tool_run_state(
+        "Set a 60 second timer",
+        {"device_id": "office-voice"},
+        allow_conversation_websocket=True,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            timeout=4.5,
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(OhfIntentCall("HassStartTimer", {"seconds": 60}))
+
+    assert result.speech == "Timer started."
+    assert seen == [("Set a 60 second timer", "office-voice", 4.5)]
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ("satellite_count", "expected_device_id"),
     [(1, "office-voice"), (2, None)],

@@ -672,7 +672,7 @@ class HomeAssistantIntentExecutor:
     ) -> Mapping[str, Any] | None:
         """Use HA's persistent conversation WebSocket when it is safe to do so.
 
-        Home Assistant exposes named intent handling only through its REST API.
+        Home Assistant exposes named intent handling only through its REST API; timers with a known device use Assist Pipeline first so older HA versions retain that device context.
         Its WebSocket API accepts the source utterance via conversation/process.
         We use that path for a single, ordinary deterministic command, but keep
         the exact HTTP intent path for plans that cannot safely re-submit their
@@ -715,6 +715,49 @@ class HomeAssistantIntentExecutor:
         if not (callable(getattr(ready, "is_set", None)) and ready.is_set()):
             return None
 
+        if call.intent_name in _TIMER_INTENTS and calling_device_id:
+            pipeline_processor = getattr(ha_ws, "process_assist_pipeline", None)
+            if callable(pipeline_processor):
+                try:
+                    pipeline_reply = await pipeline_processor(
+                        source_text,
+                        device_id=calling_device_id,
+                        timeout=self._timeout,
+                    )
+                except Exception:
+                    # A timeout or transport failure can mean the timer was
+                    # created. Do not fall through to an untargeted command.
+                    log.exception(
+                        "HA Assist pipeline timer dispatch failed; not retrying "
+                        "without a device target intent=%s",
+                        call.intent_name,
+                    )
+                    raise
+
+                if isinstance(pipeline_reply, Mapping):
+                    pipeline_body = pipeline_reply.get("result")
+                    if pipeline_reply.get("success") is True and isinstance(
+                        pipeline_body, Mapping
+                    ):
+                        log.info(
+                            "Executed Home Assistant timer through Assist pipeline "
+                            "intent=%s device_id=%s",
+                            call.intent_name,
+                            calling_device_id,
+                        )
+                        return pipeline_body
+                    log.warning(
+                        "HA Assist pipeline timer dispatch was rejected; trying "
+                        "conversation WebSocket intent=%s error=%s",
+                        call.intent_name,
+                        pipeline_reply.get("error"),
+                    )
+                else:
+                    log.warning(
+                        "HA Assist pipeline timer dispatch returned an invalid reply; "
+                        "trying conversation WebSocket intent=%s",
+                        call.intent_name,
+                    )
         processor = getattr(ha_ws, "process_conversation", None)
         if not callable(processor):
             return None

@@ -57,6 +57,40 @@ async def test_reader_ignores_or_discards_unusable_results(client):
 
 
 @pytest.mark.asyncio
+async def test_reader_routes_assist_pipeline_events_to_the_request_stream(client):
+    event_stream: asyncio.Queue[dict[str, object] | Exception] = asyncio.Queue()
+    client._event_streams[7] = event_stream
+
+    class Frames:
+        def __aiter__(self):
+            self._frames = iter(
+                [
+                    json.dumps(
+                        {
+                            "type": "event",
+                            "id": 7,
+                            "event": {"type": "intent-end", "data": {}},
+                        }
+                    )
+                ]
+            )
+            return self
+
+        async def __anext__(self):
+            try:
+                return next(self._frames)
+            except StopIteration:
+                raise StopAsyncIteration from None
+
+    await client._reader_loop(Frames())
+
+    assert await event_stream.get() == {
+        "type": "event",
+        "id": 7,
+        "event": {"type": "intent-end", "data": {}},
+    }
+
+@pytest.mark.asyncio
 async def test_send_current_cleans_pending_after_send_error_and_timeout(client):
     client._ws = type("Socket", (), {"send": AsyncMock(side_effect=OSError("closed"))})()
     with pytest.raises(OSError, match="closed"):

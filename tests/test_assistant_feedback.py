@@ -19,7 +19,7 @@ async def test_feedback_lifecycle_can_select_both_channels():
         resolve=AsyncMock(return_value=sound_target),
         play=AsyncMock(return_value=True),
     )
-    feedback = AssistantFeedback(leds, sounds)
+    feedback = AssistantFeedback(leds, sounds, processing_sound_delay_seconds=0)
     origin = {"device_id": "satellite"}
 
     handle = await feedback.begin(origin, led=True, sounds=True)
@@ -37,6 +37,25 @@ async def test_feedback_lifecycle_can_select_both_channels():
 
 
 @pytest.mark.asyncio
+async def test_completed_request_cancels_pending_processing_sound():
+    leds = SimpleNamespace(
+        begin=AsyncMock(return_value=None),
+        end=AsyncMock(),
+        stop_all=AsyncMock(),
+    )
+    sounds = SimpleNamespace(
+        resolve=AsyncMock(return_value=object()),
+        play=AsyncMock(return_value=True),
+    )
+    feedback = AssistantFeedback(leds, sounds, processing_sound_delay_seconds=60)
+
+    handle = await feedback.begin(None, led=False, sounds=True)
+    await feedback.complete(handle, success=True, play_terminal_sound=False)
+
+    sounds.play.assert_not_awaited()
+
+
+@pytest.mark.asyncio
 async def test_feedback_lifecycle_supports_independent_channels_and_errors():
     leds = SimpleNamespace(
         begin=AsyncMock(return_value=None),
@@ -47,7 +66,7 @@ async def test_feedback_lifecycle_supports_independent_channels_and_errors():
         resolve=AsyncMock(return_value=None),
         play=AsyncMock(return_value=False),
     )
-    feedback = AssistantFeedback(leds, sounds)
+    feedback = AssistantFeedback(leds, sounds, processing_sound_delay_seconds=0)
 
     sound_handle = await feedback.begin(None, led=False, sounds=True)
     await feedback.complete(sound_handle, success=False)
