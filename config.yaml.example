@@ -1,0 +1,139 @@
+# Intent Bridge nested configuration. Environment variables override these values.
+# Every setting mirrors .env.example; paths under intent_bridge are joined to
+# form the canonical INTENT_BRIDGE_* environment variable names.
+intent_bridge:
+  # Intent Bridge process and OpenAI-compatible API
+  log_level: INFO
+  api:
+    model_name: home-intent
+  # Public root HA can resolve; required when assistant sounds are enabled.
+  base_url: ""
+  timezone: Europe/London
+  # General-assistant grounding for local conventions and location-relative questions.
+  locale: en-GB
+  location: United Kingdom
+  voice_response_max_chars: 180
+  voice_action_confirmation: Done.
+  voice_failure_response: Sorry, I couldn't handle that request.
+
+  # Local OHF/HassIL deterministic voice route
+  deterministic:
+    language: en
+    # Recursively loaded at startup. A missing directory logs a warning and is ignored.
+    custom_sentences_path: ./custom_sentences/en
+    timeout_seconds: 10
+    response_grace_seconds: 0.75
+    default_response: Done
+    min_confidence: 1.0
+    # Semicolon-separated, case-insensitive phrases.
+    error_phrases: ""
+
+  # OpenAI-compatible LLM fallback
+  llm:
+    enabled: true
+    ambiguous_target_fallback_enabled: true
+    base_url: http://localhost:13305/v1
+    api_key: not-used
+    model: ""
+    max_turns: 6
+    timeout_seconds: 120
+    data_recovery_enabled: true
+    data_recovery_max_chars: 16000
+
+  # Optional MCP servers exposed directly to the LLM fallback.
+  mcp:
+    config_path: ./mcp.json
+    connect_timeout_seconds: 30
+    cleanup_timeout_seconds: 10
+    # Client-side read timeout for MCP requests made by LLM agents.
+    client_session_timeout_seconds: 120
+    # Per-server exponential reconnect backoff after a closed MCP transport.
+    reconnect:
+      initial_backoff_seconds: 1
+      max_backoff_seconds: 60
+
+  # Voice-origin context
+  voice_origin:
+    enabled: true
+    area_bias_enabled: true
+    soft_ranking_enabled: true
+    system_prompt_fallback_enabled: true
+
+  # Home Assistant direct integration
+  ha:
+    base_url: http://homeassistant.local:8123
+    access_token: ""
+    ws:
+      enabled: true
+      connect_timeout_seconds: 20
+      command_timeout_seconds: 15
+      reconnect_delay_seconds: 2
+    service_cache_ttl_seconds: 600
+    registry_cache_ttl_seconds: 600
+    state_confirm_timeout_seconds: 1
+    # The deterministic catalog is rebuilt in the background from complete cache copies.
+    catalog_refresh_seconds: 60
+    catalog_event_debounce_seconds: 0.5
+    catalog_minimum_refresh_seconds: 1
+    search_default_limit: 8
+    search_max_limit: 20
+    schema_auto_repair_enabled: true
+    # Bare names that uniquely resolve to an automation run its actions. Set false
+    # to retain the former behavior of reporting whether the automation is on.
+    trigger_discovered_automations_enabled: true
+    penalize_indicator_lights: true
+    ignored_entity_domains: update
+    # Comma-separated service names that can return terminal action responses.
+    state_changing_services: turn_on,turn_off,toggle,open,close,open_cover,close_cover,lock,unlock,set_temperature,set_hvac_mode,set_fan_mode,set_percentage,set_preset_mode,select_option,set_value,set_datetime,set_cover_position,set_position,play_media,media_play,media_pause,media_stop
+    # Optional advanced Home Assistant MCP specialist
+    advanced:
+      enabled: true
+      connect_timeout_seconds: 120
+      cleanup_timeout_seconds: 30
+      max_turns: 8
+      command: python3
+      args: -m uv tool run ha-mcp@latest
+      tool_search_enabled: true
+      tool_search_max_results: 5
+      pinned_tools: ha_search,ha_get_state,ha_call_service,ha_get_overview
+
+  # Native Music Assistant integration
+  ma:
+    enabled: true
+    prefer_native_playback: true
+    base_url: http://music-assistant.local:8095
+    access_token: ""
+    # Format: Office=player-id,Kitchen=other-player-id
+    area_player_map: ""
+    connect_timeout_seconds: 15
+    command_timeout_seconds: 20
+    reconnect_delay_seconds: 2
+    search_default_limit: 10
+    post_action_settle_seconds: 0.25
+    play_ack_timeout_seconds: 2
+    play_completion_timeout_seconds: 90
+    first_audio_timeout_seconds: 15
+    first_audio_poll_seconds: 0.2
+    background_timeout_seconds: 300
+    radio_seed_top_n: 8
+    radio_seed_strategy: weighted
+    terminal_actions_enabled: true
+    replay_guard_seconds: 4
+
+  # Assistant feedback (available to any adapter)
+  assistant:
+    led:
+      enabled: true
+      domains: light,switch
+      color: green
+      effect: pulse
+      software_pulse_enabled: true
+      pulse_interval_seconds: 0.7
+    sounds_enabled: false
+
+  # Conversation memory
+  conversation:
+    enabled: true
+    history_turns: 4
+    ttl_seconds: 300
+    max_sessions: 32

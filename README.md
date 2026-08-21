@@ -88,11 +88,31 @@ application, so dotenv, SDK tracing and logging setup remain executable concerns
 
 ## Configuration
 
-Copy [`.env.example`](.env.example) to `.env` and set the required integration
-addresses and credentials. Intent Bridge accepts only canonical variables with
-the `INTENT_BRIDGE_` prefix; there are intentionally no legacy aliases while the
-project remains alpha. Environment parsing and validation are isolated in
-`config/environment.py`, and consumers use typed fields from `BridgeSettings`.
+Copy [`.env.example`](.env.example) to `.env`, or copy [`config.yaml.example`](config.yaml.example) to `config.yaml`, then set the required integration addresses and credentials. The YAML file is an indented form of the same canonical settings. 
+
+YAML paths below
+`intent_bridge` are joined and uppercased, so this environment setting:
+
+```text
+INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS=60
+```
+
+can be loaded as:
+
+```yaml
+intent_bridge:
+  mcp:
+    reconnect:
+      max_backoff_seconds: 60
+```
+
+`config.yaml` is optional; process environment values (including `.env` values)
+override it. YAML keys must be lowercase snake_case and YAML values must be
+scalars. Existing comma-separated settings, such as `HA_IGNORED_ENTITY_DOMAINS`,
+remain comma-separated strings. Intent Bridge accepts only canonical variables
+with the `INTENT_BRIDGE_` prefix; there are intentionally no legacy aliases
+while the project remains alpha. Environment parsing and validation are isolated
+in `config/environment.py`, and consumers use typed fields from `BridgeSettings`.
 
 `INTENT_BRIDGE_LLM_AMBIGUOUS_TARGET_FALLBACK_ENABLED` defaults to `true`.
 When enabled, a deterministic target ambiguity is offered to the LLM route

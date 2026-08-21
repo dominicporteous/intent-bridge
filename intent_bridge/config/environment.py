@@ -1,10 +1,13 @@
 """Canonical environment loader for Intent Bridge configuration."""
 
 import os
+import re
 import shlex
 from collections.abc import Mapping
 from pathlib import Path
 from urllib.parse import urlparse
+
+import yaml
 
 from intent_bridge.config.models import (
     ApiSettings,
@@ -22,12 +25,80 @@ from intent_bridge.config.models import (
 )
 
 PREFIX = "INTENT_BRIDGE_"
+CONFIG_PATH = Path("config.yaml")
 TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
 FALSE_VALUES = frozenset({"0", "false", "no", "off"})
+_CONFIG_KEY = re.compile(r"[a-z][a-z0-9_]*")
 
 
 class ConfigurationError(ValueError):
     """Raised when a canonical environment value cannot be parsed."""
+
+
+def load_yaml_config(path: Path = CONFIG_PATH) -> dict[str, str]:
+    """Load nested ``intent_bridge`` YAML settings as canonical environment names.
+
+    ``intent_bridge.mcp.reconnect.max_backoff_seconds`` becomes
+    ``INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS``. The caller applies
+    environment variables afterwards, so deployments can still override YAML
+    values without changing the file.
+    """
+    if not path.exists():
+        return {}
+    if not path.is_file():
+        raise ConfigurationError(f"{path} must be a file")
+
+    try:
+        with path.open(encoding="utf-8") as config_file:
+            document = yaml.safe_load(config_file)
+    except OSError as exc:
+        raise ConfigurationError(f"Unable to read {path}: {exc}") from exc
+    except yaml.YAMLError as exc:
+        raise ConfigurationError(f"Unable to parse {path}: {exc}") from exc
+
+    if document is None:
+        return {}
+    if not isinstance(document, Mapping):
+        raise ConfigurationError(f"{path} must contain a mapping")
+    if set(document) - {"intent_bridge"}:
+        raise ConfigurationError(f"{path} may contain only the intent_bridge mapping")
+
+    config = document.get("intent_bridge")
+    if config is None:
+        return {}
+    if not isinstance(config, Mapping):
+        raise ConfigurationError(f"{path}.intent_bridge must be a mapping")
+
+    environment: dict[str, str] = {}
+    _flatten_yaml_config(config, environment, path=("intent_bridge",))
+    return environment
+
+
+def _flatten_yaml_config(
+    config: Mapping[object, object],
+    environment: dict[str, str],
+    *,
+    path: tuple[str, ...],
+) -> None:
+    for key, value in config.items():
+        if not isinstance(key, str) or not _CONFIG_KEY.fullmatch(key):
+            location = ".".join(path)
+            raise ConfigurationError(
+                f"{location} keys must be lowercase snake_case configuration names"
+            )
+
+        value_path = (*path, key)
+        if isinstance(value, Mapping):
+            _flatten_yaml_config(value, environment, path=value_path)
+            continue
+        if value is not None and not isinstance(value, (str, int, float, bool)):
+            raise ConfigurationError(
+                f"{'.'.join(value_path)} must be a scalar; use the existing "
+                "comma-separated environment-value format for collections"
+            )
+
+        name = PREFIX + "_".join(value_path[1:]).upper()
+        environment[name] = "" if value is None else str(value)
 
 
 def _name(suffix: str) -> str:
@@ -107,8 +178,13 @@ def _csv(environ: Mapping[str, str], suffix: str, default: str) -> tuple[str, ..
 
 
 def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
-    """Load and validate settings from canonical ``INTENT_BRIDGE_*`` names."""
-    environ = os.environ if environ is None else environ
+    """Load settings from ``config.yaml`` and canonical ``INTENT_BRIDGE_*`` names.
+
+    Explicit ``environ`` mappings are useful for tests and are loaded on their
+    own. For normal process configuration, values from ``config.yaml`` are
+    loaded first and process environment values override them.
+    """
+    environ = {**load_yaml_config(), **os.environ} if environ is None else environ
 
     base_url = _text(environ, "BASE_URL", "").rstrip("/")
     sounds_enabled = _boolean(environ, "ASSISTANT_SOUNDS_ENABLED", False)
@@ -380,4 +456,4 @@ def load_settings(environ: Mapping[str, str] | None = None) -> BridgeSettings:
     )
 
 
-__all__ = ["ConfigurationError", "PREFIX", "load_settings"]
+__all__ = ["CONFIG_PATH", "ConfigurationError", "PREFIX", "load_settings", "load_yaml_config"]

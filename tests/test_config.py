@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from dotenv import dotenv_values
 
-from intent_bridge.config import ConfigurationError, load_settings
+from intent_bridge.config import ConfigurationError, load_settings, load_yaml_config
 
 
 def test_canonical_environment_maps_to_typed_domains():
@@ -85,6 +85,57 @@ def test_home_assistant_ignored_entity_domains_can_be_configured_by_env():
 
     assert settings.home_assistant.ignored_entity_domains == ("update", "select")
 
+
+def test_nested_yaml_config_maps_to_canonical_settings_and_environment_wins(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "config.yaml").write_text(
+        """
+intent_bridge:
+  mcp:
+    reconnect:
+      initial_backoff_seconds: 2.5
+      max_backoff_seconds: 60
+""".strip(),
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS", "30")
+
+    environment = load_yaml_config()
+    settings = load_settings()
+
+    assert environment == {
+        "INTENT_BRIDGE_MCP_RECONNECT_INITIAL_BACKOFF_SECONDS": "2.5",
+        "INTENT_BRIDGE_MCP_RECONNECT_MAX_BACKOFF_SECONDS": "60",
+    }
+    assert settings.mcp.reconnect_initial_backoff_seconds == 2.5
+    assert settings.mcp.reconnect_max_backoff_seconds == 30
+
+
+def test_yaml_example_has_parity_with_env_example():
+    environment = {
+        key: value or "" for key, value in dotenv_values(".env.example").items() if key is not None
+    }
+    yaml_environment = load_yaml_config(Path("config.yaml.example"))
+
+    assert set(yaml_environment) == set(environment)
+    assert load_settings(yaml_environment) == load_settings(environment)
+
+@pytest.mark.parametrize(
+    ("contents", "message"),
+    [
+        ("other: value", "only the intent_bridge mapping"),
+        ("intent_bridge:\n  mcp: [60]", "intent_bridge.mcp must be a scalar"),
+        ("intent_bridge:\n  mcp:\n    max-backoff: 60", "lowercase snake_case"),
+    ],
+)
+def test_invalid_yaml_config_fails_fast(tmp_path, contents, message):
+    path = tmp_path / "config.yaml"
+    path.write_text(contents, encoding="utf-8")
+
+    with pytest.raises(ConfigurationError, match=message):
+        load_yaml_config(path)
 
 def test_deterministic_sentence_settings_have_safe_defaults():
     settings = load_settings({})
