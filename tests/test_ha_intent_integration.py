@@ -443,13 +443,15 @@ async def test_intent_executor_uses_persistent_websocket_before_http():
         ("HassTimerStatus", {}),
     ],
 )
-async def test_intent_executor_targets_timer_intents_at_calling_device_over_http(
+async def test_intent_executor_keeps_timer_device_id_off_unsupported_http_dispatch(
     intent_name, data
 ):
     seen: list[dict[str, object]] = []
 
     def handle(request: httpx.Request) -> httpx.Response:
-        seen.append(json.loads(request.content))
+        payload = json.loads(request.content)
+        assert "device_id" not in payload
+        seen.append(payload)
         return httpx.Response(
             200,
             json={"speech": {"plain": {"speech": "Timer command completed."}}},
@@ -468,12 +470,56 @@ async def test_intent_executor_targets_timer_intents_at_calling_device_over_http
 
     assert result.speech == "Timer command completed."
     assert seen == [
-        {
-            "name": intent_name,
-            "data": data,
-            "device_id": "kitchen-voice-device",
-        }
+        {"name": intent_name, "data": data}
     ]
+
+@pytest.mark.asyncio
+async def test_intent_executor_targets_timer_calling_device_over_websocket():
+    seen = []
+
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, text, *, language, device_id, timeout):
+            seen.append((text, language, device_id, timeout))
+            return {
+                "success": True,
+                "result": {
+                    "response": {
+                        "response_type": "action_done",
+                        "speech": {"plain": {"speech": "Timer started."}},
+                        "data": {"success": [], "failed": []},
+                    }
+                },
+            }
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        pytest.fail(f"Timer with a calling device must not use HTTP: {request.url}")
+
+    _reset_voice_tool_run_state(
+        "Set a 60 second timer",
+        {"device_id": "office-voice"},
+        allow_conversation_websocket=True,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
+        executor = HomeAssistantIntentExecutor(
+            "http://ha",
+            "secret",
+            timeout=4.5,
+            client=client,
+            websocket_provider=lambda: WebSocket(),
+        )
+        result = await executor.execute(OhfIntentCall("HassStartTimer", {"seconds": 60}))
+
+    assert result.speech == "Timer started."
+    assert seen == [
+        ("Set a 60 second timer", settings.deterministic.language, "office-voice", 4.5)
+    ]
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -507,6 +553,28 @@ async def test_intent_executor_uses_sole_origin_area_satellite_for_timers(
         resolve_area_reference=lambda **_kwargs: ("office", "Office"),
     )
     seen: list[dict[str, object]] = []
+    websocket_seen = []
+
+    class Ready:
+        def is_set(self) -> bool:
+            return True
+
+    class WebSocket:
+        ready = Ready()
+
+        async def process_conversation(self, text, *, language, device_id, timeout):
+            websocket_seen.append((text, language, device_id, timeout))
+            return {
+                "success": True,
+                "result": {
+                    "response": {
+                        "response_type": "action_done",
+                        "speech": {"plain": {"speech": "Timer command completed."}},
+                        "data": {"success": [], "failed": []},
+                    }
+                },
+            }
+
 
     def handle(request: httpx.Request) -> httpx.Response:
         seen.append(json.loads(request.content))
@@ -518,20 +586,28 @@ async def test_intent_executor_uses_sole_origin_area_satellite_for_timers(
     _reset_voice_tool_run_state(
         "Set a 60 second timer",
         {"area_id": "office", "area_name": "Office", "source": "ha_system_prompt"},
-        allow_conversation_websocket=False,
+        allow_conversation_websocket=True,
     )
     with runtime.override(ha_ws=ha_ws):
         async with httpx.AsyncClient(transport=httpx.MockTransport(handle)) as client:
-            executor = HomeAssistantIntentExecutor("http://ha", "secret", client=client)
+            executor = HomeAssistantIntentExecutor(
+                "http://ha",
+                "secret",
+                client=client,
+                timeout=4.5,
+                websocket_provider=lambda: WebSocket(),
+            )
             result = await executor.execute(OhfIntentCall("HassStartTimer", {"seconds": 60}))
 
     assert result.speech == "Timer command completed."
-    assert seen[0]["name"] == "HassStartTimer"
-    assert seen[0]["data"] == {"seconds": 60}
     if expected_device_id is None:
-        assert "device_id" not in seen[0]
+        assert seen == [{"name": "HassStartTimer", "data": {"seconds": 60}}]
+        assert websocket_seen == []
     else:
-        assert seen[0]["device_id"] == expected_device_id
+        assert seen == []
+        assert websocket_seen == [
+            ("Set a 60 second timer", settings.deterministic.language, expected_device_id, 4.5)
+        ]
 
 
 

@@ -667,6 +667,8 @@ class HomeAssistantIntentExecutor:
     async def _execute_via_conversation_websocket(
         self,
         call: OhfIntentCall,
+        *,
+        calling_device_id: str | None = None,
     ) -> Mapping[str, Any] | None:
         """Use HA's persistent conversation WebSocket when it is safe to do so.
 
@@ -692,7 +694,7 @@ class HomeAssistantIntentExecutor:
         # Preserve that explicit resolution for target-sensitive commands, but
         # allow targetless time/date requests through: their result is wholly
         # independent of the source area.
-        device_id = state.origin_device_id
+        device_id = calling_device_id or state.origin_device_id
         inferred_area = state.origin_area_id or state.origin_area_name
         if (
             inferred_area
@@ -820,10 +822,10 @@ class HomeAssistantIntentExecutor:
         if call.intent_name == _TRIGGER_AUTOMATION_INTENT:
             return await self._trigger_automation(headers, call)
         payload = {"name": call.intent_name, "data": dict(call.data)}
+        calling_device_id: str | None = None
         if call.intent_name in _TIMER_INTENTS:
             calling_device_id = await _timer_target_device_id()
             if calling_device_id:
-                payload["device_id"] = calling_device_id
                 log.info(
                     "Targeting Home Assistant timer intent at calling device "
                     "intent=%s device_id=%s",
@@ -837,7 +839,10 @@ class HomeAssistantIntentExecutor:
             dict(call.data),
         )
 
-        body = await self._execute_via_conversation_websocket(call)
+        body = await self._execute_via_conversation_websocket(
+            call,
+            calling_device_id=calling_device_id,
+        )
         if body is None:
             body = await self._execute_via_http(headers, payload)
             log.info(
